@@ -1,0 +1,1314 @@
+/* ==========================================================================
+   03-molecules/_button-group.scss
+   Identity Design System (IDS) - Molécula de Grupos de Botones y Barras de Acciones
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL GRUPO DE BOTONES
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Espaciado y Ritmo Horizontal/Vertical (Esqueleto) */
+  --ids-button-group-gap: var(--spacing-sm);
+  --ids-button-group-gap-sm: var(--spacing-xs);
+  --ids-button-group-gap-lg: var(--spacing-md);
+  --ids-button-group-margin-bottom: var(--spacing-md);
+
+  /* Curvaturas de Borde (Radii) */
+  --ids-button-group-radius: var(--radius-button);
+
+  /* Bordes y Geometría */
+  --ids-button-group-border-width: var(--focus-ring-width);
+  --ids-button-group-divider-width: var(--divider-thickness);
+
+  /* Piel y Mapeo Cromático - Controles Segmentados (Segmented Controls) */
+  --ids-button-group-segmented-bg: var(--color-surface-muted);
+  --ids-button-group-segmented-border: var(--color-border-subtle);
+  --ids-button-group-active-bg: var(--color-surface-card);
+  --ids-button-group-active-color: var(--color-text-primary);
+  --ids-button-group-active-border: var(--color-border-interactive);
+
+  /* Piel y Mapeo Cromático - Barras de Herramientas (Toolbar) */
+  --ids-button-group-toolbar-bg: var(--color-surface-card);
+  --ids-button-group-toolbar-border: var(--color-border-subtle);
+  --ids-button-group-divider-color: var(--color-border-subtle);
+
+  /* Botones Divididos / Desplegables (Split Buttons) */
+  --ids-split-button-toggle-padding-x: var(--spacing-sm);
+  --ids-split-button-chevron-size: 1rem;
+
+  /* Grupo de Búsqueda Inline (Search Group: Input + Botón) */
+  --ids-search-group-width: 100%;
+  --ids-search-group-max-width: 32rem;
+  --ids-search-group-radius: var(--radius-button);
+
+  /* Botones con Label Expansible (Expandable Action Buttons) */
+  --ids-button-expandable-max-width: 18rem;
+  --ids-button-expandable-collapsed-size: var(--ids-button-min-height, var(--target-size-min));
+
+  /* Movimiento */
+  --ids-button-group-transition-speed: var(--transition-speed-fast);
+  --ids-button-group-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-button-group)
+   Unidad compositiva que alinea y coordina botones atómicos (.ids-button).
+   -------------------------------------------------------------------------- */
+.ids-button-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ids-button-group-gap);
+  box-sizing: border-box;
+  position: relative;
+  max-inline-size: 100%;
+  margin-block-end: var(--ids-button-group-margin-bottom);
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+
+  /* Coordinación con botones atómicos (.ids-button) */
+  > .ids-button,
+  > button {
+    position: relative;
+    margin: 0;
+    white-space: nowrap;
+
+    /* Capa de apilamiento para garantizar visibilidad total del anillo de foco */
+    &:focus-visible {
+      z-index: 2;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 MODIFICADORES DE ALINEACIÓN Y DISTRIBUCIÓN
+     ------------------------------------------------------------------------ */
+  /* Alineación al inicio (predeterminada) */
+  &--start {
+    justify-content: flex-start;
+  }
+
+  /* Centrado en contenedor */
+  &--center {
+    justify-content: center;
+  }
+
+  /* Alineación al final (ej. botones de confirmación en modales o formularios) */
+  &--end {
+    justify-content: flex-end;
+  }
+
+  /* Espaciado justificado entre botones */
+  &--between {
+    justify-content: space-between;
+  }
+
+  /* Ancho completo con expansión proporcional de botones */
+  &--full-width {
+    display: flex;
+    inline-size: 100%;
+
+    > .ids-button,
+    > button {
+      flex: 1 1 0;
+      min-inline-size: 0;
+      justify-content: center;
+    }
+  }
+
+  /* Modificadores de Densidad */
+  &--compact {
+    gap: var(--ids-button-group-gap-sm);
+  }
+
+  &--relaxed {
+    gap: var(--ids-button-group-gap-lg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. BARRA DE HERRAMIENTAS OPERATIVA (.ids-button-group--toolbar / role="toolbar")
+   Conjunto modular para edición o acciones en lote con soporte direccional.
+   -------------------------------------------------------------------------- */
+.ids-button-group--toolbar,
+.ids-button-group[role="toolbar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  background-color: var(--ids-button-group-toolbar-bg);
+  border: var(--ids-button-group-border-width) solid var(--ids-button-group-toolbar-border);
+  border-radius: var(--ids-button-group-radius);
+
+  /* Separador vertical atómico dentro de la barra de herramientas */
+  .ids-button-group__divider,
+  .ids-divider--vertical {
+    inline-size: var(--ids-button-group-divider-width);
+    block-size: 1.5rem;
+    background-color: var(--ids-button-group-divider-color);
+    margin-inline: var(--spacing-xs);
+    border: none;
+    padding: 0;
+    align-self: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. CONTROLES SEGMENTADOS Y BOTONES UNIDOS (.ids-button-group--segmented)
+   Fusión física de botones contiguos con bordes compartidos y estado activo claro.
+   -------------------------------------------------------------------------- */
+.ids-button-group--segmented {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  border-radius: var(--ids-button-group-radius);
+  background-color: var(--ids-button-group-segmented-bg);
+  padding: calc(var(--ids-button-group-border-width) / 2);
+  border: var(--ids-button-group-border-width) solid var(--ids-button-group-segmented-border);
+
+  > .ids-button,
+  > button {
+    border-radius: 0;
+    border: none;
+    flex: 1 1 auto;
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    box-shadow: none;
+
+    /* Primer botón: curvatura en extremo inicial */
+    &:first-child {
+      border-start-start-radius: calc(var(--ids-button-group-radius) - calc(var(--ids-button-group-border-width) / 2));
+      border-end-start-radius: calc(var(--ids-button-group-radius) - calc(var(--ids-button-group-border-width) / 2));
+    }
+
+    /* Último botón: curvatura en extremo final */
+    &:last-child {
+      border-start-end-radius: calc(var(--ids-button-group-radius) - calc(var(--ids-button-group-border-width) / 2));
+      border-end-end-radius: calc(var(--ids-button-group-radius) - calc(var(--ids-button-group-border-width) / 2));
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      color: var(--color-text-primary);
+      background-color: var(--color-surface-hover);
+      z-index: 1;
+    }
+
+    /* Estado Activo / Seleccionado Inequívoco (WCAG AAA) */
+    &.is-active,
+    &[aria-pressed="true"],
+    &[aria-selected="true"],
+    &[aria-current="true"] {
+      background-color: var(--ids-button-group-active-bg);
+      color: var(--ids-button-group-active-color);
+      font-weight: var(--font-weight-medium);
+      outline: var(--ids-button-group-border-width) solid var(--ids-button-group-active-border);
+      outline-offset: calc(var(--ids-button-group-border-width) * -1);
+      z-index: 2;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    > .ids-button,
+    > button {
+      transition: background-color var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease),
+                  color var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease),
+                  outline-color var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    > .ids-button,
+    > button {
+      transition: none !important;
+    }
+  }
+}
+
+/* 4.1 Botones Unidos Contiguos (.ids-button-group--joined) */
+.ids-button-group--joined {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0;
+
+  > .ids-button,
+  > button {
+    border-radius: 0;
+    margin-inline-start: calc(var(--ids-button-group-border-width) * -1);
+
+    &:first-child {
+      margin-inline-start: 0;
+      border-start-start-radius: var(--ids-button-group-radius);
+      border-end-start-radius: var(--ids-button-group-radius);
+    }
+
+    &:last-child {
+      border-start-end-radius: var(--ids-button-group-radius);
+      border-end-end-radius: var(--ids-button-group-radius);
+    }
+
+    &:hover,
+    &:focus-visible {
+      z-index: 2;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. BOTONES DIVIDIDOS / DESPLEGABLES (SPLIT BUTTONS)
+   (.ids-button-group--split / .ids-split-button)
+   Acción principal atómica fusionada físicamente con un disparador secundario
+   de menú contextual o despliegue de opciones.
+   -------------------------------------------------------------------------- */
+.ids-button-group--split,
+.ids-split-button {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  vertical-align: middle;
+  position: relative;
+  box-sizing: border-box;
+
+  /* Acción principal: primer botón */
+  > .ids-button:first-child,
+  > button:first-child,
+  .ids-split-button__action {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    margin-inline-end: 0;
+  }
+
+  /* Disparador desplegable (Toggle): botón final contiguo */
+  > .ids-button:last-child,
+  > button:last-child,
+  > .ids-button-group__split-toggle,
+  > .ids-split-button__toggle,
+  .ids-button-group__split-toggle,
+  .ids-split-button__toggle {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    margin-inline-start: calc(var(--ids-button-group-border-width) * -1);
+    padding-inline: var(--ids-split-button-toggle-padding-x);
+    min-inline-size: var(--ids-button-min-height);
+    justify-content: center;
+  }
+
+  /* Soporte cuando el toggle está contenido dentro de un .ids-dropdown anidado */
+  > .ids-dropdown {
+    display: inline-flex;
+    margin-inline-start: calc(var(--ids-button-group-border-width) * -1);
+
+    > .ids-button,
+    > button {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      padding-inline: var(--ids-split-button-toggle-padding-x);
+      min-inline-size: var(--ids-button-min-height);
+      justify-content: center;
+    }
+  }
+
+  /* Capa de apilamiento para garantizar visibilidad total del anillo de foco WCAG AAA */
+  > .ids-button,
+  > button,
+  > .ids-dropdown > .ids-button,
+  .ids-button-group__split-toggle,
+  .ids-split-button__toggle {
+    position: relative;
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      z-index: 2;
+    }
+
+    &:focus-visible {
+      z-index: 3;
+    }
+  }
+
+  /* Ícono chevron desplegable */
+  .ids-split-button__chevron,
+  .ids-dropdown__chevron {
+    inline-size: var(--ids-split-button-chevron-size);
+    block-size: var(--ids-split-button-chevron-size);
+    fill: currentColor;
+    flex-shrink: 0;
+    transition: transform var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease);
+  }
+
+  /* Rotación del indicador chevron al abrir el menú */
+  &.is-open .ids-split-button__chevron,
+  &.is-open .ids-dropdown__chevron,
+  [aria-expanded="true"] .ids-split-button__chevron,
+  [aria-expanded="true"] .ids-dropdown__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ------------------------------------------------------------------------
+     5.1 DIVISOR ÓPTICO INTERNO (Internal Divider)
+     Separador vertical discreto entre acción y toggle
+     ------------------------------------------------------------------------ */
+  .ids-button-group__split-divider,
+  .ids-split-button__divider {
+    inline-size: var(--ids-button-group-divider-width);
+    background-color: var(--ids-button-group-divider-color);
+    margin: 0;
+    border: none;
+    padding: 0;
+    align-self: stretch;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     5.2 ESCALA DE TAMAÑOS (.ids-button-group--sm / .ids-button-group--lg)
+     ------------------------------------------------------------------------ */
+  &.ids-button-group--sm,
+  &--sm {
+    --ids-split-button-toggle-padding-x: calc(var(--spacing-xs) * 1.5);
+    --ids-split-button-chevron-size: 0.875rem;
+
+    > .ids-button,
+    > button,
+    > .ids-dropdown > .ids-button {
+      min-inline-size: calc(var(--target-size-min) * 0.85);
+      padding-block: var(--padding-button-sm-y);
+      font-size: var(--font-size-button-sm);
+    }
+  }
+
+  &.ids-button-group--lg,
+  &--lg {
+    --ids-split-button-toggle-padding-x: var(--spacing-md);
+    --ids-split-button-chevron-size: 1.25rem;
+
+    > .ids-button,
+    > button,
+    > .ids-dropdown > .ids-button {
+      min-inline-size: calc(var(--target-size-min) * 1.2);
+      padding-block: var(--padding-button-lg-y);
+      font-size: var(--font-size-button-lg);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     5.3 VARIANTE INVERSA (.ids-button-group--split-reverse)
+     Toggle a la izquierda y acción principal a la derecha
+     ------------------------------------------------------------------------ */
+  &--reverse,
+  &.ids-button-group--split-reverse {
+    > .ids-button:first-child,
+    > button:first-child,
+    > .ids-dropdown:first-child > .ids-button {
+      border-start-start-radius: var(--ids-button-group-radius);
+      border-end-start-radius: var(--ids-button-group-radius);
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+      margin-inline-start: 0;
+    }
+
+    > .ids-button:last-child,
+    > button:last-child,
+    .ids-split-button__action {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      border-start-end-radius: var(--ids-button-group-radius);
+      border-end-end-radius: var(--ids-button-group-radius);
+      margin-inline-start: calc(var(--ids-button-group-border-width) * -1);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     5.4 COMPATIBILIDAD CON DISPOSICIÓN VERTICAL
+     ------------------------------------------------------------------------ */
+  &.ids-button-group--vertical {
+    flex-direction: column;
+
+    > .ids-button:first-child,
+    > button:first-child {
+      border-start-start-radius: var(--ids-button-group-radius);
+      border-start-end-radius: var(--ids-button-group-radius);
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+      margin-block-end: 0;
+    }
+
+    > .ids-button:last-child,
+    > button:last-child,
+    > .ids-dropdown > .ids-button {
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+      border-end-start-radius: var(--ids-button-group-radius);
+      border-end-end-radius: var(--ids-button-group-radius);
+      margin-inline-start: 0;
+      margin-block-start: calc(var(--ids-button-group-border-width) * -1);
+      inline-size: 100%;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     5.5 ESTADO DESHABILITADO
+     ------------------------------------------------------------------------ */
+  &--disabled,
+  &[aria-disabled="true"] {
+    opacity: var(--opacity-disabled);
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. GRUPO DE BÚSQUEDA SIMPLE INLINE (SEARCH GROUP: INPUT + BOTÓN)
+   (.ids-button-group--search / .ids-search-group)
+   Fusión armónica entre un campo de texto/búsqueda atómico (.ids-input)
+   y un botón atómico contiguo (.ids-button).
+   Diseño responsivo fluido y paridad estricta de altura (block-size / height).
+   -------------------------------------------------------------------------- */
+.ids-button-group--search,
+.ids-search-group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  vertical-align: middle;
+  position: relative;
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--ids-input-min-height);
+
+  /* Adaptación responsiva: despliegue de ancho máximo restringido a partir de 48rem */
+  @media (min-width: 48rem) {
+    max-inline-size: var(--ids-search-group-max-width);
+  }
+
+  /* Campo de Entrada (Input de búsqueda o texto) */
+  > .ids-input,
+  > input[type="search"],
+  > input[type="text"],
+  > input,
+  .ids-search-group__input {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    inline-size: 0;
+    margin: 0;
+    box-sizing: border-box;
+    min-block-size: var(--ids-input-min-height);
+    block-size: auto;
+    height: auto;
+    padding-block: var(--ids-input-padding-y);
+    padding-inline: var(--ids-input-padding-x);
+    border-width: var(--ids-input-border-width);
+    border-style: solid;
+    font-size: var(--ids-input-font-size);
+    line-height: var(--ids-input-line-height);
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    border-start-start-radius: var(--ids-search-group-radius);
+    border-end-start-radius: var(--ids-search-group-radius);
+
+    &:hover {
+      z-index: 1;
+    }
+
+    &:focus,
+    &:focus-visible {
+      z-index: 2;
+    }
+  }
+
+  /* Botón de Acción / Envío (Submit Button) */
+  /* Regla de oro: Mismo tamaño (height / block-size) exacto del input */
+  > .ids-button,
+  > button,
+  .ids-search-group__button,
+  .ids-search-group__submit {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    box-sizing: border-box;
+    margin: 0;
+    margin-inline-start: calc(var(--ids-button-group-border-width) * -1);
+    min-block-size: var(--ids-input-min-height);
+    block-size: auto;
+    height: auto;
+    padding-block: var(--ids-input-padding-y);
+    padding-inline: var(--ids-button-padding-x);
+    border-width: var(--ids-input-border-width);
+    border-style: solid;
+    line-height: var(--ids-input-line-height);
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    border-start-end-radius: var(--ids-search-group-radius);
+    border-end-end-radius: var(--ids-search-group-radius);
+    white-space: nowrap;
+
+    /* Botón de solo icono dentro del grupo de búsqueda: proporción cuadrada exacta */
+    &.ids-button--icon-only {
+      block-size: auto;
+      height: auto;
+      inline-size: var(--ids-input-min-height);
+      min-inline-size: var(--ids-input-min-height);
+      padding-inline: 0;
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      z-index: 2;
+    }
+
+    &:focus-visible {
+      z-index: 3;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     6.1 ESCALA DE TAMAÑOS (.ids-button-group--sm / .ids-button-group--lg)
+     Paridad rigurosa de altura en todas las escalas.
+     ------------------------------------------------------------------------ */
+  &.ids-button-group--sm,
+  &--sm {
+    min-block-size: var(--ids-input-min-height-sm);
+
+    > .ids-input,
+    > input[type="search"],
+    > input[type="text"],
+    > input,
+    .ids-search-group__input {
+      min-block-size: var(--ids-input-min-height-sm);
+      block-size: auto;
+      height: auto;
+      padding-block: var(--ids-input-padding-y-sm);
+      padding-inline: var(--ids-input-padding-x-sm);
+      font-size: var(--ids-input-font-size-sm);
+      line-height: var(--ids-input-line-height);
+    }
+
+    > .ids-button,
+    > button,
+    .ids-search-group__button,
+    .ids-search-group__submit {
+      min-block-size: var(--ids-input-min-height-sm);
+      block-size: auto;
+      height: auto;
+      align-self: stretch;
+      padding-block: var(--ids-input-padding-y-sm);
+      padding-inline: var(--ids-button-padding-x-sm);
+      font-size: var(--ids-button-font-size-sm);
+      line-height: var(--ids-input-line-height);
+
+      &.ids-button--icon-only {
+        block-size: auto;
+        height: auto;
+        inline-size: var(--ids-input-min-height-sm);
+        min-inline-size: var(--ids-input-min-height-sm);
+        padding-inline: 0;
+      }
+    }
+  }
+
+  &.ids-button-group--lg,
+  &--lg {
+    min-block-size: var(--ids-input-min-height-lg);
+
+    > .ids-input,
+    > input[type="search"],
+    > input[type="text"],
+    > input,
+    .ids-search-group__input {
+      min-block-size: var(--ids-input-min-height-lg);
+      block-size: auto;
+      height: auto;
+      padding-block: var(--ids-input-padding-y-lg);
+      padding-inline: var(--ids-input-padding-x-lg);
+      font-size: var(--ids-input-font-size-lg);
+      line-height: var(--ids-input-line-height);
+    }
+
+    > .ids-button,
+    > button,
+    .ids-search-group__button,
+    .ids-search-group__submit {
+      min-block-size: var(--ids-input-min-height-lg);
+      block-size: auto;
+      height: auto;
+      align-self: stretch;
+      padding-block: var(--ids-input-padding-y-lg);
+      padding-inline: var(--ids-button-padding-x-lg);
+      font-size: var(--ids-button-font-size-lg);
+      line-height: var(--ids-input-line-height);
+
+      &.ids-button--icon-only {
+        block-size: auto;
+        height: auto;
+        inline-size: var(--ids-input-min-height-lg);
+        min-inline-size: var(--ids-input-min-height-lg);
+        padding-inline: 0;
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     6.2 VARIANTE REDONDEADA / PÍLDORA (.ids-button-group--pill / .ids-search-group--pill)
+     ------------------------------------------------------------------------ */
+  &--pill,
+  &.ids-button-group--pill {
+    --ids-search-group-radius: var(--radius-full);
+
+    > .ids-input,
+    > input {
+      padding-inline-start: var(--spacing-lg);
+    }
+
+    > .ids-button,
+    > button {
+      padding-inline-end: var(--spacing-lg);
+
+      &.ids-button--icon-only {
+        padding-inline: 0;
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     6.3 VARIANTE INVERSA (Botón al inicio, input al final)
+     ------------------------------------------------------------------------ */
+  &--reverse,
+  &.ids-button-group--search-reverse {
+    > .ids-button:first-child,
+    > button:first-child,
+    .ids-search-group__button:first-child,
+    .ids-search-group__submit:first-child {
+      border-start-start-radius: var(--ids-search-group-radius);
+      border-end-start-radius: var(--ids-search-group-radius);
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+      margin-inline-start: 0;
+      margin-inline-end: calc(var(--ids-button-group-border-width) * -1);
+    }
+
+    > .ids-input:last-child,
+    > input:last-child,
+    .ids-search-group__input:last-child {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      border-start-end-radius: var(--ids-search-group-radius);
+      border-end-end-radius: var(--ids-search-group-radius);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     6.4 ANCHO COMPLETO (.ids-button-group--full-width)
+     ------------------------------------------------------------------------ */
+  &--full-width,
+  &.ids-button-group--full-width {
+    inline-size: 100%;
+    max-inline-size: 100%;
+  }
+
+  /* ------------------------------------------------------------------------
+     6.5 RESPONSIVIDAD Y APILAMIENTO MÓVIL (Mobile Stacking)
+     Adaptación en pantallas estrechas preservando accesibilidad.
+     ------------------------------------------------------------------------ */
+  &--stack-mobile,
+  &.ids-button-group--search-stack,
+  &.ids-search-group--stack,
+  &--responsive {
+    flex-direction: column;
+    align-items: stretch;
+    inline-size: 100%;
+    max-inline-size: 100%;
+
+    > .ids-input,
+    > input[type="search"],
+    > input[type="text"],
+    > input,
+    .ids-search-group__input {
+      inline-size: 100%;
+      flex: 0 0 auto;
+      border-radius: 0;
+      border-start-start-radius: var(--ids-search-group-radius);
+      border-start-end-radius: var(--ids-search-group-radius);
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    > .ids-button,
+    > button,
+    .ids-search-group__button,
+    .ids-search-group__submit {
+      inline-size: 100%;
+      flex: 0 0 auto;
+      margin-inline-start: 0;
+      margin-block-start: calc(var(--ids-button-group-border-width) * -1);
+      border-radius: 0;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+      border-end-start-radius: var(--ids-search-group-radius);
+      border-end-end-radius: var(--ids-search-group-radius);
+      justify-content: center;
+
+      &.ids-button--icon-only {
+        inline-size: 100%;
+        min-inline-size: 100%;
+      }
+    }
+
+    @media (min-width: 48rem) {
+      flex-direction: row;
+      align-items: stretch;
+
+      > .ids-input,
+      > input[type="search"],
+      > input[type="text"],
+      > input,
+      .ids-search-group__input {
+        flex: 1 1 0;
+        inline-size: 0;
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+        border-start-start-radius: var(--ids-search-group-radius);
+        border-end-start-radius: var(--ids-search-group-radius);
+      }
+
+      > .ids-button,
+      > button,
+      .ids-search-group__button,
+      .ids-search-group__submit {
+        inline-size: auto;
+        flex: 0 0 auto;
+        margin-block-start: 0;
+        margin-inline-start: calc(var(--ids-button-group-border-width) * -1);
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+        border-start-end-radius: var(--ids-search-group-radius);
+        border-end-end-radius: var(--ids-search-group-radius);
+
+        &.ids-button--icon-only {
+          inline-size: auto;
+          min-inline-size: var(--ids-button-group-min-height);
+        }
+      }
+    }
+  }
+
+  /* Apilamiento móvil en modo inverso */
+  &--reverse,
+  &.ids-button-group--search-reverse {
+    &.ids-button-group--stack-mobile,
+    &.ids-button-group--search-stack,
+    &.ids-search-group--stack,
+    &.ids-button-group--responsive {
+      > .ids-button:first-child,
+      > button:first-child,
+      .ids-search-group__button:first-child,
+      .ids-search-group__submit:first-child {
+        border-radius: 0;
+        border-start-start-radius: var(--ids-search-group-radius);
+        border-start-end-radius: var(--ids-search-group-radius);
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+        margin-inline-end: 0;
+      }
+
+      > .ids-input:last-child,
+      > input:last-child,
+      .ids-search-group__input:last-child {
+        border-radius: 0;
+        border-start-start-radius: 0;
+        border-start-end-radius: 0;
+        border-end-start-radius: var(--ids-search-group-radius);
+        border-end-end-radius: var(--ids-search-group-radius);
+        margin-block-start: calc(var(--ids-button-group-border-width) * -1);
+      }
+
+      @media (min-width: 48rem) {
+        > .ids-button:first-child,
+        > button:first-child,
+        .ids-search-group__button:first-child,
+        .ids-search-group__submit:first-child {
+          border-start-start-radius: var(--ids-search-group-radius);
+          border-end-start-radius: var(--ids-search-group-radius);
+          border-start-end-radius: 0;
+          border-end-end-radius: 0;
+          margin-inline-end: calc(var(--ids-button-group-border-width) * -1);
+        }
+
+        > .ids-input:last-child,
+        > input:last-child,
+        .ids-search-group__input:last-child {
+          border-start-end-radius: var(--ids-search-group-radius);
+          border-end-end-radius: var(--ids-search-group-radius);
+          border-start-start-radius: 0;
+          border-end-start-radius: 0;
+          margin-block-start: 0;
+        }
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     6.6 ESTADO DESHABILITADO
+     ------------------------------------------------------------------------ */
+  &--disabled,
+  &[aria-disabled="true"] {
+    opacity: var(--opacity-disabled);
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. GRUPO DE PARIDAD DE CONSENTIMIENTO (.ids-button-group--consent)
+   Tecnología Consentida: Idéntico peso visual y escala física sin sesgos coercitivos.
+   -------------------------------------------------------------------------- */
+.ids-button-group--consent {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+  gap: var(--spacing-md);
+  inline-size: 100%;
+
+  /* Ambos botones cuentan con idéntica jerarquía y distribución equitativa */
+  > .ids-button,
+  > button {
+    inline-size: 100%;
+    min-inline-size: 0;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Adaptación responsiva: despliegue horizontal simétrico a partir de 48rem */
+  @media (min-width: 48rem) {
+    flex-direction: row;
+
+    > .ids-button,
+    > button {
+      flex: 1 1 0;
+      inline-size: auto;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. DISPOSICIÓN VERTICAL (.ids-button-group--vertical)
+   Apilamiento vertical coherente con continuidad visual.
+   -------------------------------------------------------------------------- */
+.ids-button-group--vertical {
+  flex-direction: column;
+  align-items: stretch;
+  inline-size: 100%;
+
+  > .ids-button,
+  > button {
+    inline-size: 100%;
+    justify-content: center;
+  }
+
+  &.ids-button-group--segmented,
+  &.ids-button-group--joined {
+    > .ids-button,
+    > button {
+      border-radius: 0;
+      margin-inline-start: 0;
+      margin-block-start: calc(var(--ids-button-group-border-width) * -1);
+
+      &:first-child {
+        margin-block-start: 0;
+        border-start-start-radius: var(--ids-button-group-radius);
+        border-start-end-radius: var(--ids-button-group-radius);
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+      }
+
+      &:last-child {
+        border-end-start-radius: var(--ids-button-group-radius);
+        border-end-end-radius: var(--ids-button-group-radius);
+        border-start-start-radius: 0;
+        border-start-end-radius: 0;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. BOTONES CON LABEL EXPANSIBLE AL HOVER / ACTIVE / FOCUS
+   (.ids-button--expandable / .ids-button-expandable / .ids-button-group--expandable)
+   Filosofía Trauma-Informed & WCAG AAA:
+   - Estado de reposo: Botón compacto de icono (mínimo 44px área táctil accesible).
+   - Estado interactivo (:hover, :active, :focus-visible, .is-active, .is-expanded):
+     El label textual se expande con transición suave, permitiendo lectura clara
+     sin recargar permanentemente la interfaz.
+   -------------------------------------------------------------------------- */
+.ids-button--expandable,
+.ids-button-expandable,
+.ids-button-group--expandable > .ids-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  box-sizing: border-box;
+  gap: 0;
+  padding-block: var(--ids-button-padding-y);
+  padding-inline: var(--ids-button-padding-y);
+  min-inline-size: var(--ids-button-expandable-collapsed-size, var(--target-size-min));
+  max-inline-size: var(--ids-button-expandable-collapsed-size, var(--target-size-min));
+  white-space: nowrap;
+  vertical-align: middle;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: max-inline-size var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease),
+                padding-inline var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease),
+                background-color var(--ids-button-transition-speed) var(--ids-button-transition-ease),
+                border-color var(--ids-button-transition-speed) var(--ids-button-transition-ease),
+                color var(--ids-button-transition-speed) var(--ids-button-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+
+  /* Icono fijo central / inicial */
+  .ids-button__icon,
+  svg.ids-button__icon,
+  .ids-icon {
+    flex-shrink: 0;
+    pointer-events: none;
+    margin: 0;
+  }
+
+  /* Texto / Label colapsable */
+  .ids-button__label,
+  .ids-button-expandable__label {
+    display: inline-block;
+    max-inline-size: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-inline-start: 0;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: max-inline-size var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease),
+                  opacity var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease),
+                  margin-inline-start var(--ids-button-group-transition-speed) var(--ids-button-group-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
+  }
+
+  /* Despliegue interactivo: :hover, :active, :focus-visible, .is-active, .is-expanded */
+  &:hover:not(:disabled):not([aria-disabled="true"]),
+  &:active:not(:disabled):not([aria-disabled="true"]),
+  &:focus-visible,
+  &:focus-within,
+  &.is-active,
+  &.is-expanded,
+  &[aria-expanded="true"] {
+    max-inline-size: var(--ids-button-expandable-max-width);
+    padding-inline: var(--ids-button-padding-x);
+
+    .ids-button__label,
+    .ids-button-expandable__label {
+      max-inline-size: var(--ids-button-expandable-max-width);
+      opacity: 1;
+      pointer-events: auto;
+      margin-inline-start: var(--ids-button-gap);
+    }
+  }
+
+  /* Combinación con formato Cápsula / Píldora (.ids-button--pill / .ids-button--capsule) */
+  &.ids-button--pill,
+  &.ids-button--capsule {
+    border-radius: var(--radius-full);
+    padding-inline: var(--ids-button-padding-y);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]),
+    &:active:not(:disabled):not([aria-disabled="true"]),
+    &:focus-visible,
+    &:focus-within,
+    &.is-active,
+    &.is-expanded,
+    &[aria-expanded="true"] {
+      padding-inline: var(--spacing-lg);
+    }
+  }
+
+  /* Modificadores de tamaño */
+  &.ids-button--sm,
+  &--sm {
+    padding-block: var(--ids-button-padding-y-sm);
+    padding-inline: var(--ids-button-padding-y-sm);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]),
+    &:active:not(:disabled):not([aria-disabled="true"]),
+    &:focus-visible,
+    &:focus-within,
+    &.is-active,
+    &.is-expanded,
+    &[aria-expanded="true"] {
+      padding-inline: var(--ids-button-padding-x-sm);
+    }
+
+    &.ids-button--pill,
+    &.ids-button--capsule {
+      &:hover:not(:disabled):not([aria-disabled="true"]),
+      &:active:not(:disabled):not([aria-disabled="true"]),
+      &:focus-visible,
+      &:focus-within,
+      &.is-active,
+      &.is-expanded,
+      &[aria-expanded="true"] {
+        padding-inline: var(--spacing-md);
+      }
+    }
+  }
+
+  &.ids-button--lg,
+  &--lg {
+    padding-block: var(--ids-button-padding-y-lg);
+    padding-inline: var(--ids-button-padding-y-lg);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]),
+    &:active:not(:disabled):not([aria-disabled="true"]),
+    &:focus-visible,
+    &:focus-within,
+    &.is-active,
+    &.is-expanded,
+    &[aria-expanded="true"] {
+      padding-inline: var(--ids-button-padding-x-lg);
+    }
+
+    &.ids-button--pill,
+    &.ids-button--capsule {
+      &:hover:not(:disabled):not([aria-disabled="true"]),
+      &:active:not(:disabled):not([aria-disabled="true"]),
+      &:focus-visible,
+      &:focus-within,
+      &.is-active,
+      &.is-expanded,
+      &[aria-expanded="true"] {
+        padding-inline: var(--spacing-xl);
+      }
+    }
+  }
+}
+
+/* Molécula de Grupo Contenedor de Botones Expansibles */
+.ids-button-group--expandable {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ids-button-group-gap);
+
+  &.ids-button-group--toolbar {
+    padding: var(--spacing-xs);
+    background-color: var(--ids-button-group-toolbar-bg);
+    border: var(--ids-button-group-border-width) solid var(--ids-button-group-toolbar-border);
+    border-radius: var(--ids-button-group-radius);
+  }
+
+  &.ids-button-group--pill {
+    border-radius: var(--radius-full);
+    padding: var(--spacing-xs);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTACIONES ESPECÍFICAS DE TEMATIZACIÓN (4 Ejes Temáticos de IDS)
+   Consumo estricto de variables declaradas en _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Tema de Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-button-group--segmented {
+    --ids-button-group-segmented-bg: var(--color-surface-card);
+    --ids-button-group-segmented-border: var(--color-border-subtle);
+    --ids-button-group-active-bg: var(--color-surface-card);
+    --ids-button-group-active-color: var(--color-text-primary);
+    --ids-button-group-active-border: var(--color-border-interactive);
+
+    > .ids-button,
+    > button {
+      border: var(--ids-button-group-border-width) solid transparent;
+
+      &.is-active,
+      &[aria-pressed="true"],
+      &[aria-selected="true"] {
+        border-color: var(--color-border-interactive);
+      }
+    }
+  }
+
+  .ids-button-group--toolbar {
+    --ids-button-group-toolbar-bg: var(--color-surface-card);
+    --ids-button-group-toolbar-border: var(--color-border-subtle);
+    --ids-button-group-divider-color: var(--color-border-subtle);
+  }
+
+  .ids-button-group--split,
+  .ids-split-button {
+    > .ids-button,
+    > button,
+    > .ids-dropdown > .ids-button {
+      border-color: var(--color-border-subtle);
+
+      &:hover:not(:disabled) {
+        border-color: var(--color-border-interactive);
+      }
+    }
+  }
+
+  .ids-button-group--search,
+  .ids-search-group {
+    > .ids-input,
+    > input {
+      border-color: var(--color-border-subtle);
+
+      &:focus {
+        border-color: var(--color-border-interactive);
+      }
+    }
+
+    > .ids-button,
+    > button {
+      border-color: var(--color-border-subtle);
+
+      &:hover:not(:disabled) {
+        border-color: var(--color-border-interactive);
+      }
+    }
+  }
+}
+
+/* 9.2 Tema de Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-button-group--segmented {
+    --ids-button-group-segmented-bg: var(--color-surface-muted);
+    --ids-button-group-segmented-border: var(--color-border-subtle);
+    --ids-button-group-active-bg: var(--color-surface-card);
+    --ids-button-group-active-color: var(--color-text-primary);
+    --ids-button-group-active-border: var(--color-border-subtle);
+  }
+
+  .ids-button-group--toolbar {
+    --ids-button-group-toolbar-bg: var(--color-surface-card);
+    --ids-button-group-toolbar-border: var(--color-border-subtle);
+    --ids-button-group-divider-color: var(--color-border-subtle);
+  }
+
+  .ids-split-button__chevron,
+  .ids-dropdown__chevron {
+    transition: none;
+  }
+}
+
+/* 9.3 Tema Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-button-group--segmented {
+    --ids-button-group-segmented-bg: var(--color-surface-muted);
+    --ids-button-group-segmented-border: var(--color-border-subtle);
+    --ids-button-group-active-bg: var(--color-surface-card);
+    --ids-button-group-active-color: var(--color-text-primary);
+    --ids-button-group-active-border: var(--color-border-subtle);
+  }
+
+  .ids-button-group--toolbar {
+    --ids-button-group-toolbar-bg: var(--color-surface-card);
+    --ids-button-group-toolbar-border: var(--color-border-subtle);
+    --ids-button-group-divider-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-button-group--segmented {
+    border-color: CanvasText;
+
+    > .ids-button.is-active,
+    > button[aria-pressed="true"],
+    > button[aria-selected="true"] {
+      background-color: Highlight;
+      color: HighlightText;
+      outline-color: Highlight;
+    }
+  }
+
+  .ids-button-group--toolbar {
+    border-color: CanvasText;
+
+    .ids-button-group__divider {
+      background-color: CanvasText;
+    }
+  }
+
+  .ids-button-group--split,
+  .ids-split-button {
+    > .ids-button,
+    > button,
+    > .ids-dropdown > .ids-button {
+      border: 0.125rem solid ButtonText;
+
+      &:hover:not(:disabled) {
+        border-color: Highlight;
+      }
+
+      &:focus-visible {
+        outline: 0.1875rem solid Highlight;
+      }
+    }
+  }
+
+  .ids-button-group--search,
+  .ids-search-group {
+    > .ids-input,
+    > input {
+      border: 0.125rem solid CanvasText;
+    }
+
+    > .ids-button,
+    > button {
+      border: 0.125rem solid ButtonText;
+
+      &:hover:not(:disabled) {
+        border-color: Highlight;
+      }
+
+      &:focus-visible {
+        outline: 0.1875rem solid Highlight;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. MOVIMIENTO REDUCIDO (Accesibilidad Vestibular)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-button-group--split .ids-split-button__chevron,
+  .ids-button-group--split .ids-dropdown__chevron,
+  .ids-split-button .ids-split-button__chevron,
+  .ids-split-button .ids-dropdown__chevron,
+  .ids-button--expandable,
+  .ids-button-expandable,
+  .ids-button-group--expandable > .ids-button,
+  .ids-button--expandable .ids-button__label,
+  .ids-button-expandable .ids-button-expandable__label {
+    transition: none !important;
+  }
+}
+
+

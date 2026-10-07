@@ -1,0 +1,566 @@
+/* ==========================================================================
+   04-organisms/_collapse.scss
+   Identity Design System (IDS) - Organismo de Colapso / Acordeón Autónomo (Collapse)
+   Soporte multivariable:
+     - Panel individual: mostrar/ocultar una sección con botón disparador dedicado.
+     - Grupo de colapso: múltiples paneles independientes (no exclusivo) y modo acordeón.
+     - Variantes visuales: outlined, filled, ghost y flush (sin bordes externos).
+     - Orientación: vertical (predeterminada) y horizontal (inline).
+     - Estados: expandido, colapsado, deshabilitado y cargando.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO COLLAPSE (Contrato de Tokens)
+   Prohibición estricta de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color y espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones Base (Flat / Clean) */
+  --ids-collapse-radius:              var(--radius-card);
+  --ids-collapse-border-width:        var(--focus-ring-width);
+  --ids-collapse-border-style:        solid;
+  --ids-collapse-border-color:        var(--color-border-subtle);
+
+  /* Disparador / Trigger (Botón de cabecera) */
+  --ids-collapse-trigger-min-height:  var(--target-size-min);     /* 44px WCAG AAA Touch Target */
+  --ids-collapse-trigger-padding-y:   var(--spacing-sm);
+  --ids-collapse-trigger-padding-x:   var(--spacing-md);
+  --ids-collapse-trigger-gap:         var(--spacing-sm);
+  --ids-collapse-trigger-bg:          var(--color-surface-card);
+  --ids-collapse-trigger-color:       var(--color-text-primary);
+  --ids-collapse-trigger-hover-bg:    var(--color-surface-hover);
+  --ids-collapse-trigger-hover-color: var(--color-text-primary);
+  --ids-collapse-trigger-active-bg:   var(--color-surface-muted);
+
+  /* Tipografía del Trigger */
+  --ids-collapse-trigger-font-family: var(--font-family-base);
+  --ids-collapse-trigger-font-size:   var(--font-size-body);
+  --ids-collapse-trigger-font-weight: var(--font-weight-semibold);
+  --ids-collapse-trigger-line-height: var(--line-height-base);
+
+  /* Ícono Chevron */
+  --ids-collapse-icon-size:           var(--icon-size);           /* 1.25rem = 20px */
+  --ids-collapse-icon-color:          var(--color-text-secondary);
+  --ids-collapse-icon-rotation-open:  180deg;
+
+  /* Panel de Contenido */
+  --ids-collapse-panel-padding-y:     var(--spacing-md);
+  --ids-collapse-panel-padding-x:     var(--spacing-md);
+  --ids-collapse-panel-bg:            var(--color-surface-card);
+  --ids-collapse-panel-color:         var(--color-text-primary);
+  --ids-collapse-panel-font-size:     var(--font-size-body);
+  --ids-collapse-panel-line-height:   var(--line-height-base);    /* Mínimo 1.5 WCAG AAA */
+
+  /* Divisor interno entre trigger y panel */
+  --ids-collapse-divider-color:       var(--color-border-subtle);
+  --ids-collapse-divider-thickness:   var(--divider-thickness);
+
+  /* Cinemática y Transiciones */
+  --ids-collapse-transition-speed:    var(--transition-speed-base);
+  --ids-collapse-transition-ease:     var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR RAÍZ (.ids-collapse)
+   Elemento único de panel, sin relación con hermanos.
+   -------------------------------------------------------------------------- */
+.ids-collapse {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+  background-color: var(--ids-collapse-panel-bg);
+  border: var(--ids-collapse-border-width) var(--ids-collapse-border-style) var(--ids-collapse-border-color);
+  border-radius: var(--ids-collapse-radius);
+  overflow: hidden;
+
+  /* Visibilidad de Foco Accesible (:focus-within) */
+  &:focus-within {
+    border-color: var(--color-border-interactive);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. DISPARADOR / TRIGGER (.ids-collapse__trigger)
+   Botón semántico nativo. Cumple role="button", aria-expanded y aria-controls.
+   Touch Target mínimo: 44px (WCAG AAA 2.5.5).
+   -------------------------------------------------------------------------- */
+.ids-collapse__trigger {
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-collapse-trigger-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: var(--ids-collapse-trigger-min-height);
+  padding-block: var(--ids-collapse-trigger-padding-y);
+  padding-inline: var(--ids-collapse-trigger-padding-x);
+
+  /* Apariencia */
+  background-color: var(--ids-collapse-trigger-bg);
+  color: var(--ids-collapse-trigger-color);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  /* Tipografía */
+  font-family: var(--ids-collapse-trigger-font-family);
+  font-size: var(--ids-collapse-trigger-font-size);
+  font-weight: var(--ids-collapse-trigger-font-weight);
+  line-height: var(--ids-collapse-trigger-line-height);
+  text-align: start;
+
+  /* Transición suave de fondo (respeta prefers-reduced-motion) */
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--ids-collapse-transition-speed) var(--ids-collapse-transition-ease),
+      color var(--ids-collapse-transition-speed) var(--ids-collapse-transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Estado Hover */
+  &:hover {
+    background-color: var(--ids-collapse-trigger-hover-bg);
+    color: var(--ids-collapse-trigger-hover-color);
+  }
+
+  /* Estado Activo */
+  &:active {
+    background-color: var(--ids-collapse-trigger-active-bg);
+  }
+
+  /* Visibilidad de Foco WCAG AAA (mínimo 2px, contraste 3:1) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Estado Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. TEXTO DEL TRIGGER (.ids-collapse__trigger-text)
+   Etiqueta semántica del título de la sección.
+   -------------------------------------------------------------------------- */
+.ids-collapse__trigger-text {
+  flex: 1;
+  min-inline-size: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* --------------------------------------------------------------------------
+   5. ICONO CHEVRON (.ids-collapse__icon)
+   Rotación declarativa CSS; JS sólo alterna aria-expanded.
+   -------------------------------------------------------------------------- */
+.ids-collapse__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--ids-collapse-icon-size);
+  block-size: var(--ids-collapse-icon-size);
+  width: var(--ids-collapse-icon-size);
+  height: var(--ids-collapse-icon-size);
+  color: var(--ids-collapse-icon-color);
+  pointer-events: none;
+  transform: rotate(0deg);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--ids-collapse-transition-speed) var(--ids-collapse-transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  svg {
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--icon-stroke-width);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+}
+
+/* Icono girado cuando el panel esta ABIERTO */
+.ids-collapse__trigger[aria-expanded="true"] .ids-collapse__icon {
+  transform: rotate(var(--ids-collapse-icon-rotation-open));
+}
+
+/* --------------------------------------------------------------------------
+   6. REGION DE CONTENIDO (.ids-collapse__panel)
+   aria-hidden="true/false" controlado por JS.
+   Animacion con grid-template-rows para medir la altura real sin JS.
+   -------------------------------------------------------------------------- */
+.ids-collapse__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  border-block-start: 0 solid var(--ids-collapse-divider-color);
+  visibility: hidden;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      grid-template-rows var(--ids-collapse-transition-speed) var(--ids-collapse-transition-ease),
+      border-block-start-width var(--ids-collapse-transition-speed) var(--ids-collapse-transition-ease),
+      visibility 0s var(--ids-collapse-transition-speed);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Estado ABIERTO: activado por JS anadiendo .is-open al .ids-collapse__panel */
+  &.is-open {
+    grid-template-rows: 1fr;
+    border-block-start-width: var(--ids-collapse-divider-thickness);
+    visibility: visible;
+  }
+}
+
+/* Soporte para selector adyacente cuando trigger y panel son hermanos */
+.ids-collapse__trigger[aria-expanded="true"] + .ids-collapse__panel {
+  grid-template-rows: 1fr;
+  border-block-start-width: var(--ids-collapse-divider-thickness);
+  visibility: visible;
+}
+
+/* Sub-contenedor interno: necesario para que grid-template-rows funcione */
+.ids-collapse__panel-inner {
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-block: var(--ids-collapse-panel-padding-y);
+  padding-inline: var(--ids-collapse-panel-padding-x);
+  background-color: var(--ids-collapse-panel-bg);
+  color: var(--ids-collapse-panel-color);
+  font-size: var(--ids-collapse-panel-font-size);
+  line-height: var(--ids-collapse-panel-line-height);
+
+  /* Tipografia de lectura extendida (Trauma-Informed) */
+  > p {
+    margin-block-start: 0;
+    margin-block-end: var(--spacing-sm);
+
+    &:last-child {
+      margin-block-end: 0;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. VARIANTE: OUTLINED (.ids-collapse--outlined)
+   Borde perimetral acentuado en el trigger cuando esta abierto.
+   -------------------------------------------------------------------------- */
+.ids-collapse--outlined {
+  border-color: var(--color-border-interactive);
+
+  .ids-collapse__trigger[aria-expanded="true"] {
+    background-color: var(--ids-collapse-trigger-active-bg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. VARIANTE: FILLED (.ids-collapse--filled)
+   Trigger con relleno de color de accion primaria cuando esta abierto.
+   -------------------------------------------------------------------------- */
+.ids-collapse--filled {
+  .ids-collapse__trigger[aria-expanded="true"] {
+    background-color: var(--color-action-primary);
+    color: var(--color-action-primary-text);
+
+    .ids-collapse__icon {
+      color: var(--color-action-primary-text);
+    }
+  }
+
+  .ids-collapse__panel.is-open,
+  .ids-collapse__trigger[aria-expanded="true"] + .ids-collapse__panel {
+    border-block-start-color: var(--color-action-primary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. VARIANTE: GHOST (.ids-collapse--ghost)
+   Sin borde perimetral; separacion minima, ultra discreta.
+   -------------------------------------------------------------------------- */
+.ids-collapse--ghost {
+  border-color: transparent;
+  background-color: transparent;
+
+  .ids-collapse__panel-inner {
+    background-color: transparent;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. VARIANTE: FLUSH (.ids-collapse--flush)
+   Borde inferior solamente; integrado en listas o contenedores sin tarjeta.
+   -------------------------------------------------------------------------- */
+.ids-collapse--flush {
+  border-radius: 0;
+  border-inline: none;
+  border-block-start: none;
+  border-block-end: var(--ids-collapse-border-width) solid var(--ids-collapse-border-color);
+
+  .ids-collapse__trigger {
+    border-radius: 0;
+    padding-inline: 0;
+  }
+
+  .ids-collapse__panel-inner {
+    padding-inline: 0;
+  }
+
+  &:last-child {
+    border-block-end: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. ESTADO: DESHABILITADO (.ids-collapse--disabled)
+   -------------------------------------------------------------------------- */
+.ids-collapse--disabled {
+  opacity: var(--opacity-disabled);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   12. ESTADO: CARGANDO (.ids-collapse--loading)
+   Espacio reservado para spinner de IDS hasta que el contenido este listo.
+   -------------------------------------------------------------------------- */
+.ids-collapse--loading {
+  .ids-collapse__panel-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. GRUPO DE COLAPSO (.ids-collapse-group)
+   Contenedor de multiples paneles. Modo acordeon: un solo panel abierto
+   a la vez (exclusividad gestionada por JS con data-accordion="true").
+   -------------------------------------------------------------------------- */
+.ids-collapse-group {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  /* Separacion entre paneles en modo espaciado */
+  &:not(.ids-collapse-group--flush) {
+    gap: var(--spacing-sm);
+  }
+
+  /* Modo contiguo: paneles sin separacion, comparten bordes */
+  &.ids-collapse-group--flush {
+    gap: 0;
+
+    > .ids-collapse {
+      border-radius: 0;
+      border-block-end: none;
+
+      &:first-child {
+        border-start-start-radius: var(--ids-collapse-radius);
+        border-start-end-radius: var(--ids-collapse-radius);
+      }
+
+      &:last-child {
+        border-block-end: var(--ids-collapse-border-width) solid var(--ids-collapse-border-color);
+        border-end-start-radius: var(--ids-collapse-radius);
+        border-end-end-radius: var(--ids-collapse-radius);
+      }
+
+      .ids-collapse__trigger {
+        border-radius: 0;
+      }
+    }
+
+    > .ids-collapse:first-child .ids-collapse__trigger {
+      border-start-start-radius: calc(var(--ids-collapse-radius) - var(--ids-collapse-border-width));
+      border-start-end-radius: calc(var(--ids-collapse-radius) - var(--ids-collapse-border-width));
+    }
+
+    > .ids-collapse:last-child .ids-collapse__trigger:not([aria-expanded="true"]) {
+      border-end-start-radius: calc(var(--ids-collapse-radius) - var(--ids-collapse-border-width));
+      border-end-end-radius: calc(var(--ids-collapse-radius) - var(--ids-collapse-border-width));
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   14. RESPONSIVIDAD NATIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+
+/* Estilos compactos móviles por defecto */
+.ids-collapse__trigger {
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-sm);
+}
+
+.ids-collapse__panel-inner {
+  padding-block: var(--spacing-sm);
+  padding-inline: var(--spacing-sm);
+}
+
+/* Despliegue en pantallas medianas y de escritorio */
+@media (min-width: 48rem) {
+  .ids-collapse__trigger {
+    padding-block: var(--ids-collapse-trigger-padding-y);
+    padding-inline: var(--ids-collapse-trigger-padding-x);
+  }
+
+  .ids-collapse__panel-inner {
+    padding-block: var(--ids-collapse-panel-padding-y);
+    padding-inline: var(--ids-collapse-panel-padding-x);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas segun tokens de _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 15.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-collapse {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-collapse__trigger {
+    background-color: var(--color-surface-background);
+    color: var(--color-text-primary);
+    border-block-end: var(--ids-collapse-divider-thickness) solid var(--color-border-subtle);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-border-interactive);
+    }
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+
+    &[aria-expanded="true"] {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  .ids-collapse__icon {
+    color: var(--color-text-primary);
+  }
+
+  .ids-collapse__panel-inner {
+    background-color: var(--color-surface-background);
+    color: var(--color-text-primary);
+  }
+
+  .ids-collapse__panel.is-open,
+  .ids-collapse__trigger[aria-expanded="true"] + .ids-collapse__panel {
+    border-block-start-color: var(--color-border-interactive);
+  }
+}
+
+/* 15.2 Tema Baja Estimulacion (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-collapse,
+  .ids-collapse__trigger,
+  .ids-collapse__panel,
+  .ids-collapse__icon {
+    transition: none;
+  }
+
+  .ids-collapse {
+    box-shadow: none;
+  }
+}
+
+/* 15.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-collapse {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-collapse__trigger {
+    background-color: var(--color-surface-card);
+
+    &[aria-expanded="true"] {
+      background-color: var(--color-surface-muted);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. MODO FORZADO DE COLORES DEL SISTEMA (Windows High Contrast / Assistive Tech)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-collapse {
+    border: 0.125rem solid CanvasText;
+  }
+
+  .ids-collapse__trigger {
+    background-color: Canvas;
+    color: CanvasText;
+    border-block-end: 0.0625rem solid CanvasText;
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+
+    &[aria-expanded="true"] {
+      background-color: Highlight;
+      color: HighlightText;
+
+      .ids-collapse__icon {
+        color: HighlightText;
+      }
+    }
+  }
+
+  .ids-collapse__panel-inner {
+    background-color: Canvas;
+    color: CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   17. MOVIMIENTO REDUCIDO — Bloque consolidado final
+   Garantia universal: ninguna transicion activa si el usuario lo prefiere.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-collapse__trigger,
+  .ids-collapse__icon,
+  .ids-collapse__panel {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .ids-collapse__panel.is-open,
+  .ids-collapse__trigger[aria-expanded="true"] + .ids-collapse__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+}

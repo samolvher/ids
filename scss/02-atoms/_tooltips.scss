@@ -1,0 +1,411 @@
+/* ==========================================================================
+   02-atoms/_tooltips.scss
+   Identity Design System (IDS) - Átomos de Tooltips (Información Contextual)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE TOOLTIPS
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, tipografía, opacidad o geometría se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Tipografía y Escalas */
+  --ids-tooltip-font-family: var(--font-family-base);
+  --ids-tooltip-font-size-sm: var(--tooltip-font-size-sm, 0.75rem);   /* 12px */
+  --ids-tooltip-font-size: var(--tooltip-font-size, var(--font-size-caption)); /* 14px */
+  --ids-tooltip-font-size-lg: var(--tooltip-font-size-lg, var(--font-size-body)); /* 16px */
+  --ids-tooltip-line-height: var(--tooltip-line-height, var(--line-height-base));
+  --ids-tooltip-font-weight: var(--font-weight-regular);
+
+  /* Espaciado Interno (Paddings) */
+  --ids-tooltip-padding-sm-y: var(--tooltip-padding-sm-y, 0.25rem);
+  --ids-tooltip-padding-sm-x: var(--tooltip-padding-sm-x, var(--spacing-xs));
+  --ids-tooltip-padding-y: var(--tooltip-padding-y, var(--spacing-xs));
+  --ids-tooltip-padding-x: var(--tooltip-padding-x, var(--spacing-sm));
+  --ids-tooltip-padding-lg-y: var(--tooltip-padding-lg-y, var(--spacing-sm));
+  --ids-tooltip-padding-lg-x: var(--tooltip-padding-lg-x, var(--spacing-md));
+
+  /* Geometría, Ancho y Flechas */
+  --ids-tooltip-radius: var(--tooltip-radius, var(--radius-sm));
+  --ids-tooltip-max-width: var(--tooltip-max-width, 20rem); /* 320px */
+  --ids-tooltip-arrow-size: var(--tooltip-arrow-size, 0.375rem); /* 6px */
+  --ids-tooltip-offset: var(--tooltip-offset, var(--spacing-xs));
+  --ids-tooltip-z-index: var(--z-index-tooltip, 1200);
+
+  /* Colores Base y Superficie - Dependientes de tokens globales */
+  --ids-tooltip-bg: var(--tooltip-bg, var(--color-surface-card));
+  --ids-tooltip-color: var(--tooltip-color, var(--color-text-primary));
+  --ids-tooltip-border-color: var(--tooltip-border-color, var(--color-border-subtle));
+  --ids-tooltip-border-width: var(--focus-ring-width);
+
+  /* Variables Activas de Estado (Inyectables dinámicamente) */
+  --ids-tooltip-current-bg: var(--ids-tooltip-bg);
+  --ids-tooltip-current-color: var(--ids-tooltip-color);
+  --ids-tooltip-current-border: var(--ids-tooltip-border-color);
+
+  /* Opacidades y Efectos de Superficie */
+  --ids-tooltip-opacity-solid: var(--tooltip-opacity-solid, 1);
+  --ids-tooltip-opacity-translucent: var(--tooltip-opacity-translucent, 0.92);
+  --ids-tooltip-opacity-glass: var(--tooltip-opacity-glass, 0.82);
+  --ids-tooltip-blur-glass: var(--tooltip-blur-glass, 0.5rem); /* 8px */
+
+  /* Los 4 Estados de Color Semánticos (WCAG AAA) */
+  --ids-tooltip-success-bg: var(--tooltip-success-bg, var(--color-status-success));
+  --ids-tooltip-success-color: var(--tooltip-success-color, var(--status-success-text));
+  --ids-tooltip-success-border: var(--tooltip-success-border, var(--color-status-success));
+  --ids-tooltip-danger-bg: var(--tooltip-danger-bg, var(--color-status-danger));
+  --ids-tooltip-danger-color: var(--tooltip-danger-color, var(--status-danger-text));
+  --ids-tooltip-danger-border: var(--tooltip-danger-border, var(--color-status-danger));
+  --ids-tooltip-warning-bg: var(--tooltip-warning-bg, var(--color-status-warning));
+  --ids-tooltip-warning-color: var(--tooltip-warning-color, var(--status-warning-text));
+  --ids-tooltip-warning-border: var(--tooltip-warning-border, var(--color-status-warning));
+  --ids-tooltip-info-bg: var(--tooltip-info-bg, var(--color-status-info));
+  --ids-tooltip-info-color: var(--tooltip-info-color, var(--status-info-text));
+  --ids-tooltip-info-border: var(--tooltip-info-border, var(--color-status-info));
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR DISPARADOR (.ids-tooltip-wrapper / .ids-tooltip-trigger)
+   Establece el contexto de apilamiento relativo para el posicionamiento del tooltip.
+   -------------------------------------------------------------------------- */
+.ids-tooltip-wrapper,
+.ids-tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+/* --------------------------------------------------------------------------
+   3. CLASE BASE DEL TOOLTIP (.ids-tooltip)
+   Elemento emergente accesible (role="tooltip") con soporte WCAG 2.2 Criterion 1.4.13.
+   -------------------------------------------------------------------------- */
+.ids-tooltip {
+  position: absolute;
+  z-index: var(--ids-tooltip-z-index);
+  display: block;
+  width: max-content;
+  max-width: var(--ids-tooltip-max-width);
+  padding: var(--ids-tooltip-padding-y) var(--ids-tooltip-padding-x);
+  font-family: var(--ids-tooltip-font-family);
+  font-size: var(--ids-tooltip-font-size);
+  font-weight: var(--ids-tooltip-font-weight);
+  line-height: var(--ids-tooltip-line-height);
+  color: var(--ids-tooltip-current-color);
+  background-color: var(--ids-tooltip-current-bg);
+  border: var(--ids-tooltip-border-width) solid var(--ids-tooltip-current-border);
+  border-radius: var(--ids-tooltip-radius);
+  text-align: start;
+  text-decoration: none;
+  word-wrap: break-word;
+  pointer-events: none;
+  box-sizing: border-box;
+  opacity: 0;
+  visibility: hidden;
+
+  /* Transición fluida respetando prefers-reduced-motion */
+  transition: 
+    opacity var(--transition-speed-fast) var(--transition-ease),
+    transform var(--transition-speed-fast) var(--transition-ease),
+    visibility var(--transition-speed-fast) var(--transition-ease);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+
+  /* Flecha indicadora de dirección mediante pseudoelemento */
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  /* ------------------------------------------------------------------------
+     4. ESCALA DE TAMAÑOS (Sizes)
+     ------------------------------------------------------------------------ */
+  /* Pequeño / Compacto (12px) - Para atajos de teclado o etiquetas breves */
+  &--sm {
+    font-size: var(--ids-tooltip-font-size-sm);
+    padding: var(--ids-tooltip-padding-sm-y) var(--ids-tooltip-padding-sm-x);
+  }
+
+  /* Mediano / Estándar (14px) */
+  &--md {
+    font-size: var(--ids-tooltip-font-size);
+    padding: var(--ids-tooltip-padding-y) var(--ids-tooltip-padding-x);
+  }
+
+  /* Grande / Descriptivo (16px) - Para explicaciones de consentimiento o trauma-informed */
+  &--lg {
+    font-size: var(--ids-tooltip-font-size-lg);
+    padding: var(--ids-tooltip-padding-lg-y) var(--ids-tooltip-padding-lg-x);
+  }
+
+  /* ------------------------------------------------------------------------
+     5. OPACIDADES Y TRANSPARENCIAS
+     ------------------------------------------------------------------------ */
+  /* Opaco sólido (Predeterminado - Máximo contraste) */
+  &--solid {
+    --ids-tooltip-opacity-active: var(--ids-tooltip-opacity-solid);
+  }
+
+  /* Translúcido suave (92% de opacidad) */
+  &--translucent {
+    --ids-tooltip-opacity-active: var(--ids-tooltip-opacity-translucent);
+  }
+
+  /* Vidrio Esmerilado (Glassmorphism accesible con desenfoque de fondo) */
+  &--glass,
+  &--frosted {
+    --ids-tooltip-opacity-active: var(--ids-tooltip-opacity-glass);
+    backdrop-filter: blur(var(--ids-tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--ids-tooltip-blur-glass));
+    border-color: var(--color-border-subtle);
+  }
+
+  /* ------------------------------------------------------------------------
+     6. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (Color States)
+     ------------------------------------------------------------------------ */
+  /* Estado de Éxito / Confirmación Segura */
+  &--success {
+    --ids-tooltip-current-bg: var(--ids-tooltip-success-bg);
+    --ids-tooltip-current-color: var(--ids-tooltip-success-color);
+    --ids-tooltip-current-border: var(--ids-tooltip-success-border);
+  }
+
+  /* Estado de Peligro / Destructivo / Acción Crítica */
+  &--danger {
+    --ids-tooltip-current-bg: var(--ids-tooltip-danger-bg);
+    --ids-tooltip-current-color: var(--ids-tooltip-danger-color);
+    --ids-tooltip-current-border: var(--ids-tooltip-danger-border);
+  }
+
+  /* Estado de Advertencia / Precaución / Consecuencias */
+  &--warning {
+    --ids-tooltip-current-bg: var(--ids-tooltip-warning-bg);
+    --ids-tooltip-current-color: var(--ids-tooltip-warning-color);
+    --ids-tooltip-current-border: var(--ids-tooltip-warning-border);
+  }
+
+  /* Estado Informativo / Ayuda de Privacidad */
+  &--info {
+    --ids-tooltip-current-bg: var(--ids-tooltip-info-bg);
+    --ids-tooltip-current-color: var(--ids-tooltip-info-color);
+    --ids-tooltip-current-border: var(--ids-tooltip-info-border);
+  }
+
+  /* ------------------------------------------------------------------------
+     7. DIRECCIONES Y POSICIONAMIENTO CON FLECHA
+     ------------------------------------------------------------------------ */
+  /* 7.1 Posición ARRIBA (Top) - Predeterminada */
+  &--top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(-1 * var(--ids-tooltip-offset)));
+    margin-bottom: var(--ids-tooltip-arrow-size);
+
+    &::after {
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: var(--ids-tooltip-arrow-size) var(--ids-tooltip-arrow-size) 0 var(--ids-tooltip-arrow-size);
+      border-color: var(--ids-tooltip-current-bg) transparent transparent transparent;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  /* 7.2 Posición ABAJO (Bottom) */
+  &--bottom {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(var(--ids-tooltip-offset));
+    margin-top: var(--ids-tooltip-arrow-size);
+
+    &::after {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 var(--ids-tooltip-arrow-size) var(--ids-tooltip-arrow-size) var(--ids-tooltip-arrow-size);
+      border-color: transparent transparent var(--ids-tooltip-current-bg) transparent;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  /* 7.3 Posición IZQUIERDA (Left) */
+  &--left {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(calc(-1 * var(--ids-tooltip-offset)));
+    margin-right: var(--ids-tooltip-arrow-size);
+
+    &::after {
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: var(--ids-tooltip-arrow-size) 0 var(--ids-tooltip-arrow-size) var(--ids-tooltip-arrow-size);
+      border-color: transparent transparent transparent var(--ids-tooltip-current-bg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: translateY(-50%) translateX(0);
+    }
+  }
+
+  /* 7.4 Posición DERECHA (Right) */
+  &--right {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(var(--ids-tooltip-offset));
+    margin-left: var(--ids-tooltip-arrow-size);
+
+    &::after {
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: var(--ids-tooltip-arrow-size) var(--ids-tooltip-arrow-size) var(--ids-tooltip-arrow-size) 0;
+      border-color: transparent var(--ids-tooltip-current-bg) transparent transparent;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: translateY(-50%) translateX(0);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. DISPARADORES Y ESTADOS DE VISIBILIDAD (Hover, Focus & Persistent)
+   Cumple con WCAG 2.2 Criterio 1.4.13 (Hoverable & Dismissible).
+   -------------------------------------------------------------------------- */
+.ids-tooltip-wrapper:hover .ids-tooltip,
+.ids-tooltip-wrapper:focus-within .ids-tooltip,
+.ids-tooltip-trigger:hover .ids-tooltip,
+.ids-tooltip-trigger:focus-within .ids-tooltip,
+.ids-tooltip.is-visible {
+  opacity: var(--ids-tooltip-opacity-active, var(--ids-tooltip-opacity-solid));
+  visibility: visible;
+  pointer-events: auto; /* Permite mover el puntero sobre el tooltip sin que se cierre */
+}
+
+/* Ajustes de transformaciones en hover/focus */
+.ids-tooltip-wrapper:hover .ids-tooltip--top,
+.ids-tooltip-wrapper:focus-within .ids-tooltip--top,
+.ids-tooltip-trigger:hover .ids-tooltip--top,
+.ids-tooltip-trigger:focus-within .ids-tooltip--top {
+  transform: translateX(-50%) translateY(0);
+}
+
+.ids-tooltip-wrapper:hover .ids-tooltip--bottom,
+.ids-tooltip-wrapper:focus-within .ids-tooltip--bottom,
+.ids-tooltip-trigger:hover .ids-tooltip--bottom,
+.ids-tooltip-trigger:focus-within .ids-tooltip--bottom {
+  transform: translateX(-50%) translateY(0);
+}
+
+.ids-tooltip-wrapper:hover .ids-tooltip--left,
+.ids-tooltip-wrapper:focus-within .ids-tooltip--left,
+.ids-tooltip-trigger:hover .ids-tooltip--left,
+.ids-tooltip-trigger:focus-within .ids-tooltip--left {
+  transform: translateY(-50%) translateX(0);
+}
+
+.ids-tooltip-wrapper:hover .ids-tooltip--right,
+.ids-tooltip-wrapper:focus-within .ids-tooltip--right,
+.ids-tooltip-trigger:hover .ids-tooltip--right,
+.ids-tooltip-trigger:focus-within .ids-tooltip--right {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* --------------------------------------------------------------------------
+   9. SOPORTE DE ATRIBUTO LIGERO [data-ids-tooltip]
+   Permite aplicar tooltips ultra rápidos sin elementos HTML adicionales.
+   -------------------------------------------------------------------------- */
+[data-ids-tooltip] {
+  position: relative;
+
+  &::before {
+    content: attr(data-ids-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(-1 * var(--ids-tooltip-offset)));
+    margin-bottom: var(--ids-tooltip-arrow-size);
+    z-index: var(--ids-tooltip-z-index);
+    width: max-content;
+    max-width: var(--ids-tooltip-max-width);
+    padding: var(--ids-tooltip-padding-y) var(--ids-tooltip-padding-x);
+    font-family: var(--ids-tooltip-font-family);
+    font-size: var(--ids-tooltip-font-size);
+    line-height: var(--ids-tooltip-line-height);
+    color: var(--ids-tooltip-color);
+    background-color: var(--ids-tooltip-bg);
+    border-radius: var(--ids-tooltip-radius);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 10.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-tooltip {
+    --ids-tooltip-opacity-active: 1;
+    border-width: var(--focus-ring-width);
+
+    /* Flecha con borde contrastado */
+    &--top::after {
+      border-color: var(--ids-tooltip-current-border) transparent transparent transparent;
+    }
+
+    &--bottom::after {
+      border-color: transparent transparent var(--ids-tooltip-current-border) transparent;
+    }
+
+    &--left::after {
+      border-color: transparent transparent transparent var(--ids-tooltip-current-border);
+    }
+
+    &--right::after {
+      border-color: transparent var(--ids-tooltip-current-border) transparent transparent;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. ADAPTACIÓN PARA ACCESIBILIDAD DEL SISTEMA OPERATIVO
+   Modo de Contraste Forzado de Windows (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-tooltip {
+    background-color: Canvas;
+    color: CanvasText;
+    border: var(--focus-ring-width) solid CanvasText;
+    forced-color-adjust: none;
+
+    &--top::after { border-color: CanvasText transparent transparent transparent; }
+    &--bottom::after { border-color: transparent transparent CanvasText transparent; }
+    &--left::after { border-color: transparent transparent transparent CanvasText; }
+    &--right::after { border-color: transparent CanvasText transparent transparent; }
+  }
+}

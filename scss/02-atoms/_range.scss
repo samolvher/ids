@@ -1,0 +1,500 @@
+/* ==========================================================================
+   02-atoms/_range.scss
+   Identity Design System (IDS) - Átomo de Control Deslizante (Range Slider)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL CONTROL DE RANGO
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría de Contenedor y Pista (Track) */
+  --ids-range-min-height: var(--range-min-height);
+  --ids-range-track-height: var(--range-track-height);
+  --ids-range-track-height-sm: var(--range-track-height-sm);
+  --ids-range-track-height-lg: var(--range-track-height-lg);
+  --ids-range-track-radius: var(--range-track-radius);
+  --ids-range-track-border-width: var(--focus-ring-width);
+
+  /* Geometría del Deslizador / Puntero (Thumb) */
+  --ids-range-thumb-size: var(--range-thumb-size);
+  --ids-range-thumb-size-sm: var(--range-thumb-size-sm);
+  --ids-range-thumb-size-lg: var(--range-thumb-size-lg);
+  --ids-range-thumb-radius: var(--range-thumb-radius);
+  --ids-range-thumb-border-width: var(--range-thumb-border-width);
+
+  /* Piel y Mapeo Cromático - Pista - Dependientes de tokens globales */
+  --ids-range-track-bg: var(--range-track-bg, var(--color-surface-muted));
+  --ids-range-track-border: var(--range-track-border, var(--color-border-subtle));
+  --ids-range-track-fill: var(--range-track-fill, var(--color-action-primary));
+
+  /* Piel y Mapeo Cromático - Puntero (Thumb) */
+  --ids-range-thumb-bg: var(--range-thumb-bg, var(--color-surface-background));
+  --ids-range-thumb-border: var(--range-thumb-border, var(--color-action-primary));
+  --ids-range-thumb-hover-bg: var(--range-thumb-hover-bg, var(--color-action-hover));
+  --ids-range-thumb-hover-border: var(--range-thumb-hover-border, var(--color-action-hover));
+
+  /* Foco Accesible WCAG AAA */
+  --ids-range-focus-ring-color: var(--focus-ring-color);
+  --ids-range-focus-ring-width: var(--focus-ring-width);
+  --ids-range-focus-ring-offset: var(--focus-ring-offset);
+
+  /* Movimiento */
+  --ids-range-transition-speed: var(--transition-speed-fast);
+  --ids-range-transition-ease: var(--transition-ease);
+
+  /* Estados de Interacción */
+  --ids-range-disabled-opacity: var(--opacity-disabled);
+  --ids-range-disabled-track-bg: var(--color-surface-muted);
+  --ids-range-disabled-thumb-bg: var(--color-surface-muted);
+  --ids-range-disabled-thumb-border: var(--color-border-subtle);
+
+  /* Variantes Semánticas de Estado (Trauma-Informed) */
+  --ids-range-danger-fill: var(--color-status-danger);
+  --ids-range-warning-fill: var(--color-status-warning);
+  --ids-range-success-fill: var(--color-status-success);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-range)
+   Lógica multi-navegador (WebKit y Firefox) asegurando área táctil de 44px.
+   -------------------------------------------------------------------------- */
+.ids-range,
+input[type="range"].ids-range {
+  /* Reseteo multi-navegador */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Área táctil mínima accesible de 44px conforme a WCAG AAA */
+  display: block;
+  inline-size: 100%;
+  block-size: var(--ids-range-min-height);
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+  box-sizing: border-box;
+  touch-action: pan-y;
+  vertical-align: middle;
+
+  /* Quitar contornos nativos deficientes */
+  &:focus {
+    outline: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 ESTILOS DE LA PISTA (Track)
+     ------------------------------------------------------------------------ */
+  /* WebKit (Chrome, Safari, Edge) */
+  &::-webkit-slider-runnable-track {
+    inline-size: 100%;
+    block-size: var(--ids-range-track-height);
+    background-color: var(--ids-range-track-bg);
+    border-radius: var(--ids-range-track-radius);
+    border: var(--ids-range-track-border-width) solid var(--ids-range-track-border);
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  border-color var(--ids-range-transition-speed) var(--ids-range-transition-ease);
+    }
+  }
+
+  /* Firefox */
+  &::-moz-range-track {
+    inline-size: 100%;
+    block-size: var(--ids-range-track-height);
+    background-color: var(--ids-range-track-bg);
+    border-radius: var(--ids-range-track-radius);
+    border: var(--ids-range-track-border-width) solid var(--ids-range-track-border);
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  border-color var(--ids-range-transition-speed) var(--ids-range-transition-ease);
+    }
+  }
+
+  /* Progreso nativo en Firefox */
+  &::-moz-range-progress {
+    background-color: var(--ids-range-track-fill);
+    border-radius: var(--ids-range-track-radius);
+    block-size: var(--ids-range-track-height);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 ESTILOS DEL PUNTERO / DESLIZADOR (Thumb)
+     ------------------------------------------------------------------------ */
+  /* WebKit */
+  &::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    inline-size: var(--ids-range-thumb-size);
+    block-size: var(--ids-range-thumb-size);
+    border-radius: var(--ids-range-thumb-radius);
+    background-color: var(--ids-range-thumb-bg);
+    border: var(--ids-range-thumb-border-width) solid var(--ids-range-thumb-border);
+    /* Centrado vertical matemático preciso sobre la pista */
+    margin-block-start: calc((var(--ids-range-track-height) - var(--ids-range-thumb-size)) / 2);
+    box-sizing: border-box;
+    cursor: grab;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  background-color var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  border-color var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  outline-color var(--ids-range-transition-speed) var(--ids-range-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  /* Firefox */
+  &::-moz-range-thumb {
+    appearance: none;
+    -moz-appearance: none;
+    inline-size: var(--ids-range-thumb-size);
+    block-size: var(--ids-range-thumb-size);
+    border-radius: var(--ids-range-thumb-radius);
+    background-color: var(--ids-range-thumb-bg);
+    border: var(--ids-range-thumb-border-width) solid var(--ids-range-thumb-border);
+    box-sizing: border-box;
+    cursor: grab;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  background-color var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  border-color var(--ids-range-transition-speed) var(--ids-range-transition-ease),
+                  outline-color var(--ids-range-transition-speed) var(--ids-range-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  /* Estado Hover del Puntero */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    &::-webkit-slider-thumb {
+      border-color: var(--ids-range-thumb-hover-border);
+    }
+
+    &::-moz-range-thumb {
+      border-color: var(--ids-range-thumb-hover-border);
+    }
+
+    &::-webkit-slider-runnable-track {
+      border-color: var(--color-border-interactive);
+    }
+
+    &::-moz-range-track {
+      border-color: var(--color-border-interactive);
+    }
+  }
+
+  /* Estado Activo / Arrastre */
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    &::-webkit-slider-thumb {
+      cursor: grabbing;
+      background-color: var(--ids-range-thumb-hover-bg);
+      border-color: var(--ids-range-thumb-hover-border);
+      transform: scale(1.1);
+    }
+
+    &::-moz-range-thumb {
+      cursor: grabbing;
+      background-color: var(--ids-range-thumb-hover-bg);
+      border-color: var(--ids-range-thumb-hover-border);
+      transform: scale(1.1);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 FOCO ACCESIBLE WCAG AAA (:focus-visible)
+     ------------------------------------------------------------------------ */
+  &:focus-visible {
+    &::-webkit-slider-thumb {
+      outline-width: var(--ids-range-focus-ring-width);
+      outline-style: solid;
+      outline-color: var(--ids-range-focus-ring-color);
+      outline-offset: var(--ids-range-focus-ring-offset);
+      border-color: var(--ids-range-focus-ring-color);
+    }
+
+    &::-moz-range-thumb {
+      outline-width: var(--ids-range-focus-ring-width);
+      outline-style: solid;
+      outline-color: var(--ids-range-focus-ring-color);
+      outline-offset: var(--ids-range-focus-ring-offset);
+      border-color: var(--ids-range-focus-ring-color);
+    }
+
+    &::-webkit-slider-runnable-track {
+      border-color: var(--ids-range-focus-ring-color);
+    }
+
+    &::-moz-range-track {
+      border-color: var(--ids-range-focus-ring-color);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.4 ESTADO DESHABILITADO
+     ------------------------------------------------------------------------ */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--ids-range-disabled-opacity);
+
+    &::-webkit-slider-thumb {
+      cursor: not-allowed;
+      background-color: var(--ids-range-disabled-thumb-bg);
+      border-color: var(--ids-range-disabled-thumb-border);
+      transform: none;
+    }
+
+    &::-moz-range-thumb {
+      cursor: not-allowed;
+      background-color: var(--ids-range-disabled-thumb-bg);
+      border-color: var(--ids-range-disabled-thumb-border);
+      transform: none;
+    }
+
+    &::-webkit-slider-runnable-track {
+      background-color: var(--ids-range-disabled-track-bg);
+    }
+
+    &::-moz-range-track {
+      background-color: var(--ids-range-disabled-track-bg);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.5 MODIFICADORES DE TAMAÑO
+     ------------------------------------------------------------------------ */
+  &--sm {
+    &::-webkit-slider-runnable-track {
+      block-size: var(--ids-range-track-height-sm);
+    }
+    &::-moz-range-track {
+      block-size: var(--ids-range-track-height-sm);
+    }
+    &::-moz-range-progress {
+      block-size: var(--ids-range-track-height-sm);
+    }
+
+    &::-webkit-slider-thumb {
+      inline-size: var(--ids-range-thumb-size-sm);
+      block-size: var(--ids-range-thumb-size-sm);
+      margin-block-start: calc((var(--ids-range-track-height-sm) - var(--ids-range-thumb-size-sm)) / 2);
+    }
+    &::-moz-range-thumb {
+      inline-size: var(--ids-range-thumb-size-sm);
+      block-size: var(--ids-range-thumb-size-sm);
+    }
+  }
+
+  &--lg {
+    &::-webkit-slider-runnable-track {
+      block-size: var(--ids-range-track-height-lg);
+    }
+    &::-moz-range-track {
+      block-size: var(--ids-range-track-height-lg);
+    }
+    &::-moz-range-progress {
+      block-size: var(--ids-range-track-height-lg);
+    }
+
+    &::-webkit-slider-thumb {
+      inline-size: var(--ids-range-thumb-size-lg);
+      block-size: var(--ids-range-thumb-size-lg);
+      margin-block-start: calc((var(--ids-range-track-height-lg) - var(--ids-range-thumb-size-lg)) / 2);
+    }
+    &::-moz-range-thumb {
+      inline-size: var(--ids-range-thumb-size-lg);
+      block-size: var(--ids-range-thumb-size-lg);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.6 VARIANTES SEMÁNTICAS (Trauma-Informed)
+     ------------------------------------------------------------------------ */
+  &--danger {
+    &::-moz-range-progress {
+      background-color: var(--ids-range-danger-fill);
+    }
+    &::-webkit-slider-thumb {
+      border-color: var(--ids-range-danger-fill);
+    }
+    &::-moz-range-thumb {
+      border-color: var(--ids-range-danger-fill);
+    }
+  }
+
+  &--warning {
+    &::-moz-range-progress {
+      background-color: var(--ids-range-warning-fill);
+    }
+    &::-webkit-slider-thumb {
+      border-color: var(--ids-range-warning-fill);
+    }
+    &::-moz-range-thumb {
+      border-color: var(--ids-range-warning-fill);
+    }
+  }
+
+  &--success {
+    &::-moz-range-progress {
+      background-color: var(--ids-range-success-fill);
+    }
+    &::-webkit-slider-thumb {
+      border-color: var(--ids-range-success-fill);
+    }
+    &::-moz-range-thumb {
+      border-color: var(--ids-range-success-fill);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. GRUPO ESTRUCTURAL DEL CONTROL DE RANGO (.ids-range-group)
+   Organiza la etiqueta, el valor numérico dinámico y las etiquetas límite.
+   -------------------------------------------------------------------------- */
+.ids-range-group {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-xs) / 2);
+  inline-size: 100%;
+
+  /* Fila superior: etiqueta a la izquierda y valor a la derecha */
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-block-end: calc(var(--spacing-xs) / 2);
+
+    .ids-label {
+      margin-block-end: 0;
+      flex: 1 1 auto;
+    }
+  }
+
+  /* Indicador numérico dinámico accesible */
+  &__value,
+  .ids-range-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--line-height-tight);
+    padding-block: 0.125rem;
+    padding-inline: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-primary);
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+    white-space: nowrap;
+    min-inline-size: 3rem;
+    text-align: center;
+  }
+
+  /* Fila inferior: valores mínimo y máximo */
+  &__labels,
+  .ids-range-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-base);
+    color: var(--color-text-secondary);
+    margin-block-start: calc(var(--spacing-xs) / 2);
+    user-select: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   -------------------------------------------------------------------------- */
+/* 4.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-range-group__value,
+  .ids-range-value {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+}
+
+/* 4.2 Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-range-group__value,
+  .ids-range-value {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+}
+
+/* 4.3 Modo Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-range-group__value,
+  .ids-range-value {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-range,
+  input[type="range"].ids-range {
+    &::-webkit-slider-runnable-track {
+      border: var(--focus-ring-width) solid ButtonText;
+      background-color: Canvas;
+    }
+    &::-moz-range-track {
+      border: var(--focus-ring-width) solid ButtonText;
+      background-color: Canvas;
+    }
+    &::-moz-range-progress {
+      background-color: Highlight;
+    }
+
+    &::-webkit-slider-thumb {
+      border: var(--focus-ring-width) solid ButtonText;
+      background-color: ButtonFace;
+    }
+    &::-moz-range-thumb {
+      border: var(--focus-ring-width) solid ButtonText;
+      background-color: ButtonFace;
+    }
+
+    &:focus-visible {
+      &::-webkit-slider-thumb {
+        outline: var(--focus-ring-width) solid Highlight;
+      }
+      &::-moz-range-thumb {
+        outline: var(--focus-ring-width) solid Highlight;
+      }
+    }
+  }
+
+  .ids-range-group__value,
+  .ids-range-value {
+    border: var(--focus-ring-width) solid ButtonText;
+    color: ButtonText;
+  }
+}

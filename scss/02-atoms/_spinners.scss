@@ -1,0 +1,338 @@
+/* ==========================================================================
+   02-atoms/_spinners.scss
+   Identity Design System (IDS) - Átomos de Spinners de Borde (Loading Indicators)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE SPINNERS DE CARGA
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, borde o velocidad se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Escala de Tamaños (Sizes) */
+  --ids-spinner-size-xs: var(--spinner-size-xs, 0.875rem); /* 14px */
+  --ids-spinner-size-sm: var(--spinner-size-sm, 1.125rem); /* 18px */
+  --ids-spinner-size: var(--spinner-size, 1.5rem);         /* 24px */
+  --ids-spinner-size-lg: var(--spinner-size-lg, 2.25rem);  /* 36px */
+  --ids-spinner-size-xl: var(--spinner-size-xl, 3.25rem);  /* 52px */
+
+  /* Escala de Grosores de Borde (Border Widths) */
+  --ids-spinner-border-width-xs: var(--spinner-border-width-xs, 0.09375rem);
+  --ids-spinner-border-width-sm: var(--spinner-border-width-sm, 0.125rem);
+  --ids-spinner-border-width: var(--spinner-border-width, 0.15625rem);
+  --ids-spinner-border-width-lg: var(--spinner-border-width-lg, 0.21875rem);
+  --ids-spinner-border-width-xl: var(--spinner-border-width-xl, 0.28125rem);
+
+  /* Curvatura y Cinemática */
+  --ids-spinner-radius: var(--spinner-radius, var(--radius-full));
+  --ids-spinner-speed: var(--spinner-speed, 750ms);
+  --ids-spinner-speed-slow: var(--spinner-speed-slow, 1400ms);
+
+  /* Colores Base y de Pista (Track) - Dependientes de tokens globales */
+  --ids-spinner-color: var(--spinner-color, var(--color-action-primary));
+  --ids-spinner-track-color: var(--spinner-track-color, var(--color-border-subtle));
+
+  /* Los 4 Estados de Color Semánticos (WCAG AAA) */
+  --ids-spinner-success-color: var(--spinner-success-color, var(--color-status-success));
+  --ids-spinner-danger-color: var(--spinner-danger-color, var(--color-status-danger));
+  --ids-spinner-warning-color: var(--spinner-warning-color, var(--color-status-warning));
+  --ids-spinner-info-color: var(--spinner-info-color, var(--color-status-info));
+
+  /* Variantes Adicionales de Contexto */
+  --ids-spinner-neutral-color: var(--spinner-neutral-color, var(--color-text-secondary));
+  --ids-spinner-inverted-color: var(--color-surface-background);
+
+  /* Espaciado y Textos Acompañantes */
+  --ids-spinner-gap: var(--spinner-gap, var(--spacing-sm));
+  --ids-spinner-text-color: var(--color-text-primary);
+  --ids-spinner-text-font-size: var(--font-size-body);
+}
+
+/* --------------------------------------------------------------------------
+   2. KEYFRAMES DE ANIMACIÓN (Respetando prefers-reduced-motion)
+   -------------------------------------------------------------------------- */
+@keyframes ids-spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ids-spinner-pulse-soft {
+  0%, 100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. CLASE BASE: SPINNER DE BORDE (.ids-spinner)
+   Indicador de carga circular ligero basado en bordes CSS.
+   -------------------------------------------------------------------------- */
+.ids-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  width: var(--ids-spinner-size);
+  height: var(--ids-spinner-size);
+  border-radius: var(--ids-spinner-radius);
+  border-style: solid;
+  border-width: var(--ids-spinner-border-width);
+  border-color: currentColor;
+  border-right-color: transparent;
+  color: var(--ids-spinner-color);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+  animation: ids-spinner-rotate var(--ids-spinner-speed) linear infinite;
+
+  /* Respeto estricto a personas con hipersensibilidad vestibular */
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    border-style: dashed;
+    border-right-color: currentColor;
+    opacity: 0.85;
+  }
+
+  /* ------------------------------------------------------------------------
+     4. ESCALA DE TAMAÑOS (Sizes)
+     ------------------------------------------------------------------------ */
+  /* Extra Pequeño (14px) - Ideal para badges, chips y texto diminuto */
+  &--xs {
+    width: var(--ids-spinner-size-xs);
+    height: var(--ids-spinner-size-xs);
+    border-width: var(--ids-spinner-border-width-xs);
+  }
+
+  /* Pequeño (18px) - Ideal para botones compactos, inputs y helper texts */
+  &--sm {
+    width: var(--ids-spinner-size-sm);
+    height: var(--ids-spinner-size-sm);
+    border-width: var(--ids-spinner-border-width-sm);
+  }
+
+  /* Base / Mediano (24px) - Tamaño estándar predeterminado */
+  &--md {
+    width: var(--ids-spinner-size);
+    height: var(--ids-spinner-size);
+    border-width: var(--ids-spinner-border-width);
+  }
+
+  /* Grande (36px) - Para tarjetas, modales y cargas de sección */
+  &--lg {
+    width: var(--ids-spinner-size-lg);
+    height: var(--ids-spinner-size-lg);
+    border-width: var(--ids-spinner-border-width-lg);
+  }
+
+  /* Extra Grande (52px) - Para cargas completas de vista o layouts */
+  &--xl {
+    width: var(--ids-spinner-size-xl);
+    height: var(--ids-spinner-size-xl);
+    border-width: var(--ids-spinner-border-width-xl);
+  }
+
+  /* ------------------------------------------------------------------------
+     5. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (Color States)
+     ------------------------------------------------------------------------ */
+  /* Estado de Éxito / Confirmación */
+  &--success {
+    color: var(--ids-spinner-success-color);
+  }
+
+  /* Estado de Peligro / Error / Acción Crítica */
+  &--danger {
+    color: var(--ids-spinner-danger-color);
+  }
+
+  /* Estado de Advertencia / Precaución */
+  &--warning {
+    color: var(--ids-spinner-warning-color);
+  }
+
+  /* Estado Informativo / Proceso Seguro */
+  &--info {
+    color: var(--ids-spinner-info-color);
+  }
+
+  /* Primario / Acción */
+  &--primary {
+    color: var(--ids-spinner-color);
+  }
+
+  /* Neutral / Texto Secundario */
+  &--neutral {
+    color: var(--ids-spinner-neutral-color);
+  }
+
+  /* Invertido / Sobre fondos contrastantes oscuros */
+  &--inverted {
+    color: var(--ids-spinner-inverted-color);
+  }
+
+  /* ------------------------------------------------------------------------
+     6. MODIFICADOR CON PISTA (Track Border Spinner)
+     Presenta un anillo de fondo continuo sutil con el arco activo giratorio.
+     ------------------------------------------------------------------------ */
+  &--track {
+    border-color: var(--ids-spinner-track-color);
+    border-top-color: currentColor;
+    border-right-color: var(--ids-spinner-track-color);
+
+    @media (prefers-reduced-motion: reduce) {
+      border-color: var(--ids-spinner-track-color);
+      border-top-color: currentColor;
+      border-style: solid;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     7. MODIFICADOR DE VELOCIDAD LENTA (Trauma-Informed / Low Stimulation)
+     ------------------------------------------------------------------------ */
+  &--slow {
+    animation-duration: var(--ids-spinner-speed-slow);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. COMPOSICIÓN Y GRUPOS DE CARGA (.ids-spinner-group)
+   Agrupación accesible de un spinner con texto o mensajes de estado.
+   -------------------------------------------------------------------------- */
+.ids-spinner-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ids-spinner-gap);
+  vertical-align: middle;
+
+  &--vertical {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  &--center {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+.ids-spinner-text {
+  font-family: var(--font-family-base);
+  font-size: var(--ids-spinner-text-font-size);
+  color: var(--ids-spinner-text-color);
+  line-height: var(--line-height-base);
+}
+
+/* --------------------------------------------------------------------------
+   9. INTEGRACIÓN DE SPINNERS EN BOTONES (.ids-btn)
+   Permite colocar un spinner dentro de un botón sin romper el layout.
+   -------------------------------------------------------------------------- */
+.ids-btn {
+  .ids-spinner {
+    color: inherit; /* Hereda el color exacto del texto del botón */
+    margin-inline-end: var(--spacing-xs);
+    vertical-align: -0.125em;
+
+    /* En botones pequeños, usar spinner pequeño automáticamente */
+    &--auto-size {
+      width: 1em;
+      height: 1em;
+      border-width: 0.15em;
+    }
+  }
+
+  /* Botón en estado de carga activa (aria-busy="true") */
+  &[aria-busy="true"],
+  &--loading {
+    cursor: wait;
+    opacity: 0.85;
+
+    .ids-spinner {
+      display: inline-block;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. TEXTO OCULTO ACCESIBLE PARA LECTORES DE PANTALLA (WCAG AAA)
+   Permite anunciar "Cargando..." a NVDA/JAWS/VoiceOver sin afectar el diseño.
+   -------------------------------------------------------------------------- */
+.ids-spinner__sr-only,
+.ids-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   11. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 11.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-spinner {
+    border-width: calc(var(--ids-spinner-border-width) + 0.0625rem);
+
+    &--track {
+      border-color: var(--color-border-subtle);
+      border-top-color: currentColor;
+    }
+  }
+
+  .ids-spinner-text {
+    color: var(--color-text-primary);
+  }
+}
+
+/* 11.2 Baja Estimulación (Neurodivergencia y Prevención de Sobrecarga) */
+[data-theme="low-stimulation"] {
+  .ids-spinner {
+    /* Velocidad atenuada por defecto para evitar sobrecarga */
+    animation-duration: var(--ids-spinner-speed-slow);
+  }
+
+  .ids-spinner-text {
+    color: var(--color-text-primary);
+  }
+}
+
+/* 11.3 Modo Discreto / Stealth (Anti-Outing / Consentful Tech) */
+[data-theme="discrete"] {
+  .ids-spinner-text {
+    color: var(--color-text-primary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. ADAPTACIÓN PARA ACCESIBILIDAD DEL SISTEMA OPERATIVO
+   Modo de Contraste Forzado de Windows (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-spinner {
+    border-color: CanvasText;
+    border-right-color: transparent;
+    forced-color-adjust: none;
+
+    &--track {
+      border-color: Canvas;
+      border-top-color: CanvasText;
+    }
+  }
+
+  .ids-spinner-text {
+    color: CanvasText;
+  }
+}

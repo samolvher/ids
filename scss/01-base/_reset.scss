@@ -1,0 +1,109 @@
+/* ==========================================================================
+   01-base/_reset.scss
+   Identity Design System (IDS) - Base y Reseteo Accesible
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Modelo de Caja Universal
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. Diseño Informado por el Trauma (Movimiento Reducido)
+   Desactiva globalmente transiciones y animaciones para prevenir 
+   sobreestimulación o mareos si el SO del usuario lo solicita.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Comportamiento Base del Documento (WCAG Escalabilidad)
+   -------------------------------------------------------------------------- */
+html {
+  /* Mantener el 100% respeta el tamaño de letra configurado por el usuario en su navegador */
+  font-size: 100%; 
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Conexión directa con _semantics y _themes */
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-background);
+  line-height: var(--line-height-base);
+  
+  /* Renderizado suave de fuentes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Prevención de scroll horizontal indeseado */
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   4. Multimedia Responsiva
+   -------------------------------------------------------------------------- */
+img,
+picture,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Gráficos vectoriales e iconos SVG
+   Previene deformaciones descontroladas de iconos en contenedores flex y grid */
+svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* SVGs de imágenes e ilustraciones de ancho fluido */
+svg.ids-img-fluid,
+svg[class*="__img"] {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   5. Limpieza de Formularios
+   Obliga a los inputs y botones a heredar Lexend y los tamaños base,
+   evitando la tipografía fea que los navegadores inyectan por defecto.
+   -------------------------------------------------------------------------- */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   6. Red de Seguridad de Accesibilidad (Focus Global)
+   Garantiza que ningún elemento interactivo pierda su indicador de teclado,
+   incluso si olvidamos declararlo al crear un Átomo específico.
+   -------------------------------------------------------------------------- */
+:focus:not(:focus-visible) {
+  outline: none; /* Eliminar el borde azul feo si el usuario solo usó el ratón/click */
+}
+
+:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}

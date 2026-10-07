@@ -1,0 +1,939 @@
+/* ==========================================================================
+   04-organisms/_global-nav.scss
+   Identity Design System (IDS) - Organismo de Navegación Global Superior
+   Barra de navegación principal adaptable para aplicaciones y portales T4HR.
+   Soporte multivariable:
+     - Posicionamiento: Estándar (static), Sticky (adherente) y Fixed (fija).
+     - Transparencia: Opaco y Translúcido al 0.85 con efecto Glassmorphism.
+     - Disposición de Marca/Logo: Alineado al inicio (start) o Centrado (center).
+     - Molécula de Búsqueda: Con o sin barra de búsqueda integrada (input + botón).
+     - Menús Desplegables: Con o sin dropdowns multinivel accesibles.
+     - Acciones y Utilidades: Botón de pánico/SOS, selector de temas, perfil y alertas.
+     - Menú Móvil Responsivo: Botón hamburguesa accesible (aria-expanded) y panel colapsable.
+     - Variantes de estilo: Bordered, Flush, Compact (--sm), Amplio (--lg) y Flotante (Island).
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO GLOBAL NAV (Contrato de Tokens)
+   Prohibición estricta de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color y espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Dimensiones y Esqueleto */
+  --ids-global-nav-height: 4rem;                            /* 64px - Altura estándar accesible */
+  --ids-global-nav-height-sm: 3.25rem;                       /* 52px - Compacta */
+  --ids-global-nav-height-lg: 5rem;                          /* 80px - Amplia / Institucional */
+  --ids-global-nav-padding-y: var(--spacing-sm);
+  --ids-global-nav-padding-x: var(--spacing-lg);
+  --ids-global-nav-gap: var(--spacing-md);
+  --ids-global-nav-max-width: 80rem;                         /* 1280px - Ancho máximo del contenedor interno */
+  --ids-global-nav-z-index: var(--z-index-sticky);           /* 100 - Capa pegajosa */
+  --ids-global-nav-radius: 0;                                /* Flat por defecto */
+  --ids-global-nav-radius-floating: var(--radius-lg);        /* Modo flotante (Island) */
+
+  /* Superficies y Bordes */
+  --ids-global-nav-bg: var(--color-surface-card);
+  --ids-global-nav-color: var(--color-text-primary);
+  --ids-global-nav-border-width: var(--focus-ring-width);
+  --ids-global-nav-border-style: solid;
+  --ids-global-nav-border-color: var(--color-border-subtle);
+
+  /* Transparencia (0.85) y Efecto Glassmorphism */
+  --ids-global-nav-opacity-translucent: 0.85;
+  --ids-global-nav-bg-translucent: color-mix(in srgb, var(--color-surface-card) 85%, transparent);
+  --ids-global-nav-border-translucent: color-mix(in srgb, var(--color-border-subtle) 80%, transparent);
+  --ids-global-nav-blur: 0.75rem;                            /* 12px */
+
+  /* Marca / Identidad */
+  --ids-global-nav-brand-gap: var(--spacing-sm);
+  --ids-global-nav-logo-size: 2rem;                          /* 32px */
+  --ids-global-nav-title-font-family: var(--font-family-heading);
+  --ids-global-nav-title-font-size: var(--font-size-h5);
+  --ids-global-nav-title-font-weight: var(--font-weight-semibold);
+  --ids-global-nav-title-line-height: var(--line-height-tight);
+  --ids-global-nav-title-color: var(--color-text-primary);
+
+  /* Enlaces de Navegación */
+  --ids-global-nav-item-min-height: var(--target-size-min);  /* 44px WCAG AAA Touch Target */
+  --ids-global-nav-item-padding-y: var(--spacing-xs);
+  --ids-global-nav-item-padding-x: var(--spacing-md);
+  --ids-global-nav-item-gap: var(--spacing-xs);
+  --ids-global-nav-item-radius: var(--radius-button);
+  --ids-global-nav-item-color: var(--color-text-secondary);
+  --ids-global-nav-item-hover-bg: var(--color-surface-hover);
+  --ids-global-nav-item-hover-color: var(--color-text-primary);
+  --ids-global-nav-item-active-bg: var(--color-surface-muted);
+  --ids-global-nav-item-active-color: var(--color-action-primary);
+  --ids-global-nav-item-indicator-height: 0.1875rem;         /* 3px */
+  --ids-global-nav-item-indicator-color: var(--color-action-primary);
+
+  /* Búsqueda */
+  --ids-global-nav-search-max-width: 22rem;
+
+  /* Toggle Móvil (Hamburguesa) */
+  --ids-global-nav-toggle-size: var(--target-size-min);      /* 44px WCAG AAA */
+  --ids-global-nav-toggle-radius: var(--radius-button);
+
+  /* Menú Colapsable Móvil */
+  --ids-global-nav-collapse-bg: var(--color-surface-card);
+  --ids-global-nav-collapse-bg-translucent: color-mix(in srgb, var(--color-surface-card) 95%, transparent);
+  --ids-global-nav-collapse-padding-y: var(--spacing-md);
+  --ids-global-nav-collapse-padding-x: var(--spacing-md);
+  --ids-global-nav-collapse-gap: var(--spacing-md);
+  --ids-global-nav-collapse-border-color: var(--color-border-subtle);
+
+  /* Movimiento */
+  --ids-global-nav-transition-speed: var(--transition-speed-fast);
+  --ids-global-nav-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-global-nav)
+   Contenedor superior maestro accesible (WAI-ARIA landmark: banner / navigation).
+   -------------------------------------------------------------------------- */
+.ids-global-nav {
+  display: block;
+  inline-size: 100%;
+  box-sizing: border-box;
+  position: relative;
+  background-color: var(--ids-global-nav-bg);
+  color: var(--ids-global-nav-color);
+  border-block-end: var(--ids-global-nav-border-width) var(--ids-global-nav-border-style) var(--ids-global-nav-border-color);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease),
+                border-color var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease),
+                box-shadow var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     3. CONTENEDOR INTERNO (.ids-global-nav__inner / .ids-global-nav__container)
+     Centrado espacial fluido con límite de lectura ergonómica.
+     ------------------------------------------------------------------------ */
+  &__inner,
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    inline-size: 100%;
+    max-inline-size: var(--ids-global-nav-max-width);
+    margin-inline: auto;
+    min-block-size: var(--ids-global-nav-height);
+    padding-block: var(--ids-global-nav-padding-y);
+    padding-inline: var(--ids-global-nav-padding-x);
+    gap: var(--ids-global-nav-gap);
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* ------------------------------------------------------------------------
+     4. IDENTIDAD Y MARCA (.ids-global-nav__brand)
+     Logotipo, denominación de la aplicación y credenciales de confianza.
+     ------------------------------------------------------------------------ */
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ids-global-nav-brand-gap);
+    text-decoration: none;
+    color: inherit;
+    flex-shrink: 0;
+    min-block-size: var(--target-size-min);
+    border-radius: var(--radius-button);
+
+    &:focus-visible {
+      outline-width: var(--focus-ring-width);
+      outline-style: var(--focus-ring-style);
+      outline-color: var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  &__logo {
+    display: inline-block;
+    inline-size: auto;
+    block-size: var(--ids-global-nav-logo-size);
+    max-block-size: var(--ids-global-nav-logo-size);
+    object-fit: contain;
+    vertical-align: middle;
+
+    svg {
+      display: block;
+      inline-size: var(--ids-global-nav-logo-size);
+      block-size: var(--ids-global-nav-logo-size);
+      fill: currentColor;
+    }
+  }
+
+  &__title,
+  &__name {
+    font-family: var(--ids-global-nav-title-font-family);
+    font-size: var(--ids-global-nav-title-font-size);
+    font-weight: var(--ids-global-nav-title-font-weight);
+    line-height: var(--ids-global-nav-title-line-height);
+    color: var(--ids-global-nav-title-color);
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  &__badge {
+    margin-inline-start: var(--spacing-xs);
+    vertical-align: middle;
+  }
+
+  /* ------------------------------------------------------------------------
+     5. PANEL COLAPSABLE Y CONTENIDO EXPANDIBLE (.ids-global-nav__collapse)
+     Coordinación unificada entre menú, búsqueda y acciones.
+     ------------------------------------------------------------------------ */
+  &__collapse {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    gap: var(--ids-global-nav-gap);
+    justify-content: space-between;
+  }
+
+  /* ------------------------------------------------------------------------
+     6. MENÚ DE NAVEGACIÓN (.ids-global-nav__menu, .ids-global-nav__list)
+     Estructura semántica de lista no ordenada con soporte para RNEP y focus.
+     ------------------------------------------------------------------------ */
+  &__menu {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--ids-global-nav-item-gap);
+    flex-wrap: wrap;
+  }
+
+  &__item {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    min-block-size: var(--ids-global-nav-item-min-height);
+    padding-block: var(--ids-global-nav-item-padding-y);
+    padding-inline: var(--ids-global-nav-item-padding-x);
+    border-radius: var(--ids-global-nav-item-radius);
+    color: var(--ids-global-nav-item-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-base);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    position: relative;
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease),
+                  color var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
+
+    /* Anillo de Foco WCAG AAA (Mínimo 2px, 3:1 de contraste) */
+    &:focus-visible {
+      outline-width: var(--focus-ring-width);
+      outline-style: var(--focus-ring-style);
+      outline-color: var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+      z-index: 2;
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--ids-global-nav-item-hover-bg);
+      color: var(--ids-global-nav-item-hover-color);
+    }
+
+    /* Estado Activo / Seleccionado Inequívoco (WAI-ARIA aria-current="page") */
+    &.is-active,
+    &[aria-current="page"],
+    &[aria-selected="true"] {
+      color: var(--ids-global-nav-item-active-color);
+      font-weight: var(--font-weight-semibold);
+
+      /* Indicador de pestaña / barra inferior accesible */
+      &::after {
+        content: '';
+        position: absolute;
+        inset-inline: var(--ids-global-nav-item-padding-x);
+        bottom: 0;
+        block-size: var(--ids-global-nav-item-indicator-height);
+        background-color: var(--ids-global-nav-item-indicator-color);
+        border-radius: var(--radius-full);
+      }
+    }
+
+    /* Ícono dentro del enlace */
+    .ids-icon,
+    svg {
+      inline-size: var(--icon-size, 1.25rem);
+      block-size: var(--icon-size, 1.25rem);
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     7. MOLÉCULA DE BÚSQUEDA INTEGRADA (.ids-global-nav__search)
+     Integración ergonómica de .ids-search-group / .ids-button-group--search.
+     ------------------------------------------------------------------------ */
+  &__search {
+    display: inline-flex;
+    align-items: center;
+    inline-size: 100%;
+    max-inline-size: var(--ids-global-nav-search-max-width);
+    flex-shrink: 1;
+
+    /* Armonización con inputs y botones atómicos dentro de la barra */
+    .ids-button-group--search,
+    .ids-search-group {
+      inline-size: 100%;
+      margin-block-end: 0;
+    }
+
+    .ids-input {
+      min-block-size: calc(var(--target-size-min) * 0.875);
+      font-size: var(--font-size-body);
+    }
+
+    .ids-button {
+      min-block-size: calc(var(--target-size-min) * 0.875);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     8. MENÚS DESPLEGABLES (.ids-global-nav__dropdown)
+     Coordinación con la molécula .ids-dropdown y foco WAI-ARIA.
+     ------------------------------------------------------------------------ */
+  &__dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    /* Armonización con .ids-dropdown */
+    &.ids-dropdown,
+    > .ids-dropdown {
+      position: relative;
+      margin: 0;
+    }
+
+    .ids-dropdown__trigger {
+      min-block-size: var(--ids-global-nav-item-min-height);
+      padding-block: var(--ids-global-nav-item-padding-y);
+      padding-inline: var(--ids-global-nav-item-padding-x);
+    }
+
+    .ids-dropdown__menu {
+      top: calc(100% + var(--spacing-xs));
+      z-index: var(--z-index-dropdown);
+    }
+
+    &--end .ids-dropdown__menu,
+    .ids-dropdown__menu--end {
+      inset-inline-start: auto;
+      inset-inline-end: 0;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     9. ACCIONES Y UTILIDADES (.ids-global-nav__actions)
+     Botones de pánico/SOS, selector de temas, perfil y alertas.
+     ------------------------------------------------------------------------ */
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+    margin-inline-start: auto;
+
+    /* Separador vertical de herramientas */
+    .ids-divider--vertical,
+    .ids-global-nav__divider {
+      inline-size: var(--divider-thickness);
+      block-size: 1.5rem;
+      background-color: var(--color-border-subtle);
+      margin-inline: var(--spacing-xs);
+      border: none;
+      padding: 0;
+      align-self: center;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     10. BOTÓN ALTERNADOR MÓVIL / HAMBURGUESA (.ids-global-nav__toggle)
+     Control accesible táctil (mínimo 44px) con feedback ARIA.
+     ------------------------------------------------------------------------ */
+  &__toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--ids-global-nav-toggle-size);
+    min-block-size: var(--ids-global-nav-toggle-size);
+    border-radius: var(--ids-global-nav-toggle-radius);
+    background: transparent;
+    border: var(--ids-global-nav-border-width) solid var(--ids-global-nav-border-color);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:focus-visible {
+      outline-width: var(--focus-ring-width);
+      outline-style: var(--focus-ring-style);
+      outline-color: var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+    }
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    /* Icono de hamburguesa con 3 barras */
+    .ids-global-nav__burger-icon {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      inline-size: 1.25rem;
+      block-size: 0.9375rem;
+      pointer-events: none;
+    }
+
+    .ids-global-nav__burger-line {
+      display: block;
+      inline-size: 100%;
+      block-size: 0.125rem;
+      background-color: currentColor;
+      border-radius: var(--radius-full);
+      transform-origin: center;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: transform var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease),
+                    opacity var(--ids-global-nav-transition-speed) var(--ids-global-nav-transition-ease);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none !important;
+      }
+    }
+
+    /* Transformación a 'X' cuando el menú está abierto */
+    &[aria-expanded="true"] {
+      background-color: var(--color-surface-muted);
+
+      .ids-global-nav__burger-line:nth-child(1) {
+        transform: translateY(0.40625rem) rotate(45deg);
+      }
+
+      .ids-global-nav__burger-line:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+
+      .ids-global-nav__burger-line:nth-child(3) {
+        transform: translateY(-0.40625rem) rotate(-45deg);
+      }
+    }
+  }
+
+  /* ========================================================================
+     11. VARIANTES DE POSICIONAMIENTO (Sticky, Fixed, Static)
+     ======================================================================== */
+
+  /* 11.1 Barra Adherente (Sticky) */
+  &--sticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--ids-global-nav-z-index);
+  }
+
+  /* 11.2 Barra Fija (Fixed) */
+  &--fixed {
+    position: fixed;
+    top: 0;
+    inset-inline: 0;
+    z-index: var(--ids-global-nav-z-index);
+  }
+
+  /* ========================================================================
+     12. VARIANTE TRANSLÚCIDA AL 0.85 Y GLASSMORPHISM (.ids-global-nav--translucent)
+     Transparencia controlada con preservación de legibilidad WCAG AAA.
+     ======================================================================== */
+  &--translucent,
+  &--glass {
+    background-color: var(--ids-global-nav-bg-translucent);
+    border-block-end-color: var(--ids-global-nav-border-translucent);
+    backdrop-filter: blur(var(--ids-global-nav-blur));
+    -webkit-backdrop-filter: blur(var(--ids-global-nav-blur));
+
+    /* El panel móvil colapsable también hereda el desenfoque */
+    .ids-global-nav__collapse {
+      background-color: var(--ids-global-nav-collapse-bg-translucent);
+      backdrop-filter: blur(var(--ids-global-nav-blur));
+      -webkit-backdrop-filter: blur(var(--ids-global-nav-blur));
+    }
+  }
+
+  /* ========================================================================
+     13. VARIANTES DE DISPOSICIÓN DE MARCA / LOGO (Logo Start vs Logo Center)
+     ======================================================================== */
+
+  /* 13.1 Marca alineada al inicio (Predeterminada) */
+  &--logo-start {
+    .ids-global-nav__brand {
+      margin-inline-end: 0;
+    }
+  }
+
+  /* 13.2 Marca centrada visualmente (.ids-global-nav--logo-center) */
+  &--logo-center {
+    @media (min-width: 64rem) {
+      .ids-global-nav__inner,
+      .ids-global-nav__container {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+      }
+
+      .ids-global-nav__collapse {
+        display: contents;
+      }
+
+      .ids-global-nav__menu {
+        grid-column: 1;
+        justify-content: flex-start;
+      }
+
+      .ids-global-nav__brand {
+        grid-column: 2;
+        justify-self: center;
+        margin-inline: auto;
+      }
+
+      .ids-global-nav__actions,
+      .ids-global-nav__search {
+        grid-column: 3;
+        justify-self: end;
+      }
+
+      /* Si coexisten búsqueda y acciones con logo centrado */
+      .ids-global-nav__actions-wrapper {
+        grid-column: 3;
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+      }
+    }
+  }
+
+  /* ========================================================================
+     14. VARIANTES DE BÚSQUEDA (Con y Sin Molécula Search)
+     ======================================================================== */
+
+  /* 14.1 Con búsqueda activa */
+  &--has-search {
+    .ids-global-nav__menu {
+      flex: 0 1 auto;
+    }
+
+    .ids-global-nav__search {
+      margin-inline: var(--spacing-md);
+    }
+  }
+
+  /* 14.2 Sin búsqueda: el menú y las acciones distribuyen el espacio */
+  &:not(&--has-search) {
+    .ids-global-nav__menu {
+      flex: 1 1 auto;
+    }
+  }
+
+  /* ========================================================================
+     15. VARIANTES DE ESCALA Y GEOMETRÍA
+     ======================================================================== */
+
+  /* 15.1 Compacta / Consola (--sm) */
+  &--sm,
+  &--compact {
+    --ids-global-nav-height: var(--ids-global-nav-height-sm);
+    --ids-global-nav-padding-y: var(--spacing-xs);
+    --ids-global-nav-logo-size: 1.5rem;
+    --ids-global-nav-title-font-size: var(--font-size-body);
+  }
+
+  /* 15.2 Amplia / Institucional (--lg) */
+  &--lg {
+    --ids-global-nav-height: var(--ids-global-nav-height-lg);
+    --ids-global-nav-padding-y: var(--spacing-md);
+    --ids-global-nav-logo-size: 2.5rem;
+    --ids-global-nav-title-font-size: var(--font-size-h4);
+  }
+
+  /* 15.3 Estilo Píldoras en Enlaces (.ids-global-nav--pills) */
+  &--pills {
+    .ids-global-nav__link {
+      border-radius: var(--radius-full);
+
+      &.is-active,
+      &[aria-current="page"] {
+        background-color: var(--ids-global-nav-item-active-bg);
+        color: var(--ids-global-nav-item-active-color);
+
+        &::after {
+          display: none;
+        }
+      }
+    }
+  }
+
+  /* 15.4 Sin Borde Inferior (.ids-global-nav--flush) */
+  &--flush {
+    border-block-end: none;
+  }
+
+  /* 15.5 Barra Flotante Tipo Isla (.ids-global-nav--floating) */
+  &--floating {
+    margin-block-start: var(--spacing-md);
+    margin-inline: auto;
+    max-inline-size: calc(var(--ids-global-nav-max-width) - var(--spacing-xl));
+    border-radius: var(--ids-global-nav-radius-floating);
+    border: var(--ids-global-nav-border-width) solid var(--ids-global-nav-border-color);
+    box-shadow: none;
+
+    &.ids-global-nav--sticky {
+      top: var(--spacing-md);
+    }
+  }
+
+  /* ========================================================================
+     16. ADAPTACIÓN RESPONSIVA NATIVA - MOBILE-FIRST
+     Móvil por defecto: activa toggle y menú colapsable.
+     A partir de 64rem despliega barra horizontal de escritorio.
+     ======================================================================== */
+  &__inner,
+  &__container {
+    padding-inline: var(--spacing-md);
+  }
+
+  /* Muestra el botón de alternancia móvil */
+  &__toggle {
+    display: inline-flex;
+  }
+
+  /* Panel colapsable en móvil */
+  &__collapse {
+    display: none;
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    background-color: var(--ids-global-nav-collapse-bg);
+    border-block-end: var(--ids-global-nav-border-width) solid var(--ids-global-nav-collapse-border-color);
+    padding-block: var(--ids-global-nav-collapse-padding-y);
+    padding-inline: var(--ids-global-nav-collapse-padding-x);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ids-global-nav-collapse-gap);
+    z-index: var(--ids-global-nav-z-index);
+    max-block-size: calc(100vh - var(--ids-global-nav-height));
+    overflow-y: auto;
+    box-sizing: border-box;
+
+    /* Estado Abierto */
+    &.is-open,
+    &[aria-hidden="false"] {
+      display: flex;
+    }
+  }
+
+  &__menu {
+    inline-size: 100%;
+  }
+
+  &__list {
+    flex-direction: column;
+    align-items: stretch;
+    inline-size: 100%;
+    gap: var(--spacing-xs);
+  }
+
+  &__item {
+    inline-size: 100%;
+  }
+
+  &__link {
+    inline-size: 100%;
+    justify-content: flex-start;
+    min-block-size: var(--target-size-min);
+    padding-inline: var(--spacing-md);
+
+    /* En móvil el indicador activo pasa a borde lateral */
+    &.is-active::after,
+    &[aria-current="page"]::after {
+      inset-inline: 0 auto;
+      left: 0;
+      top: var(--spacing-xs);
+      bottom: var(--spacing-xs);
+      inline-size: var(--ids-global-nav-item-indicator-height);
+      block-size: auto;
+    }
+  }
+
+  &__search {
+    max-inline-size: 100%;
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+
+  &__actions {
+    inline-size: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-inline-start: 0;
+    padding-block-start: var(--spacing-xs);
+    border-block-start: var(--ids-global-nav-border-width) solid var(--color-border-subtle);
+  }
+
+  /* Dropdowns dentro de panel móvil */
+  &__dropdown {
+    inline-size: 100%;
+
+    .ids-dropdown__trigger {
+      inline-size: 100%;
+      justify-content: space-between;
+    }
+
+    .ids-dropdown__menu {
+      position: static;
+      inline-size: 100%;
+      max-inline-size: 100%;
+      box-shadow: none;
+      border-radius: var(--radius-sm);
+      margin-block-start: var(--spacing-xs);
+    }
+  }
+
+  /* Despliegue en pantallas de escritorio (>= 64rem) */
+  @media (min-width: 64rem) {
+    &__inner,
+    &__container {
+      padding-inline: var(--ids-global-nav-padding-x);
+    }
+
+    &__toggle {
+      display: none;
+    }
+
+    &__collapse {
+      display: flex;
+      position: static;
+      background-color: transparent;
+      border-block-end: none;
+      padding-block: 0;
+      padding-inline: 0;
+      flex-direction: row;
+      align-items: center;
+      gap: var(--ids-global-nav-gap);
+      z-index: auto;
+      max-block-size: none;
+      overflow-y: visible;
+    }
+
+    &__menu {
+      inline-size: auto;
+    }
+
+    &__list {
+      flex-direction: row;
+      align-items: center;
+      inline-size: auto;
+      gap: var(--ids-global-nav-gap);
+    }
+
+    &__item {
+      inline-size: auto;
+    }
+
+    &__link {
+      inline-size: auto;
+      justify-content: center;
+      min-block-size: 100%;
+      padding-inline: var(--ids-global-nav-item-padding-x);
+
+      &.is-active::after,
+      &[aria-current="page"]::after {
+        inset-inline: 0;
+        left: auto;
+        top: auto;
+        bottom: 0;
+        inline-size: auto;
+        block-size: var(--ids-global-nav-item-indicator-height);
+      }
+    }
+
+    &__search {
+      max-inline-size: var(--ids-global-nav-search-width);
+      inline-size: auto;
+      margin-inline: var(--spacing-sm);
+    }
+
+    &__actions {
+      inline-size: auto;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      margin-inline-start: auto;
+      padding-block-start: 0;
+      border-block-start: none;
+    }
+
+    &__dropdown {
+      inline-size: auto;
+
+      .ids-dropdown__trigger {
+        inline-size: auto;
+        justify-content: center;
+      }
+
+      .ids-dropdown__menu {
+        position: absolute;
+        inline-size: auto;
+        max-inline-size: none;
+        border-radius: var(--radius-dropdown, var(--radius-sm));
+        margin-block-start: var(--spacing-xs);
+      }
+    }
+  }
+
+  /* ========================================================================
+     17. ADAPTACIONES ESPECÍFICAS DE TEMATIZACIÓN (4 Ejes Temáticos de IDS)
+     Consumo estricto de variables declaradas en _themes.scss.
+     ======================================================================== */
+
+  /* 17.1 Tema de Alto Contraste (WCAG AAA 7:1) */
+  [data-theme="high-contrast"] & {
+    --ids-global-nav-bg: var(--color-surface-card);
+    --ids-global-nav-color: var(--color-text-primary);
+    --ids-global-nav-border-color: var(--color-border-subtle);
+    --ids-global-nav-border-width: var(--focus-ring-width);
+    --ids-global-nav-item-color: var(--color-text-primary);
+    --ids-global-nav-item-hover-bg: var(--color-surface-hover);
+    --ids-global-nav-item-hover-color: var(--color-border-interactive);
+    --ids-global-nav-item-active-color: var(--color-border-interactive);
+    --ids-global-nav-item-indicator-color: var(--color-border-interactive);
+    --ids-global-nav-collapse-bg: var(--color-surface-card);
+    --ids-global-nav-collapse-border-color: var(--color-border-subtle);
+
+    /* En alto contraste se anulan transparencias y desenfoques para evitar confusión */
+    &.ids-global-nav--translucent,
+    &.ids-global-nav--glass {
+      background-color: var(--color-surface-card);
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+
+      .ids-global-nav__collapse {
+        background-color: var(--color-surface-card);
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+    }
+
+    .ids-global-nav__link.is-active,
+    .ids-global-nav__link[aria-current="page"] {
+      outline: var(--focus-ring-width) solid var(--color-border-interactive);
+    }
+
+    .ids-global-nav__toggle {
+      border-color: var(--color-border-subtle);
+      color: var(--color-text-primary);
+    }
+  }
+
+  /* 17.2 Tema de Baja Estimulación (Neurodivergencia) */
+  [data-theme="low-stimulation"] & {
+    --ids-global-nav-bg: var(--color-surface-card);
+    --ids-global-nav-color: var(--color-text-primary);
+    --ids-global-nav-border-color: var(--color-border-subtle);
+    --ids-global-nav-bg-translucent: color-mix(in srgb, var(--color-surface-card) 85%, transparent);
+    --ids-global-nav-item-color: var(--color-text-secondary);
+    --ids-global-nav-item-hover-bg: var(--color-surface-hover);
+    --ids-global-nav-item-hover-color: var(--color-text-primary);
+    --ids-global-nav-item-active-color: var(--color-action-primary);
+    --ids-global-nav-item-indicator-color: var(--color-action-primary);
+    --ids-global-nav-collapse-bg: var(--color-surface-card);
+  }
+
+  /* 17.3 Tema Discreto / Stealth (Anti-Outing) */
+  [data-theme="discrete"] & {
+    --ids-global-nav-bg: var(--color-surface-card);
+    --ids-global-nav-color: var(--color-text-primary);
+    --ids-global-nav-border-color: var(--color-border-subtle);
+    --ids-global-nav-bg-translucent: color-mix(in srgb, var(--color-surface-card) 85%, transparent);
+    --ids-global-nav-item-color: var(--color-text-secondary);
+    --ids-global-nav-item-hover-bg: var(--color-action-secondary-hover-bg);
+    --ids-global-nav-item-hover-color: var(--color-text-primary);
+    --ids-global-nav-item-active-color: var(--color-action-primary);
+    --ids-global-nav-item-indicator-color: var(--color-action-primary);
+    --ids-global-nav-collapse-bg: var(--color-surface-card);
+  }
+
+  /* ========================================================================
+     18. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+     ======================================================================== */
+  @media (forced-colors: active) {
+    border-block-end: var(--focus-ring-width) solid CanvasText;
+
+    &.ids-global-nav--translucent,
+    &.ids-global-nav--glass {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .ids-global-nav__link:hover {
+      outline: var(--focus-ring-width) solid Highlight;
+      color: Highlight;
+    }
+
+    .ids-global-nav__link.is-active,
+    .ids-global-nav__link[aria-current="page"] {
+      border: var(--focus-ring-width) solid Highlight;
+      color: Highlight;
+    }
+
+    .ids-global-nav__toggle {
+      border-color: ButtonText;
+      color: ButtonText;
+    }
+
+    .ids-global-nav__burger-line {
+      background-color: ButtonText;
+    }
+  }
+}

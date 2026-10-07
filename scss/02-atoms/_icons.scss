@@ -1,0 +1,1047 @@
+/* ==========================================================================
+   02-atoms/_icons.scss
+   Identity Design System (IDS) - Átomos de Íconos SVG y Contenedores (Icons & Icon Containers)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE ÍCONOS Y CONTENEDORES
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, borde o geometría se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Escala de Tamaños SVG (Icon Sizes) */
+  --ids-icon-size-xs: var(--icon-size-xs, 0.75rem);   /* 12px */
+  --ids-icon-size-sm: var(--icon-size-sm, 1rem);      /* 16px */
+  --ids-icon-size: var(--icon-size, 1.25rem);         /* 20px */
+  --ids-icon-size-lg: var(--icon-size-lg, 1.5rem);    /* 24px */
+  --ids-icon-size-xl: var(--icon-size-xl, 2rem);      /* 32px */
+  --ids-icon-size-2xl: var(--icon-size-2xl, 3rem);    /* 48px */
+
+  /* Trazo de Iconos SVG */
+  --ids-icon-stroke-width: var(--icon-stroke-width, 2);
+  --ids-icon-stroke-width-thin: var(--icon-stroke-width-thin, 1.5);
+  --ids-icon-stroke-width-thick: var(--icon-stroke-width-thick, 2.5);
+
+  /* Escala de Contenedores de Iconos (Icon Box Sizes) */
+  --ids-icon-box-size-xs: var(--icon-box-size-xs, 1.5rem);   /* 24px */
+  --ids-icon-box-size-sm: var(--icon-box-size-sm, 2rem);     /* 32px */
+  --ids-icon-box-size: var(--icon-box-size, 2.75rem);        /* 44px - Target Area Mínima Accesible WCAG AAA */
+  --ids-icon-box-size-lg: var(--icon-box-size-lg, 3.5rem);   /* 56px */
+  --ids-icon-box-size-xl: var(--icon-box-size-xl, 4.5rem);   /* 72px */
+
+  /* Curvaturas de Contenedores */
+  --ids-icon-box-radius-circle: var(--icon-box-radius-circle, var(--radius-full));
+  --ids-icon-box-radius-rounded: var(--icon-box-radius-rounded, var(--radius-sm));
+  --ids-icon-box-radius-square: var(--icon-box-radius-square, 0);
+
+  /* Bordes y Superficies de Contenedores */
+  --ids-icon-box-border-width: var(--icon-box-border-width, var(--focus-ring-width));
+  --ids-icon-box-border-color: var(--icon-box-border-color, var(--color-border-subtle));
+  --ids-icon-box-bg: var(--icon-box-bg, var(--color-surface-muted));
+  --ids-icon-box-color: var(--icon-box-color, var(--color-text-primary));
+
+  /* Piel y Mapeo Cromático - Estados Semánticos (WCAG AAA) */
+  --ids-icon-primary-color: var(--color-action-primary);
+  --ids-icon-secondary-color: var(--color-text-secondary);
+  --ids-icon-success-color: var(--color-status-success);
+  --ids-icon-danger-color: var(--color-status-danger);
+  --ids-icon-warning-color: var(--color-status-warning);
+  --ids-icon-info-color: var(--color-status-info);
+
+  /* Fondos Sutiles para Contenedores de Estado */
+  --ids-icon-box-success-bg: var(--icon-box-success-bg, var(--status-success-bg, var(--color-surface-muted)));
+  --ids-icon-box-danger-bg: var(--icon-box-danger-bg, var(--status-danger-bg, var(--color-surface-muted)));
+  --ids-icon-box-warning-bg: var(--icon-box-warning-bg, var(--status-warning-bg, var(--color-surface-muted)));
+  --ids-icon-box-info-bg: var(--icon-box-info-bg, var(--status-info-bg, var(--color-surface-muted)));
+  --ids-icon-box-primary-bg: var(--icon-box-primary-bg, var(--color-surface-muted));
+
+  /* Animación / Cinemática */
+  --ids-icon-spin-duration: 1000ms;
+}
+
+/* --------------------------------------------------------------------------
+   2. KEYFRAMES DE ANIMACIÓN (Respetando prefers-reduced-motion)
+   -------------------------------------------------------------------------- */
+@keyframes ids-icon-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ids-icon-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.92);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ÁTOMO SVG BASE (.ids-icon)
+   Estilos limpios, responsivos e independientes para gráficos vectoriales.
+   Alineación tipográfica perfecta con texto corrido y soporte fill/stroke.
+   -------------------------------------------------------------------------- */
+.ids-icon,
+svg.ids-icon {
+  display: inline-block;
+  vertical-align: -0.125em; /* Alineación óptica armónica con texto corrido */
+  inline-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  block-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  width: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  height: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-inline-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-block-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-width: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-height: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  flex-shrink: 0;
+  color: inherit;
+  fill: currentColor;
+  user-select: none;
+  pointer-events: none; /* Previene interrupciones táctiles cuando acompaña botones o enlaces */
+
+  /* Movimiento suave y condicionado (Diseño Informado en el Trauma) */
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color var(--transition-speed-fast) var(--transition-ease),
+                transform var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     3.1 MODIFICADORES DE TRAZO (STROKE)
+     Para iconos de líneas vectoriales trazadas en lugar de siluetas sólidas.
+     ------------------------------------------------------------------------ */
+  &--stroke {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--ids-icon-stroke-width);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    &--thin {
+      stroke-width: var(--ids-icon-stroke-width-thin);
+    }
+
+    &--thick {
+      stroke-width: var(--ids-icon-stroke-width-thick);
+    }
+  }
+
+  /* Alias directos del grosor de trazo (.ids-icon--thin / .ids-icon--thick) */
+  &--thin {
+    stroke-width: var(--ids-icon-stroke-width-thin);
+  }
+
+  &--thick {
+    stroke-width: var(--ids-icon-stroke-width-thick);
+  }
+
+  /* ------------------------------------------------------------------------
+     3.2 MODIFICADORES DE TAMAÑO (SIZES)
+     Escala proporcional basada estrictamente en unidades relativas rem.
+     ------------------------------------------------------------------------ */
+  /* Extra Pequeño (12px) - Badges, Chips y Metadatos */
+  &--xs {
+    inline-size: var(--ids-icon-size-xs);
+    block-size: var(--ids-icon-size-xs);
+    width: var(--ids-icon-size-xs);
+    height: var(--ids-icon-size-xs);
+    max-inline-size: var(--ids-icon-size-xs);
+    max-block-size: var(--ids-icon-size-xs);
+    max-width: var(--ids-icon-size-xs);
+    max-height: var(--ids-icon-size-xs);
+  }
+
+  /* Pequeño (16px) - Inputs compactos y texto de apoyo */
+  &--sm {
+    inline-size: var(--ids-icon-size-sm);
+    block-size: var(--ids-icon-size-sm);
+    width: var(--ids-icon-size-sm);
+    height: var(--ids-icon-size-sm);
+    max-inline-size: var(--ids-icon-size-sm);
+    max-block-size: var(--ids-icon-size-sm);
+    max-width: var(--ids-icon-size-sm);
+    max-height: var(--ids-icon-size-sm);
+  }
+
+  /* Base / Mediano (20px) - Botones, listas y controles interactivos */
+  &--md,
+  &--base {
+    inline-size: var(--ids-icon-size);
+    block-size: var(--ids-icon-size);
+    width: var(--ids-icon-size);
+    height: var(--ids-icon-size);
+    max-inline-size: var(--ids-icon-size);
+    max-block-size: var(--ids-icon-size);
+    max-width: var(--ids-icon-size);
+    max-height: var(--ids-icon-size);
+  }
+
+  /* Grande (24px) - Encabezados, pestañas y botones de acción principal */
+  &--lg {
+    inline-size: var(--ids-icon-size-lg);
+    block-size: var(--ids-icon-size-lg);
+    width: var(--ids-icon-size-lg);
+    height: var(--ids-icon-size-lg);
+    max-inline-size: var(--ids-icon-size-lg);
+    max-block-size: var(--ids-icon-size-lg);
+    max-width: var(--ids-icon-size-lg);
+    max-height: var(--ids-icon-size-lg);
+  }
+
+  /* Extra Grande (32px) - Alertas, modales y avisos de estado */
+  &--xl {
+    inline-size: var(--ids-icon-size-xl);
+    block-size: var(--ids-icon-size-xl);
+    width: var(--ids-icon-size-xl);
+    height: var(--ids-icon-size-xl);
+    max-inline-size: var(--ids-icon-size-xl);
+    max-block-size: var(--ids-icon-size-xl);
+    max-width: var(--ids-icon-size-xl);
+    max-height: var(--ids-icon-size-xl);
+  }
+
+  /* 2X Grande (48px) - Ilustraciones vacías, bienvenida y onboarding */
+  &--2xl {
+    inline-size: var(--ids-icon-size-2xl);
+    block-size: var(--ids-icon-size-2xl);
+    width: var(--ids-icon-size-2xl);
+    height: var(--ids-icon-size-2xl);
+    max-inline-size: var(--ids-icon-size-2xl);
+    max-block-size: var(--ids-icon-size-2xl);
+    max-width: var(--ids-icon-size-2xl);
+    max-height: var(--ids-icon-size-2xl);
+  }
+
+  /* Fluido / Totalmente adaptable al contenedor */
+  &--fluid {
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Heredado del font-size (1em) */
+  &--inherit {
+    inline-size: 1em;
+    block-size: 1em;
+    width: 1em;
+    height: 1em;
+    max-inline-size: 1em;
+    max-block-size: 1em;
+    max-width: 1em;
+    max-height: 1em;
+  }
+
+  /* --------------------------------------------------------------------------
+     3.3 MODIFICADORES DE COLOR SEMÁNTICO (WCAG AAA)
+     -------------------------------------------------------------------------- */
+  /* Color Principal de Acción / Marca */
+  &--primary {
+    color: var(--ids-icon-primary-color);
+  }
+
+  /* Color Secundario / Texto Atenuado */
+  &--secondary,
+  &--muted {
+    color: var(--ids-icon-secondary-color);
+  }
+
+  /* Estado de Éxito / Seguro / Cifrado (Success) */
+  &--success {
+    color: var(--ids-icon-success-color);
+  }
+
+  /* Estado de Peligro / Destructivo / Error (Danger) */
+  &--danger {
+    color: var(--ids-icon-danger-color);
+  }
+
+  /* Estado de Advertencia / Alerta Sensible (Warning) */
+  &--warning {
+    color: var(--ids-icon-warning-color);
+  }
+
+  /* Estado Informativo Neutral (Info) */
+  &--info {
+    color: var(--ids-icon-info-color);
+  }
+
+  /* Color Invertido (Para fondos oscuros o tarjetas de color) */
+  &--inverted {
+    color: var(--color-surface-background);
+  }
+
+  /* Forzado al color de texto actual */
+  &--current {
+    color: currentColor;
+  }
+
+  /* ------------------------------------------------------------------------
+     3.4 TRANSFORMACIONES Y CINEMÁTICA ACCESIBLE
+     ------------------------------------------------------------------------ */
+  /* Rotaciones estáticas */
+  &--rotate-90 {
+    transform: rotate(90deg);
+  }
+
+  &--rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  &--rotate-270 {
+    transform: rotate(270deg);
+  }
+
+  /* Espejado / Volteado */
+  &--flip-h {
+    transform: scaleX(-1);
+  }
+
+  &--flip-v {
+    transform: scaleY(-1);
+  }
+
+  /* Animación de Giro Continuo (para iconos de recarga / sync) */
+  &--spin {
+    animation: ids-icon-spin var(--ids-icon-spin-duration) linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none !important;
+    }
+  }
+
+  /* Animación de Pulso Suave (para alertas vivas / grabación en curso) */
+  &--pulse {
+    animation: ids-icon-pulse 2s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3.5 RED DE SEGURIDAD PARA ICONOS SVG EN CONTENEDORES INTERACTIVOS Y ESTRUCTURALES
+   Asegura que cualquier SVG auxiliar (cierre, chevron, navegación, estados)
+   mantenga proporciones accesibles y nunca deforme el elemento padre.
+   -------------------------------------------------------------------------- */
+.ids-button svg:not([class*="__img"]):not([class*="-img"]),
+.ids-badge svg:not([class*="__img"]):not([class*="-img"]),
+.ids-alert svg:not([class*="__img"]):not([class*="-img"]),
+.ids-alert__icon svg,
+.ids-alert__close svg,
+.ids-input-affix-wrapper svg:not([class*="__img"]):not([class*="-img"]),
+.ids-input-message svg,
+.ids-help-text svg,
+.ids-modal-dialog__close svg,
+.ids-modal-dialog__header svg:not([class*="__img"]):not([class*="-img"]),
+.ids-offcanvas__close svg,
+.ids-offcanvas__header svg:not([class*="__img"]):not([class*="-img"]),
+.ids-accordion__icon svg,
+.ids-accordion__chevron svg,
+.ids-accordion__header svg:not([class*="__img"]):not([class*="-img"]),
+.ids-carousel__control svg,
+.ids-carousel__playback-btn svg,
+.ids-card__close svg,
+.ids-sidebar__close svg,
+.ids-toc__icon,
+.ids-toc__chevron-icon,
+.ids-toggle__track svg,
+.ids-toggle__glyph-off svg,
+.ids-toggle__glyph-on svg,
+.ids-divider__content svg,
+.ids-popover__close svg,
+.ids-snackbar__close svg,
+.ids-snackbar__icon svg,
+.ids-fab svg:not([class*="__img"]):not([class*="-img"]),
+.ids-toolbar__button svg:not([class*="__img"]):not([class*="-img"]),
+.ids-consent-card svg:not([class*="__img"]):not([class*="-img"]) {
+  inline-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  block-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  width: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  height: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-inline-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-block-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-width: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  max-height: var(--ids-icon-size, var(--icon-size, 1.25rem));
+  fill: currentColor;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Redimensionamiento proporcional por contexto específico */
+.ids-badge svg,
+.ids-toggle__track svg,
+.ids-toggle__glyph-off svg,
+.ids-toggle__glyph-on svg {
+  inline-size: var(--ids-icon-size-xs, 0.75rem);
+  block-size: var(--ids-icon-size-xs, 0.75rem);
+  width: var(--ids-icon-size-xs, 0.75rem);
+  height: var(--ids-icon-size-xs, 0.75rem);
+  max-inline-size: var(--ids-icon-size-xs, 0.75rem);
+  max-block-size: var(--ids-icon-size-xs, 0.75rem);
+  max-width: var(--ids-icon-size-xs, 0.75rem);
+  max-height: var(--ids-icon-size-xs, 0.75rem);
+}
+
+.ids-help-text svg,
+.ids-input-message svg {
+  inline-size: var(--ids-icon-size-sm, 1rem);
+  block-size: var(--ids-icon-size-sm, 1rem);
+  width: var(--ids-icon-size-sm, 1rem);
+  height: var(--ids-icon-size-sm, 1rem);
+  max-inline-size: var(--ids-icon-size-sm, 1rem);
+  max-block-size: var(--ids-icon-size-sm, 1rem);
+  max-width: var(--ids-icon-size-sm, 1rem);
+  max-height: var(--ids-icon-size-sm, 1rem);
+}
+
+.ids-button--sm svg:not([class*="__img"]):not([class*="-img"]) {
+  inline-size: var(--icon-size-sm, 1rem);
+  block-size: var(--icon-size-sm, 1rem);
+  width: var(--icon-size-sm, 1rem);
+  height: var(--icon-size-sm, 1rem);
+  max-inline-size: var(--icon-size-sm, 1rem);
+  max-block-size: var(--icon-size-sm, 1rem);
+  max-width: var(--icon-size-sm, 1rem);
+  max-height: var(--icon-size-sm, 1rem);
+}
+
+.ids-button--lg svg:not([class*="__img"]):not([class*="-img"]) {
+  inline-size: var(--icon-size-lg, 1.5rem);
+  block-size: var(--icon-size-lg, 1.5rem);
+  width: var(--icon-size-lg, 1.5rem);
+  height: var(--icon-size-lg, 1.5rem);
+  max-inline-size: var(--icon-size-lg, 1.5rem);
+  max-block-size: var(--icon-size-lg, 1.5rem);
+  max-width: var(--icon-size-lg, 1.5rem);
+  max-height: var(--icon-size-lg, 1.5rem);
+}
+
+/* --------------------------------------------------------------------------
+   4. CONTENEDORES DE ÍCONOS (.ids-icon-box / .ids-icon-container)
+   Cajas de encuadre visual con formas geométricas y superficies semánticas.
+   Garantiza target táctil accesible (44px) y jerarquía visual armonizada.
+   -------------------------------------------------------------------------- */
+.ids-icon-box,
+.ids-icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--ids-icon-box-size);
+  block-size: var(--ids-icon-box-size);
+  min-inline-size: var(--ids-icon-box-size);
+  min-block-size: var(--ids-icon-box-size);
+  flex-shrink: 0;
+  border-radius: var(--ids-icon-box-radius-rounded);
+  background-color: var(--ids-icon-box-bg);
+  color: var(--ids-icon-box-color);
+  border: var(--ids-icon-box-border-width) solid var(--ids-icon-box-border-color);
+  box-sizing: border-box;
+  vertical-align: middle;
+  user-select: none;
+  line-height: 1;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                border-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+
+  /* El SVG interno hereda centrado y no se desborda */
+  .ids-icon {
+    vertical-align: middle;
+  }
+
+  /* ------------------------------------------------------------------------
+     4.1 ESCALA DE TAMAÑOS DE CONTENEDOR
+     ------------------------------------------------------------------------ */
+  /* Extra Pequeño (24px) */
+  &--xs {
+    inline-size: var(--ids-icon-box-size-xs);
+    block-size: var(--ids-icon-box-size-xs);
+    min-inline-size: var(--ids-icon-box-size-xs);
+    min-block-size: var(--ids-icon-box-size-xs);
+
+    .ids-icon {
+      inline-size: var(--ids-icon-size-xs);
+      block-size: var(--ids-icon-size-xs);
+    }
+  }
+
+  /* Pequeño (32px) */
+  &--sm {
+    inline-size: var(--ids-icon-box-size-sm);
+    block-size: var(--ids-icon-box-size-sm);
+    min-inline-size: var(--ids-icon-box-size-sm);
+    min-block-size: var(--ids-icon-box-size-sm);
+
+    .ids-icon {
+      inline-size: var(--ids-icon-size-sm);
+      block-size: var(--ids-icon-size-sm);
+    }
+  }
+
+  /* Mediano / Base (44px - Target Area Mínima Accesible WCAG AAA) */
+  &--md,
+  &--base {
+    inline-size: var(--ids-icon-box-size);
+    block-size: var(--ids-icon-box-size);
+    min-inline-size: var(--ids-icon-box-size);
+    min-block-size: var(--ids-icon-box-size);
+
+    .ids-icon {
+      inline-size: var(--ids-icon-size);
+      block-size: var(--ids-icon-size);
+    }
+  }
+
+  /* Grande (56px) */
+  &--lg {
+    inline-size: var(--ids-icon-box-size-lg);
+    block-size: var(--ids-icon-box-size-lg);
+    min-inline-size: var(--ids-icon-box-size-lg);
+    min-block-size: var(--ids-icon-box-size-lg);
+
+    .ids-icon {
+      inline-size: var(--ids-icon-size-lg);
+      block-size: var(--ids-icon-size-lg);
+    }
+  }
+
+  /* Extra Grande (72px) */
+  &--xl {
+    inline-size: var(--ids-icon-box-size-xl);
+    block-size: var(--ids-icon-box-size-xl);
+    min-inline-size: var(--ids-icon-box-size-xl);
+    min-block-size: var(--ids-icon-box-size-xl);
+
+    .ids-icon {
+      inline-size: var(--ids-icon-size-xl);
+      block-size: var(--ids-icon-size-xl);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     4.2 FORMAS GEOMÉTRICAS DE CONTENEDOR
+     ------------------------------------------------------------------------ */
+  /* Círculo */
+  &--circle {
+    border-radius: var(--ids-icon-box-radius-circle);
+  }
+
+  /* Esquinas Suavemente Redondeadas */
+  &--rounded {
+    border-radius: var(--ids-icon-box-radius-rounded);
+  }
+
+  /* Cuadrado Plano / Recto */
+  &--square {
+    border-radius: var(--ids-icon-box-radius-square);
+  }
+
+  /* ------------------------------------------------------------------------
+     4.3 ESTILOS DE SUPERFICIE (SURFACES)
+     ------------------------------------------------------------------------ */
+  /* Sutil (Subtle): Fondo claro translúcido con icono de color */
+  &--subtle {
+    background-color: var(--color-surface-muted);
+    border-color: transparent;
+
+    &.ids-icon-box--primary {
+      background-color: var(--ids-icon-box-primary-bg);
+      color: var(--ids-icon-primary-color);
+    }
+
+    &.ids-icon-box--success {
+      background-color: var(--ids-icon-box-success-bg);
+      color: var(--ids-icon-success-color);
+    }
+
+    &.ids-icon-box--danger {
+      background-color: var(--ids-icon-box-danger-bg);
+      color: var(--ids-icon-danger-color);
+    }
+
+    &.ids-icon-box--warning {
+      background-color: var(--ids-icon-box-warning-bg);
+      color: var(--ids-icon-warning-color);
+    }
+
+    &.ids-icon-box--info {
+      background-color: var(--ids-icon-box-info-bg);
+      color: var(--ids-icon-info-color);
+    }
+  }
+
+  /* Sólido (Solid): Fondo pleno con icono blanco contrastado */
+  &--solid {
+    border-color: transparent;
+
+    &.ids-icon-box--primary {
+      background-color: var(--ids-icon-primary-color);
+      color: var(--color-action-primary-text);
+    }
+
+    &.ids-icon-box--success {
+      background-color: var(--ids-icon-success-color);
+      color: var(--status-success-text);
+    }
+
+    &.ids-icon-box--danger {
+      background-color: var(--ids-icon-danger-color);
+      color: var(--status-danger-text);
+    }
+
+    &.ids-icon-box--warning {
+      background-color: var(--ids-icon-warning-color);
+      color: var(--status-warning-text);
+    }
+
+    &.ids-icon-box--info {
+      background-color: var(--ids-icon-info-color);
+      color: var(--status-info-text);
+    }
+  }
+
+  /* Contorno (Outline): Fondo transparente con borde semántico */
+  &--outline {
+    background-color: transparent;
+    border-color: var(--ids-icon-box-border-color);
+    color: var(--ids-icon-box-color);
+
+    &.ids-icon-box--primary {
+      border-color: var(--ids-icon-primary-color);
+      color: var(--ids-icon-primary-color);
+    }
+
+    &.ids-icon-box--success {
+      border-color: var(--ids-icon-success-color);
+      color: var(--ids-icon-success-color);
+    }
+
+    &.ids-icon-box--danger {
+      border-color: var(--ids-icon-danger-color);
+      color: var(--ids-icon-danger-color);
+    }
+
+    &.ids-icon-box--warning {
+      border-color: var(--ids-icon-warning-color);
+      color: var(--ids-icon-warning-color);
+    }
+
+    &.ids-icon-box--info {
+      border-color: var(--ids-icon-info-color);
+      color: var(--ids-icon-info-color);
+    }
+  }
+
+  /* Fantasma (Ghost): Sin fondo ni bordes, solo encuadre y alineación */
+  &--ghost {
+    background-color: transparent;
+    border-color: transparent;
+    color: inherit;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. BOTÓN DE ÍCONO ACCESIBLE (.ids-icon-btn / .ids-icon-button)
+   Botón interactivo puro para acciones compactas (cerrar modal, alternar menú, etc.).
+   Cumple rigurosamente el área táctil mínima WCAG AAA de 44px (2.75rem).
+   -------------------------------------------------------------------------- */
+.ids-icon-btn,
+.ids-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--ids-icon-box-size);
+  block-size: var(--ids-icon-box-size);
+  min-inline-size: var(--ids-icon-box-size);
+  min-block-size: var(--ids-icon-box-size);
+  padding: 0;
+  border-radius: var(--ids-icon-box-radius-rounded);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: var(--focus-ring-width) solid transparent;
+  cursor: pointer;
+  vertical-align: middle;
+  user-select: none;
+  touch-action: manipulation;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                border-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease),
+                outline-offset var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+
+  /* Hover */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: var(--color-surface-muted);
+    color: var(--color-action-hover);
+  }
+
+  /* Foco Accesible por Teclado WCAG AAA (Mínimo 2px / 0.125rem) */
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline-width: var(--focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-color: var(--color-border-interactive);
+  }
+
+  /* Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--opacity-disabled);
+    pointer-events: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     Variantes de Forma para Botón de Ícono
+     ------------------------------------------------------------------------ */
+  &--circle {
+    border-radius: var(--ids-icon-box-radius-circle);
+  }
+
+  &--rounded {
+    border-radius: var(--ids-icon-box-radius-rounded);
+  }
+
+  &--square {
+    border-radius: var(--ids-icon-box-radius-square);
+  }
+
+  /* ------------------------------------------------------------------------
+     Variantes de Estilo para Botón de Ícono
+     ------------------------------------------------------------------------ */
+  /* Secundario / Con Borde */
+  &--secondary,
+  &--outline {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      border-color: var(--color-border-interactive);
+      background-color: var(--color-surface-muted);
+    }
+  }
+
+  /* Primario / Destacado */
+  &--primary {
+    background-color: var(--color-action-primary);
+    color: var(--color-action-primary-text);
+    border-color: transparent;
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--color-action-hover);
+      color: var(--color-action-primary-text);
+    }
+  }
+
+  /* Peligro / Destructivo (Trauma-Informed: claro sin pánico) */
+  &--danger {
+    color: var(--color-status-danger);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--ids-icon-box-danger-bg);
+      color: var(--color-action-danger-hover);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. CONTENEDOR CON INSIGNIA / NOTIFICACIÓN (.ids-icon-badge-wrapper)
+   Para iconos con punto de estado o contador de notificaciones superpuesto.
+   -------------------------------------------------------------------------- */
+.ids-icon-badge-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+
+  /* Punto de Estado en Esquina Superior */
+  &__dot {
+    position: absolute;
+    inset-block-start: -0.125rem;
+    inset-inline-end: -0.125rem;
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-status-danger);
+    border: var(--focus-ring-width) solid var(--color-surface-background);
+    pointer-events: none;
+
+    &--success {
+      background-color: var(--color-status-success);
+    }
+
+    &--warning {
+      background-color: var(--color-status-warning);
+    }
+
+    &--info {
+      background-color: var(--color-status-info);
+    }
+  }
+
+  /* Contador numérico de notificaciones */
+  &__count {
+    position: absolute;
+    inset-block-start: -0.375rem;
+    inset-inline-end: -0.375rem;
+    min-inline-size: 1.125rem;
+    block-size: 1.125rem;
+    padding-inline: 0.25rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-status-danger);
+    color: var(--status-danger-text);
+    font-family: var(--font-family-base);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--focus-ring-width) solid var(--color-surface-background);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 7.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-icon {
+    &--primary {
+      color: var(--color-action-primary);
+    }
+
+    &--success {
+      color: var(--color-status-success);
+    }
+
+    &--danger {
+      color: var(--color-status-danger);
+    }
+
+    &--warning {
+      color: var(--color-status-warning);
+    }
+
+    &--info {
+      color: var(--color-status-info);
+    }
+  }
+
+  .ids-icon-box,
+  .ids-icon-container {
+    --ids-icon-box-border-color: var(--color-border-subtle);
+    --ids-icon-box-bg: var(--color-surface-background);
+    --ids-icon-box-color: var(--color-text-primary);
+    border-width: var(--focus-ring-width);
+
+    &--subtle,
+    &--solid {
+      &.ids-icon-box--primary {
+        background-color: var(--color-surface-background);
+        border-color: var(--color-action-primary);
+        color: var(--color-action-primary);
+      }
+
+      &.ids-icon-box--success {
+        background-color: var(--color-surface-background);
+        border-color: var(--color-status-success);
+        color: var(--color-status-success);
+      }
+
+      &.ids-icon-box--danger {
+        background-color: var(--color-surface-background);
+        border-color: var(--color-status-danger);
+        color: var(--color-status-danger);
+      }
+
+      &.ids-icon-box--warning {
+        background-color: var(--color-surface-background);
+        border-color: var(--color-status-warning);
+        color: var(--color-status-warning);
+      }
+
+      &.ids-icon-box--info {
+        background-color: var(--color-surface-background);
+        border-color: var(--color-status-info);
+        color: var(--color-status-info);
+      }
+    }
+  }
+
+  .ids-icon-btn,
+  .ids-icon-button {
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--color-surface-hover);
+      border-color: var(--color-action-primary);
+      color: var(--color-action-primary);
+    }
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+      border-color: var(--focus-ring-color);
+    }
+  }
+
+  .ids-icon-badge-wrapper__dot,
+  .ids-icon-badge-wrapper__count {
+    border-color: var(--color-surface-background);
+  }
+}
+
+/* 7.2 Baja Estimulación (Neurodivergencia y Prevención de Fatiga) */
+[data-theme="low-stimulation"] {
+  .ids-icon-box,
+  .ids-icon-container {
+    --ids-icon-box-bg: var(--color-surface-muted);
+    --ids-icon-box-border-color: var(--color-border-subtle);
+    --ids-icon-box-color: var(--color-text-primary);
+
+    &--subtle {
+      &.ids-icon-box--primary {
+        background-color: var(--color-surface-muted);
+        color: var(--color-action-primary);
+      }
+
+      &.ids-icon-box--success {
+        background-color: var(--color-surface-muted);
+        color: var(--color-status-success);
+      }
+
+      &.ids-icon-box--danger {
+        background-color: var(--color-surface-muted);
+        color: var(--color-status-danger);
+      }
+
+      &.ids-icon-box--warning {
+        background-color: var(--color-surface-muted);
+        color: var(--color-status-warning);
+      }
+
+      &.ids-icon-box--info {
+        background-color: var(--color-surface-muted);
+        color: var(--color-status-info);
+      }
+    }
+  }
+
+  .ids-icon-btn:hover:not(:disabled):not([aria-disabled="true"]),
+  .ids-icon-button:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: var(--color-surface-hover);
+    color: var(--color-text-primary);
+  }
+}
+
+/* 7.3 Modo Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-icon-box,
+  .ids-icon-container {
+    --ids-icon-box-bg: var(--color-surface-muted);
+    --ids-icon-box-border-color: var(--color-border-subtle);
+    --ids-icon-box-color: var(--color-text-primary);
+
+    &--subtle,
+    &--solid {
+      &.ids-icon-box--primary,
+      &.ids-icon-box--success,
+      &.ids-icon-box--danger,
+      &.ids-icon-box--warning,
+      &.ids-icon-box--info {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border-subtle);
+        color: var(--color-text-secondary);
+      }
+    }
+  }
+
+  .ids-icon {
+    &--primary,
+    &--success,
+    &--danger,
+    &--warning,
+    &--info {
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-icon {
+    fill: CanvasText;
+    color: CanvasText;
+
+    &--stroke {
+      stroke: CanvasText;
+    }
+  }
+
+  .ids-icon-box,
+  .ids-icon-container {
+    border: var(--focus-ring-width) solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    .ids-icon {
+      fill: CanvasText;
+      color: CanvasText;
+    }
+  }
+
+  .ids-icon-btn,
+  .ids-icon-button {
+    border: var(--focus-ring-width) solid ButtonText;
+    color: ButtonText;
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid Highlight;
+    }
+  }
+
+  .ids-icon-badge-wrapper__dot,
+  .ids-icon-badge-wrapper__count {
+    border: var(--focus-ring-width) solid CanvasText;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}

@@ -1,0 +1,375 @@
+/* ==========================================================================
+   02-atoms/_dividers.scss
+   Identity Design System (IDS) - Átomo de Separador y Pausa Emocional (<hr>)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL SEPARADOR (DIVIDER / <hr>)
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Grosor */
+  --ids-divider-thickness: var(--divider-thickness);
+  --ids-divider-thickness-thick: var(--divider-thickness-thick);
+  --ids-divider-style: var(--divider-style);
+  --ids-divider-color: var(--divider-color);
+
+  /* Espaciado Vertical Estándar y Proporcional */
+  --ids-divider-margin-y: var(--divider-margin-y);
+  --ids-divider-margin-y-xs: var(--divider-margin-y-xs);
+  --ids-divider-margin-y-sm: var(--divider-margin-y-sm);
+  --ids-divider-margin-y-md: var(--divider-margin-y-md);
+  --ids-divider-margin-y-lg: var(--divider-margin-y-lg);
+  --ids-divider-margin-y-xl: var(--divider-margin-y-xl);
+
+  /* Pausa Emocional (Trauma-Informed Design) */
+  --ids-divider-margin-y-emotional: var(--divider-margin-y-emotional);
+
+  /* Separadores Verticales */
+  --ids-divider-margin-x: var(--divider-margin-x);
+  --ids-divider-vertical-height: var(--divider-vertical-height);
+
+  /* Contenido y Etiquetas Integradas */
+  --ids-divider-content-gap: var(--divider-content-gap);
+  --ids-divider-content-padding-x: var(--divider-content-padding-x);
+  --ids-divider-content-font-size: var(--divider-content-font-size);
+  --ids-divider-content-color: var(--divider-content-color);
+  --ids-divider-content-font-weight: var(--divider-content-font-weight);
+
+  /* Variantes Cromáticas Semánticas */
+  --ids-divider-primary-color: var(--divider-primary-color);
+  --ids-divider-interactive-color: var(--divider-interactive-color);
+  --ids-divider-success-color: var(--divider-success-color);
+  --ids-divider-danger-color: var(--divider-danger-color);
+  --ids-divider-warning-color: var(--divider-warning-color);
+  --ids-divider-info-color: var(--divider-info-color);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTILO BASE (hr y .ids-divider)
+   Reseteo accesible y normalización multi-navegador.
+   -------------------------------------------------------------------------- */
+hr,
+.ids-divider {
+  display: block;
+  box-sizing: border-box;
+  border: none;
+  border-block-start: var(--ids-divider-thickness) var(--ids-divider-style) var(--ids-divider-color);
+  margin-block: var(--ids-divider-margin-y);
+  margin-inline: 0;
+  inline-size: 100%;
+  padding: 0;
+  clear: both;
+}
+
+/* --------------------------------------------------------------------------
+   3. PAUSA EMOCIONAL TRAUMA-INFORMED (.ids-divider--emotional-break)
+   Diseñado específicamente para procesos de derechos humanos, formularios de
+   denuncia o narración de testimonios sensibles donde se requiere un respiro
+   cognitivo generoso entre bloques de contenido.
+   -------------------------------------------------------------------------- */
+hr.ids-divider--emotional-break,
+.ids-divider--emotional-break {
+  margin-block: calc(var(--ids-divider-margin-y-emotional) * 0.75);
+  border-block-start-color: var(--color-border-subtle);
+  position: relative;
+
+  @media (min-width: 48rem) {
+    margin-block: var(--ids-divider-margin-y-emotional);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. MODIFICADORES DE TRAZO Y GROSOR (BEM)
+   -------------------------------------------------------------------------- */
+
+/* 4.1 Trazo Punteado (Dotted) */
+.ids-divider--dotted {
+  border-block-start-style: dotted;
+}
+
+/* 4.2 Trazo Discontinuo (Dashed) */
+.ids-divider--dashed {
+  border-block-start-style: dashed;
+}
+
+/* 4.3 Trazo Grueso / Estructural (.ids-divider--thick) */
+.ids-divider--thick {
+  border-block-start-width: var(--ids-divider-thickness-thick);
+}
+
+/* --------------------------------------------------------------------------
+   5. MODIFICADORES DE ESPACIADO VERTICAL
+   -------------------------------------------------------------------------- */
+.ids-divider--spacing-xs {
+  margin-block: var(--ids-divider-margin-y-xs);
+}
+
+.ids-divider--spacing-sm {
+  margin-block: var(--ids-divider-margin-y-sm);
+}
+
+.ids-divider--spacing-md {
+  margin-block: var(--ids-divider-margin-y-md);
+}
+
+.ids-divider--spacing-lg {
+  margin-block: var(--ids-divider-margin-y-lg);
+}
+
+.ids-divider--spacing-xl {
+  margin-block: var(--ids-divider-margin-y-xl);
+}
+
+.ids-divider--spacing-emotional {
+  margin-block: calc(var(--ids-divider-margin-y-emotional) * 0.75);
+
+  @media (min-width: 48rem) {
+    margin-block: var(--ids-divider-margin-y-emotional);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. MODIFICADORES DE ANCHO Y ALINEACIÓN
+   -------------------------------------------------------------------------- */
+/* 6.1 Ancho Corto (25%) */
+.ids-divider--short {
+  inline-size: 25%;
+  margin-inline: auto;
+}
+
+/* 6.2 Ancho Medio (50%) */
+.ids-divider--half {
+  inline-size: 50%;
+  margin-inline: auto;
+}
+
+/* 6.3 Alineación al Inicio */
+.ids-divider--start {
+  margin-inline-start: 0;
+  margin-inline-end: auto;
+}
+
+/* 6.4 Alineación al Centro */
+.ids-divider--center {
+  margin-inline: auto;
+}
+
+/* 6.5 Alineación al Final */
+.ids-divider--end {
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+}
+
+/* --------------------------------------------------------------------------
+   7. SEPARADOR CON CONTENIDO / TEXTO / ICONO (.ids-divider--with-content)
+   Permite colocar texto o iconos centrados o alineados como delimitadores
+   semánticos (ej: "o", "Continuar después de respirar", etc.).
+   -------------------------------------------------------------------------- */
+.ids-divider--with-content,
+.ids-divider--with-text {
+  display: flex;
+  align-items: center;
+  border-block-start: none;
+  margin-block: var(--ids-divider-margin-y);
+  inline-size: 100%;
+  text-align: center;
+  color: var(--ids-divider-content-color);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-block-start: var(--ids-divider-thickness) var(--ids-divider-style) var(--ids-divider-color);
+  }
+
+  /* Alineación del Contenido al Inicio */
+  &.ids-divider--content-start {
+    &::before {
+      flex: 0 0 var(--spacing-lg);
+    }
+    &::after {
+      flex: 1;
+    }
+  }
+
+  /* Alineación del Contenido al Final */
+  &.ids-divider--content-end {
+    &::before {
+      flex: 1;
+    }
+    &::after {
+      flex: 0 0 var(--spacing-lg);
+    }
+  }
+
+  /* Contenedor del Texto o Icono */
+  .ids-divider__content,
+  .ids-divider__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-inline: var(--ids-divider-content-padding-x);
+    font-size: var(--ids-divider-content-font-size);
+    font-weight: var(--ids-divider-content-font-weight);
+    color: var(--ids-divider-content-color);
+    line-height: var(--line-height-tight);
+    white-space: nowrap;
+
+    svg {
+      inline-size: var(--ids-divider-content-font-size);
+      block-size: var(--ids-divider-content-font-size);
+      fill: currentColor;
+    }
+  }
+
+  /* Pausa Emocional con Contenido */
+  &.ids-divider--emotional-break {
+    margin-block: calc(var(--ids-divider-margin-y-emotional) * 0.75);
+
+    @media (min-width: 48rem) {
+      margin-block: var(--ids-divider-margin-y-emotional);
+    }
+
+    .ids-divider__content,
+    .ids-divider__label {
+      padding-block: var(--spacing-xs);
+      color: var(--color-text-secondary);
+      font-weight: var(--font-weight-medium);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. SEPARADOR VERTICAL (.ids-divider--vertical)
+   Útil para barras de herramientas, menús de navegación y acciones en línea.
+   -------------------------------------------------------------------------- */
+.ids-divider--vertical {
+  display: inline-block;
+  border-block-start: none;
+  border-inline-start: var(--ids-divider-thickness) var(--ids-divider-style) var(--ids-divider-color);
+  inline-size: 0;
+  block-size: auto;
+  min-block-size: var(--ids-divider-vertical-height);
+  margin-block: 0;
+  margin-inline: var(--spacing-sm);
+  vertical-align: middle;
+  align-self: stretch;
+
+  @media (min-width: 48rem) {
+    margin-inline: var(--ids-divider-margin-x);
+  }
+
+  &.ids-divider--thick {
+    border-inline-start-width: var(--ids-divider-thickness-thick);
+  }
+
+  &.ids-divider--dotted {
+    border-inline-start-style: dotted;
+  }
+
+  &.ids-divider--dashed {
+    border-inline-start-style: dashed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. VARIANTES CROMÁTICAS SEMÁNTICAS (BEM)
+   -------------------------------------------------------------------------- */
+.ids-divider--primary {
+  --ids-divider-color: var(--ids-divider-primary-color);
+}
+
+.ids-divider--interactive {
+  --ids-divider-color: var(--ids-divider-interactive-color);
+}
+
+.ids-divider--success {
+  --ids-divider-color: var(--ids-divider-success-color);
+}
+
+.ids-divider--danger {
+  --ids-divider-color: var(--ids-divider-danger-color);
+}
+
+.ids-divider--warning {
+  --ids-divider-color: var(--ids-divider-warning-color);
+}
+
+.ids-divider--info {
+  --ids-divider-color: var(--ids-divider-info-color);
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   -------------------------------------------------------------------------- */
+
+/* 10.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  hr,
+  .ids-divider {
+    --ids-divider-color: var(--color-border-subtle);
+    --ids-divider-thickness: var(--focus-ring-width);
+  }
+
+  .ids-divider--with-content,
+  .ids-divider--with-text {
+    .ids-divider__content,
+    .ids-divider__label {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+/* 10.2 Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  hr,
+  .ids-divider {
+    --ids-divider-color: var(--color-border-subtle);
+  }
+}
+
+/* 10.3 Modo Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  hr,
+  .ids-divider {
+    --ids-divider-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  hr,
+  .ids-divider {
+    border-block-start-color: ButtonText;
+  }
+
+  .ids-divider--with-content,
+  .ids-divider--with-text {
+    &::before,
+    &::after {
+      border-block-start-color: ButtonText;
+    }
+
+    .ids-divider__content,
+    .ids-divider__label {
+      color: ButtonText;
+    }
+  }
+
+  .ids-divider--vertical {
+    border-inline-start-color: ButtonText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. DISEÑO RESPONSIVO (Nativo mediante @media queries) - Mobile-First
+   La pausa emocional y los separadores se definen en escala compacta por
+   defecto para móvil y escalan a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+

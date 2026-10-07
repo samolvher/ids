@@ -1,0 +1,83 @@
+/* ==========================================================================
+   01-base/_typography.scss
+   Identity Design System (IDS) - Reglas tipográficas de etiquetas HTML
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Encabezados (H1 - H6)
+   Vinculación de las etiquetas semánticas con la escala modular matemática.
+   -------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 { font-size: var(--font-size-h1); }
+h2 { font-size: var(--font-size-h2); }
+h3 { font-size: var(--font-size-h3); }
+h4 { font-size: var(--font-size-h4); }
+h5 { font-size: var(--font-size-h5); }
+h6 { font-size: var(--font-size-h6); }
+
+/* --------------------------------------------------------------------------
+   2. Párrafos y Lectura (Trauma-Informed & WCAG)
+   -------------------------------------------------------------------------- */
+p {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-base);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+  
+  /* Límite de ancho estricto para evitar fatiga cognitiva en pantallas anchas */
+  max-width: 65ch; 
+}
+
+/* --------------------------------------------------------------------------
+   3. Enlaces Interactivos (Links)
+   -------------------------------------------------------------------------- */
+a {
+  color: var(--color-action-primary);
+  /* WCAG exige que los enlaces en bloques de texto no dependan solo del color */
+  text-decoration: underline;
+  text-underline-offset: 0.25rem; /* Separa la línea del texto para mejorar la legibilidad (4px) */
+  transition: color var(--transition-speed-fast) var(--transition-ease);
+
+  &:hover {
+    color: var(--color-action-hover);
+    text-decoration-thickness: 0.125rem; /* 2px */
+  }
+
+  &:focus-visible {
+    border-radius: 0.125rem; /* Suaviza las esquinas del outline del reset (2px) */
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Elementos de Texto Semántico
+   -------------------------------------------------------------------------- */
+strong, b {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+small {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   5. Listas Base
+   -------------------------------------------------------------------------- */
+ul, ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+  max-width: 65ch;
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+  line-height: var(--line-height-base);
+}

@@ -1,0 +1,1211 @@
+/* ==========================================================================
+   04-organisms/_card.scss
+   Identity Design System (IDS) - Organismo de Tarjetas (Cards)
+   Amplio espectro de presentaciones modulares:
+     - Formatos: Vertical Estándar, Horizontal (Row), Superposición (Overlay Scrim),
+       Métrica / KPI, Perfil / Identidad, Protección Sensible (Trauma-Informed Blur).
+     - Comportamientos: Estática, Interactiva (Clickable / Stretched Link),
+       Seleccionable (Selectable / Consent), Descartable (Dismissible).
+     - Estilos: Bordeada, Flush, Fantasma (Ghost), Acento lateral (Accent Border).
+     - Densidades: Compacta, Estándar y Relajada.
+     - Contenedores: Card Group (Unificado), Card Deck (Alturas iguales) y Card Grid.
+     - Los 4 Estados Cromáticos Semánticos: Success, Danger, Warning, Info.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO CARD (Contrato de Tokens)
+   Estricta prohibición de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color o espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Superficie Base (Flat / Clean, sin sombras complejas) */
+  --ids-card-radius: var(--radius-card);
+  --ids-card-radius-sm: var(--radius-sm);
+  --ids-card-radius-lg: var(--radius-lg);
+  --ids-card-border-width: var(--focus-ring-width);
+  --ids-card-border-style: solid;
+  --ids-card-accent-border-width: var(--spacing-xs);
+  --ids-card-shadow: var(--shadow-elevation-none);
+  --ids-card-overlay-bg: var(--overlay-backdrop-bg);
+  --ids-card-overlay-border: var(--overlay-border-subtle);
+
+  /* Espaciado Interno General y de Secciones */
+  --ids-card-padding: var(--padding-card);
+  --ids-card-header-padding-y: var(--spacing-md);
+  --ids-card-header-padding-x: var(--spacing-xl);
+  --ids-card-body-padding-y: var(--spacing-lg);
+  --ids-card-body-padding-x: var(--spacing-xl);
+  --ids-card-footer-padding-y: var(--spacing-md);
+  --ids-card-footer-padding-x: var(--spacing-xl);
+  --ids-card-gap: var(--spacing-md);
+  --ids-card-section-gap: var(--spacing-sm);
+
+  /* Variantes de Densidad (Compacta y Relajada) */
+  --ids-card-compact-padding-y: var(--spacing-sm);
+  --ids-card-compact-padding-x: var(--spacing-md);
+  --ids-card-relaxed-padding-y: var(--spacing-xl);
+  --ids-card-relaxed-padding-x: var(--spacing-xxl);
+
+  /* Dimensiones en Modo Horizontal */
+  --ids-card-horizontal-media-width: 16rem;
+  --ids-card-horizontal-media-min-width: 12rem;
+
+  /* Tipografía Semántica */
+  --ids-card-font-family: var(--font-family-base);
+  --ids-card-title-font-size: var(--font-size-h4);
+  --ids-card-title-font-weight: var(--font-weight-semibold);
+  --ids-card-title-line-height: var(--line-height-tight);
+  --ids-card-subtitle-font-size: var(--font-size-caption);
+  --ids-card-body-font-size: var(--font-size-body);
+  --ids-card-body-line-height: var(--line-height-base); /* Mínimo 1.5 WCAG AAA */
+  --ids-card-metric-value-size: var(--font-size-h2);
+  --ids-card-metric-value-weight: var(--font-weight-bold);
+
+  /* Piel y Superficies Base (Reposo) */
+  --ids-card-bg: var(--color-surface-card);
+  --ids-card-header-bg: transparent;
+  --ids-card-footer-bg: var(--color-surface-muted);
+  --ids-card-hover-bg: var(--color-surface-hover);
+  --ids-card-hover-border: var(--color-border-interactive);
+  --ids-card-color: var(--color-text-primary);
+  --ids-card-body-color: var(--color-text-secondary);
+  --ids-card-divider-color: var(--color-border-subtle);
+  --ids-card-divider-thickness: var(--divider-thickness);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-card-current-bg: var(--ids-card-bg);
+  --ids-card-current-border: var(--ids-card-border-color);
+  --ids-card-current-header-bg: var(--ids-card-header-bg);
+  --ids-card-current-footer-bg: var(--ids-card-footer-bg);
+  --ids-card-current-color: var(--ids-card-color);
+  --ids-card-current-body-color: var(--ids-card-body-color);
+  --ids-card-current-divider: var(--ids-card-divider-color);
+  --ids-card-current-accent: var(--color-action-primary);
+
+  /* Botón de Cierre Accesible (Target mínimo 44px WCAG AAA) */
+  --ids-card-close-size: var(--target-size-min);
+  --ids-card-close-color: var(--color-text-secondary);
+  --ids-card-close-hover-color: var(--color-text-primary);
+  --ids-card-close-hover-bg: var(--color-surface-hover);
+
+  /* Cinemática y Transiciones */
+  --ids-card-transition-speed: var(--transition-speed-fast);
+  --ids-card-transition-ease: var(--transition-ease);
+
+  /* ------------------------------------------------------------------------
+     LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA & Trauma-Informed)
+     ------------------------------------------------------------------------ */
+  --ids-card-success-border: var(--status-success-border);
+  --ids-card-success-bg: var(--color-surface-card);
+  --ids-card-success-header-bg: var(--status-success-bg);
+  --ids-card-success-accent: var(--status-success);
+
+  --ids-card-danger-border: var(--status-danger-border);
+  --ids-card-danger-bg: var(--color-surface-card);
+  --ids-card-danger-header-bg: var(--status-danger-bg);
+  --ids-card-danger-accent: var(--status-danger);
+
+  --ids-card-warning-border: var(--status-warning-border);
+  --ids-card-warning-bg: var(--color-surface-card);
+  --ids-card-warning-header-bg: var(--status-warning-bg);
+  --ids-card-warning-accent: var(--status-warning);
+
+  --ids-card-info-border: var(--status-info-border);
+  --ids-card-info-bg: var(--color-surface-card);
+  --ids-card-info-header-bg: var(--status-info-bg);
+  --ids-card-info-accent: var(--status-info);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-card)
+   Contenedor modular con estética plana (Flat/Clean, sin sombras complejas).
+   -------------------------------------------------------------------------- */
+.ids-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background-color: var(--ids-card-current-bg);
+  color: var(--ids-card-current-color);
+  font-family: var(--ids-card-font-family);
+  border: var(--ids-card-border-width) var(--ids-card-border-style) var(--ids-card-current-border);
+  border-radius: var(--ids-card-radius);
+  overflow: hidden;
+
+  /* Geometría plana innegociable con soporte a elevación sutil */
+  box-shadow: var(--ids-card-shadow);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--ids-card-transition-speed) var(--ids-card-transition-ease),
+                border-color var(--ids-card-transition-speed) var(--ids-card-transition-ease),
+                outline-offset var(--ids-card-transition-speed) var(--ids-card-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. SUBCOMPONENTES ESTRUCTURALES ATÓMICOS DE LA TARJETA
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Encabezado (.ids-card__header) */
+.ids-card__header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: var(--spacing-xs);
+  padding-block: var(--ids-card-header-padding-y);
+  padding-inline: var(--ids-card-header-padding-x);
+  background-color: var(--ids-card-current-header-bg);
+  border-block-end: var(--ids-card-divider-thickness) solid var(--ids-card-current-divider);
+  box-sizing: border-box;
+  inline-size: 100%;
+  width: 100%;
+  min-inline-size: 0;
+  min-width: 0;
+
+  &:empty {
+    display: none;
+  }
+}
+
+/* Modificador para encabezados de una sola fila horizontal */
+.ids-card__header--row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-card-gap);
+}
+
+/* Fila superior para metadatos o badges dentro del encabezado (.ids-card__header-top / .ids-card__header-meta) */
+.ids-card__header-top,
+.ids-card__header-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  inline-size: 100%;
+  width: 100%;
+  min-inline-size: 0;
+}
+
+.ids-card__meta {
+  font-size: var(--font-size-caption);
+  color: var(--ids-card-current-body-color);
+  line-height: var(--line-height-tight);
+  white-space: nowrap;
+}
+
+.ids-card__header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1 1 auto;
+  inline-size: 100%;
+  width: 100%;
+  min-inline-size: 0;
+}
+
+.ids-card__title-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  inline-size: 100%;
+  width: 100%;
+  min-inline-size: 0;
+}
+
+.ids-card__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--ids-card-title-font-size);
+  font-weight: var(--ids-card-title-font-weight);
+  line-height: var(--ids-card-title-line-height);
+  color: inherit;
+  inline-size: 100%;
+  width: 100%;
+  min-inline-size: 0;
+  min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.ids-card__subtitle {
+  margin: 0;
+  font-size: var(--ids-card-subtitle-font-size);
+  color: var(--ids-card-current-body-color);
+  line-height: var(--line-height-base);
+  inline-size: 100%;
+  width: 100%;
+  min-inline-size: 0;
+  min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* 3.2 Cuerpo de Contenido (.ids-card__body) */
+.ids-card__body {
+  flex: 1 1 auto;
+  padding-block: var(--ids-card-body-padding-y);
+  padding-inline: var(--ids-card-body-padding-x);
+  color: var(--ids-card-current-body-color);
+  font-size: var(--ids-card-body-font-size);
+  line-height: var(--ids-card-body-line-height);
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-inline-size: 0;
+  min-width: 0;
+
+  & > *:first-child {
+    margin-block-start: 0;
+  }
+
+  & > *:last-child {
+    margin-block-end: 0;
+  }
+
+  p {
+    margin-block-end: var(--spacing-md);
+    line-height: var(--line-height-base);
+  }
+}
+
+/* 3.3 Pie de Acciones (.ids-card__footer) */
+.ids-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--ids-card-gap);
+  padding-block: var(--ids-card-footer-padding-y);
+  padding-inline: var(--ids-card-footer-padding-x);
+  background-color: var(--ids-card-current-footer-bg);
+  border-block-start: var(--ids-card-divider-thickness) solid var(--ids-card-current-divider);
+  box-sizing: border-box;
+  min-inline-size: 0;
+  min-width: 0;
+
+  .ids-button {
+    margin: 0;
+  }
+}
+
+/* Pie Simétrico para Tecnología Consentida (.ids-card__footer--consent) */
+.ids-card__footer--consent {
+  justify-content: stretch;
+
+  & > .ids-button {
+    flex: 1 1 0;
+  }
+}
+
+/* 3.4 Medios, Imágenes y Miniaturas (.ids-card__media / __img)
+   Integración estricta con 02-atoms/_images.scss. */
+.ids-card__media {
+  position: relative;
+  inline-size: 100%;
+  width: 100%;
+  max-inline-size: 100%;
+  overflow: hidden;
+  background-color: var(--color-surface-muted);
+  aspect-ratio: 16 / 9;
+  flex-shrink: 0;
+
+  img,
+  video,
+  svg,
+  .ids-card__img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    object-fit: cover;
+    border: none;
+  }
+}
+
+/* Imagen en el extremo superior: redondeo simétrico superior */
+.ids-card__img-top {
+  inline-size: 100%;
+  border-top-left-radius: calc(var(--ids-card-radius) - var(--ids-card-border-width));
+  border-top-right-radius: calc(var(--ids-card-radius) - var(--ids-card-border-width));
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  object-fit: cover;
+}
+
+/* Imagen en el extremo inferior: redondeo simétrico inferior */
+.ids-card__img-bottom {
+  inline-size: 100%;
+  border-bottom-left-radius: calc(var(--ids-card-radius) - var(--ids-card-border-width));
+  border-bottom-right-radius: calc(var(--ids-card-radius) - var(--ids-card-border-width));
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  object-fit: cover;
+}
+
+/* 3.5 Botón de Cierre Descartable (.ids-card__close)
+   Basado en el átomo .ids-button con área táctil accesible de 44px. */
+.ids-card__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--ids-card-close-size);
+  min-block-size: var(--ids-card-close-size);
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: var(--focus-ring-width) solid transparent;
+  background-color: transparent;
+  color: var(--ids-card-close-color);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-card-close-hover-bg);
+    color: var(--ids-card-close-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  svg,
+  .ids-icon {
+    inline-size: var(--ids-icon-size, 1.25rem);
+    block-size: var(--ids-icon-size, 1.25rem);
+    width: var(--ids-icon-size, 1.25rem);
+    height: var(--ids-icon-size, 1.25rem);
+    max-inline-size: var(--ids-icon-size, 1.25rem);
+    max-block-size: var(--ids-icon-size, 1.25rem);
+    max-width: var(--ids-icon-size, 1.25rem);
+    max-height: var(--ids-icon-size, 1.25rem);
+    fill: currentColor;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+/* 3.6 Divisor Interno (.ids-card__divider) */
+.ids-card__divider {
+  display: block;
+  inline-size: 100%;
+  border: none;
+  border-block-start: var(--ids-card-divider-thickness) solid var(--ids-card-current-divider);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. AMPLIO ESPECTRO DE PRESENTACIONES Y FORMATOS
+   -------------------------------------------------------------------------- */
+
+/* 4.1 FORMATO HORIZONTAL (.ids-card--horizontal)
+   Disposición fluida en fila para medios laterales (Start o End).
+   Implementa flex-wrap: wrap nativo para transicionar suavemente
+   a disposición en columna sin deformar el contenido ni los textos. */
+.ids-card--horizontal {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  --ids-card-header-padding-x: var(--spacing-xl);
+  --ids-card-body-padding-x: var(--spacing-xl);
+  --ids-card-footer-padding-x: var(--spacing-xl);
+
+  & > .ids-card__media {
+    inline-size: 100%;
+    width: 100%;
+    max-inline-size: 100%;
+    min-inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    block-size: auto;
+    height: auto;
+    min-height: 0;
+    flex-shrink: 0;
+
+    img,
+    video,
+    svg,
+    .ids-card__img {
+      inline-size: 100%;
+      block-size: 100%;
+      width: 100%;
+      height: 100%;
+      min-block-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  & > .ids-card__content,
+  & > div:not(.ids-card__media) {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 2 1 15rem;
+    min-inline-size: min(100%, 14rem);
+    min-width: 0;
+  }
+
+  /* Variante con medio a la derecha */
+  &.ids-card--horizontal-reverse {
+    flex-direction: column;
+  }
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+
+    --ids-card-header-padding-x: var(--spacing-lg);
+    --ids-card-body-padding-x: var(--spacing-lg);
+    --ids-card-footer-padding-x: var(--spacing-lg);
+
+    & > .ids-card__media {
+      flex: 1 1 12rem;
+      inline-size: 12rem;
+      min-inline-size: 10rem;
+      max-inline-size: 100%;
+    }
+
+    &.ids-card--horizontal-reverse {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+/* 4.2 FORMATO SUPERPOSICIÓN DE TEXTO / SCRIM (.ids-card--overlay)
+   Imagen completa con velo de alto contraste para máxima legibilidad. */
+.ids-card--overlay {
+  border: none;
+
+  .ids-card__media {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    height: 100%;
+    z-index: 0;
+
+    img {
+      inline-size: 100%;
+      block-size: 100%;
+      height: 100%;
+    }
+
+    /* Velo de contraste protector WCAG AAA */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: var(--ids-card-overlay-bg);
+    }
+  }
+
+  .ids-card__header,
+  .ids-card__body,
+  .ids-card__footer {
+    position: relative;
+    z-index: 1;
+    color: var(--color-overlay-text);
+  }
+
+  .ids-card__title,
+  .ids-card__subtitle,
+  .ids-card__body p {
+    color: var(--color-overlay-text);
+  }
+
+  .ids-card__header {
+    border-block-end-color: var(--ids-card-overlay-border);
+  }
+
+  .ids-card__footer {
+    background-color: transparent;
+    border-block-start-color: var(--ids-card-overlay-border);
+  }
+}
+
+/* 4.3 FORMATO MÉTRICA / KPI (.ids-card--metric)
+   Cifras destacadas y tendencias para paneles de derechos humanos y monitoreo. */
+.ids-card--metric {
+  .ids-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .ids-card__metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+  }
+
+  .ids-card__metric-value {
+    font-family: var(--font-family-heading);
+    font-size: clamp(var(--font-size-h3), 5vw, var(--ids-card-metric-value-size));
+    font-weight: var(--ids-card-metric-value-weight);
+    line-height: var(--line-height-tight);
+    color: var(--ids-card-current-color);
+    overflow-wrap: break-word;
+  }
+
+  .ids-card__metric-label {
+    font-size: var(--font-size-caption);
+    color: var(--ids-card-current-body-color);
+    line-height: var(--line-height-base);
+  }
+
+  .ids-card__metric-diff,
+  .ids-card__metric-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+
+    &--up {
+      color: var(--status-success);
+    }
+
+    &--down {
+      color: var(--status-danger);
+    }
+  }
+}
+
+/* 4.4 FORMATO PERFIL / IDENTIDAD (.ids-card--profile)
+   Estructura para usuarios, defensores o perfiles protegidos. */
+.ids-card--profile {
+  .ids-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .ids-card__avatar {
+    inline-size: var(--icon-box-size, 2.75rem);
+    block-size: var(--icon-box-size, 2.75rem);
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+}
+
+/* 4.5 FORMATO CON PROTECCIÓN DE CONTENIDO SENSIBLE (.ids-card--sensitive)
+   Trauma-Informed Design: Difumina y enmascara contenido sensible hasta consentimiento consciente. */
+.ids-card--sensitive {
+  /* Contenedor relativo de medios protegidos */
+  .ids-card__media,
+  .ids-card__sensitive-wrapper,
+  .ids-card__reveal-wrapper {
+    position: relative;
+    inline-size: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Contenido difuminado de forma predeterminada */
+  .ids-card__sensitive-content,
+  .ids-card__media > img,
+  .ids-card__media > svg,
+  .ids-card__media > video,
+  .ids-card__media > .ids-card__img {
+    filter: blur(var(--img-sensitive-blur, 1.25rem));
+    transform: scale(1.06); /* Elimina bordes nítidos no deseados */
+    user-select: none;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: filter var(--ids-card-transition-speed) var(--ids-card-transition-ease),
+                  transform var(--ids-card-transition-speed) var(--ids-card-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
+  }
+
+  /* Velo superpuesto absoluto con aviso y botón de consentimiento */
+  .ids-card__sensitive-scrim,
+  .ids-card__reveal-content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm);
+    background-color: var(--color-overlay-sensitive);
+    color: var(--color-overlay-text);
+    text-align: center;
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--ids-card-transition-speed) var(--ids-card-transition-ease),
+                  backdrop-filter var(--ids-card-transition-speed) var(--ids-card-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
+  }
+
+  /* Cuadro o panel de aviso */
+  .ids-card__reveal-panel,
+  .ids-card__reveal-content > div,
+  .ids-card__sensitive-scrim > div {
+    background-color: var(--color-surface-card);
+    color: var(--color-text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-card);
+    border: var(--ids-card-border-width) solid var(--color-border-subtle);
+    text-align: center;
+    max-inline-size: 92%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--ids-card-transition-speed) var(--ids-card-transition-ease),
+                  border-color var(--ids-card-transition-speed) var(--ids-card-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
+
+    p {
+      margin: 0;
+      line-height: var(--line-height-base);
+    }
+  }
+
+  /* ESTADO REVELADO (is-revealed): El usuario concedió permiso consciente */
+  &.is-revealed {
+    .ids-card__sensitive-content,
+    .ids-card__media > img,
+    .ids-card__media > svg,
+    .ids-card__media > video,
+    .ids-card__media > .ids-card__img {
+      filter: none;
+      transform: scale(1);
+      user-select: auto;
+      pointer-events: auto;
+    }
+
+    /* El fondo oscuro del scrim se desvanece */
+    .ids-card__sensitive-scrim,
+    .ids-card__reveal-content {
+      background-color: transparent;
+      pointer-events: none;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding: var(--spacing-sm);
+    }
+
+    /* El panel se transforma en un botón flotante de re-ocultamiento accesible */
+    .ids-card__reveal-panel,
+    .ids-card__reveal-content > div,
+    .ids-card__sensitive-scrim > div {
+      background: transparent;
+      border: none;
+      padding: 0;
+
+      /* Ocultar el texto de aviso y el icono para dejar ver la imagen completa */
+      & > *:not([data-ids-card-reveal]):not(.ids-card__reveal-btn):not(.ids-card__sensitive-btn) {
+        display: none !important;
+      }
+    }
+
+    /* El botón permanece interactivo para permitir volver a proteger la imagen */
+    .ids-card__reveal-btn,
+    .ids-card__sensitive-btn,
+    [data-ids-card-reveal] {
+      pointer-events: auto;
+      background-color: var(--color-surface-card);
+      color: var(--color-text-primary);
+      border: var(--ids-card-border-width) solid var(--color-border-subtle);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. COMPORTAMIENTOS E INTERACTIVIDAD (Interactive Modes)
+   -------------------------------------------------------------------------- */
+
+/* 5.1 Tarjeta Clickeable / Interactiva (.ids-card--interactive / --clickable) */
+.ids-card--interactive,
+.ids-card--clickable {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ids-card-hover-bg);
+    border-color: var(--ids-card-hover-border);
+  }
+
+  &:focus-within,
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* Enlace Estirado Accesible (.ids-card__stretched-link)
+   Extiende el área de clic de un <a> a toda la tarjeta sin romper la accesibilidad. */
+.ids-card__stretched-link {
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: auto;
+    content: '';
+    background-color: transparent;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+/* 5.2 Tarjeta Seleccionable (.ids-card--selectable / .is-selected)
+   Ideal para cuestionarios de consentimiento, selección de roles o configuraciones. */
+.ids-card--selectable {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  &.is-selected,
+  &[aria-selected="true"] {
+    border-color: var(--color-action-primary);
+    background-color: var(--color-surface-muted);
+
+    /* Anillo perimetral accesible integrado */
+    outline: var(--focus-ring-width) solid var(--color-action-primary);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. VARIANTES DE ACENTO, BORDE Y SUPERFICIE
+   -------------------------------------------------------------------------- */
+
+/* 6.1 Acento en Borde de Inicio (.ids-card--accent-start) */
+.ids-card--accent-start {
+  border-inline-start-width: var(--ids-card-accent-border-width);
+  border-inline-start-color: var(--ids-card-current-accent);
+}
+
+/* 6.2 Acento en Borde Superior (.ids-card--accent-top) */
+.ids-card--accent-top {
+  border-block-start-width: var(--ids-card-accent-border-width);
+  border-block-start-color: var(--ids-card-current-accent);
+}
+
+/* 6.3 Acentos Cromáticos Semánticos Específicos */
+.ids-card--accent-primary {
+  border-block-start-width: var(--ids-card-accent-border-width, var(--spacing-xs));
+  border-block-start-color: var(--color-action-primary);
+}
+
+.ids-card--accent-success {
+  border-block-start-width: var(--ids-card-accent-border-width, var(--spacing-xs));
+  border-block-start-color: var(--color-status-success);
+}
+
+.ids-card--accent-warning {
+  border-block-start-width: var(--ids-card-accent-border-width, var(--spacing-xs));
+  border-block-start-color: var(--color-status-warning);
+}
+
+.ids-card--accent-danger {
+  border-block-start-width: var(--ids-card-accent-border-width, var(--spacing-xs));
+  border-block-start-color: var(--color-status-danger);
+}
+
+/* 6.3 Tarjeta Flush (.ids-card--flush)
+   Sin bordes exteriores ni curvatura, diseñada para anidarse limpiamente. */
+.ids-card--flush {
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+/* 6.4 Tarjeta Fantasma / Ghost (.ids-card--ghost) */
+.ids-card--ghost {
+  border-color: transparent;
+  background-color: transparent;
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 6.5 Variantes de Densidad (Compact y Relaxed) */
+.ids-card--compact {
+  .ids-card__header {
+    padding-block: var(--ids-card-compact-padding-y);
+    padding-inline: var(--ids-card-compact-padding-x);
+  }
+
+  .ids-card__body {
+    padding-block: var(--ids-card-compact-padding-y);
+    padding-inline: var(--ids-card-compact-padding-x);
+  }
+
+  .ids-card__footer {
+    padding-block: var(--ids-card-compact-padding-y);
+    padding-inline: var(--ids-card-compact-padding-x);
+  }
+}
+
+.ids-card--relaxed {
+  .ids-card__header {
+    padding-block: var(--ids-card-relaxed-padding-y);
+    padding-inline: var(--ids-card-relaxed-padding-x);
+  }
+
+  .ids-card__body {
+    padding-block: var(--ids-card-relaxed-padding-y);
+    padding-inline: var(--ids-card-relaxed-padding-x);
+  }
+
+  .ids-card__footer {
+    padding-block: var(--ids-card-relaxed-padding-y);
+    padding-inline: var(--ids-card-relaxed-padding-x);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA & Trauma-Informed)
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Estado Éxito (Success) */
+.ids-card--success {
+  --ids-card-current-border: var(--ids-card-success-border);
+  --ids-card-current-header-bg: var(--ids-card-success-header-bg);
+  --ids-card-current-accent: var(--ids-card-success-accent);
+
+  border-color: var(--ids-card-success-border);
+
+  .ids-card__header {
+    border-block-end-color: var(--ids-card-success-border);
+  }
+}
+
+/* 7.2 Estado Peligro / Atención Crítica (Danger - Trauma-Informed) */
+.ids-card--danger {
+  --ids-card-current-border: var(--ids-card-danger-border);
+  --ids-card-current-header-bg: var(--ids-card-danger-header-bg);
+  --ids-card-current-accent: var(--ids-card-danger-accent);
+
+  border-color: var(--ids-card-danger-border);
+
+  .ids-card__header {
+    border-block-end-color: var(--ids-card-danger-border);
+  }
+
+  .ids-card__title {
+    color: var(--status-danger);
+  }
+}
+
+/* 7.3 Estado Advertencia (Warning) */
+.ids-card--warning {
+  --ids-card-current-border: var(--ids-card-warning-border);
+  --ids-card-current-header-bg: var(--ids-card-warning-header-bg);
+  --ids-card-current-accent: var(--ids-card-warning-accent);
+
+  border-color: var(--ids-card-warning-border);
+
+  .ids-card__header {
+    border-block-end-color: var(--ids-card-warning-border);
+  }
+}
+
+/* 7.4 Estado Información (Info) */
+.ids-card--info {
+  --ids-card-current-border: var(--ids-card-info-border);
+  --ids-card-current-header-bg: var(--ids-card-info-header-bg);
+  --ids-card-current-accent: var(--ids-card-info-accent);
+
+  border-color: var(--ids-card-info-border);
+
+  .ids-card__header {
+    border-block-end-color: var(--ids-card-info-border);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. CONTENEDORES MÚLTIPLES: GRUPOS, DECKS Y CUADRÍCULAS
+   -------------------------------------------------------------------------- */
+
+/* 8.1 Card Group (Tarjetas unificadas con bordes compartidos) */
+.ids-card-group {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+
+    & > .ids-card {
+      flex: 1 1 0;
+
+      &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-inline-end: none;
+      }
+
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+}
+
+/* 8.2 Card Deck (Tarjetas con separación e igual altura) */
+.ids-card-deck {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-card-gap);
+  inline-size: 100%;
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+
+    & > .ids-card {
+      flex: 1 1 0;
+    }
+  }
+}
+
+/* 8.3 Card Grid (Cuadrícula responsiva pura con tokens) */
+.ids-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--ids-card-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   9. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens de _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-card {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+
+  .ids-card__header {
+    background-color: var(--color-surface-muted);
+    border-block-end-color: var(--color-border-subtle);
+  }
+
+  .ids-card__footer {
+    background-color: var(--color-surface-muted);
+    border-block-start-color: var(--color-border-subtle);
+  }
+
+  .ids-card--interactive:hover {
+    border-color: var(--color-border-interactive);
+    background-color: var(--color-surface-hover);
+  }
+
+  .ids-card--selectable.is-selected {
+    outline-color: var(--color-border-interactive);
+  }
+
+  .ids-card--danger {
+    --ids-card-current-border: var(--color-action-danger-bg);
+  }
+}
+
+/* 9.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-card {
+    transition: none;
+    box-shadow: none;
+  }
+}
+
+/* 9.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-card {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-card__header {
+    background-color: var(--color-surface-muted);
+  }
+
+  .ids-card__footer {
+    background-color: var(--color-surface-muted);
+  }
+}
+
+/* 9.4 Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-card {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-card__header {
+    border-block-end: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-card__footer {
+    border-block-start: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-card__close:focus-visible,
+  .ids-card--interactive:focus-visible {
+    outline: 0.1875rem solid Highlight;
+    outline-offset: 0.125rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* Movimiento Reducido (Accesibilidad Vestibular Universal) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-card,
+  .ids-card__close,
+  .ids-card__sensitive-content {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTABILIDAD RESPONSIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+
+/* Estilos compactos móviles por defecto */
+.ids-card__header {
+  padding-inline: var(--spacing-sm);
+  padding-block: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.ids-card__body {
+  padding-inline: var(--spacing-sm);
+  padding-block: var(--spacing-md);
+}
+
+.ids-card__footer {
+  padding-inline: var(--spacing-sm);
+  padding-block: var(--spacing-sm);
+  flex-direction: column-reverse;
+  align-items: stretch;
+
+  & > .ids-button,
+  & > div > .ids-button {
+    inline-size: 100%;
+    width: 100%;
+  }
+}
+
+.ids-card-grid {
+  grid-template-columns: 1fr;
+}
+
+.ids-card--sensitive {
+  .ids-card__reveal-panel,
+  .ids-card__reveal-content > div,
+  .ids-card__sensitive-scrim > div {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    max-inline-size: 96%;
+  }
+}
+
+/* Despliegue en pantallas medianas y de escritorio */
+@media (min-width: 48rem) {
+  .ids-card__header {
+    padding-inline: var(--ids-card-header-padding-x);
+    padding-block: var(--ids-card-header-padding-y);
+    flex-wrap: nowrap;
+  }
+
+  .ids-card__body {
+    padding-inline: var(--ids-card-body-padding-x);
+    padding-block: var(--ids-card-body-padding-y);
+  }
+
+  .ids-card__footer {
+    padding-inline: var(--ids-card-footer-padding-x);
+    padding-block: var(--ids-card-footer-padding-y);
+    flex-direction: row;
+    align-items: center;
+
+    & > .ids-button,
+    & > div > .ids-button {
+      inline-size: auto;
+      width: auto;
+    }
+  }
+
+  .ids-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .ids-card--sensitive {
+    .ids-card__reveal-panel,
+    .ids-card__reveal-content > div,
+    .ids-card__sensitive-scrim > div {
+      padding: var(--spacing-sm) var(--spacing-md);
+      max-inline-size: 92%;
+    }
+  }
+}
+

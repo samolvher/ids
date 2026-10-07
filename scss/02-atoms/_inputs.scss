@@ -1,0 +1,814 @@
+/* ==========================================================================
+   02-atoms/_inputs.scss
+   Identity Design System (IDS) - Átomos de Input, Checkbox, Radio y Variables Semánticas
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE CONTROLES DE ENTRADA Y FORMULARIOS
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* ------------------------------------------------------------------------
+     1.1 ENTRADAS DE TEXTO Y ÁREAS DE TEXTO (Inputs, Textarea & Select)
+     ------------------------------------------------------------------------ */
+  /* Geometría y Proporciones (Esqueleto) */
+  --ids-input-radius: var(--radius-input);
+  --ids-input-border-width: var(--input-border-width);
+  --ids-input-border-style: solid;
+  --ids-input-min-height: var(--input-min-height);
+  --ids-input-min-width: var(--input-min-width);
+
+  /* Espaciado Interno (Padding) y Separación (Gap) */
+  --ids-input-padding-y: var(--padding-input-y);
+  --ids-input-padding-x: var(--padding-input-x);
+  --ids-input-gap: var(--input-gap);
+
+  /* Escalas de Tamaño (Modificadores) */
+  --ids-input-padding-y-sm: var(--padding-input-sm-y);
+  --ids-input-padding-x-sm: var(--padding-input-sm-x);
+  --ids-input-font-size-sm: var(--font-size-input-sm);
+  --ids-input-min-height-sm: calc(var(--target-size-min) - var(--spacing-sm));
+
+  --ids-input-padding-y-lg: var(--padding-input-lg-y);
+  --ids-input-padding-x-lg: var(--padding-input-lg-x);
+  --ids-input-font-size-lg: var(--font-size-input-lg);
+  --ids-input-min-height-lg: calc(var(--target-size-min) + var(--spacing-sm));
+
+  /* Tipografía Semántica */
+  --ids-input-font-family: var(--font-family-base);
+  --ids-input-font-size: var(--input-font-size);
+  --ids-input-font-weight: var(--input-font-weight);
+  --ids-input-line-height: var(--input-line-height);
+
+  /* Movimiento y Transiciones */
+  --ids-input-transition-speed: var(--transition-speed-fast);
+  --ids-input-transition-ease: var(--transition-ease);
+
+  /* Piel y Mapeo Cromático - Estado Normal y Hover */
+  --ids-input-bg: var(--color-surface-background);
+  --ids-input-color: var(--color-text-primary);
+  --ids-input-placeholder-color: var(--color-text-secondary);
+  --ids-input-border-color: var(--color-border-subtle);
+  --ids-input-hover-border: var(--color-border-interactive);
+  --ids-input-hover-bg: var(--color-surface-background);
+
+  /* Foco Accesible WCAG AAA (Mínimo 2px, contraste 3:1) */
+  --ids-input-focus-border: var(--color-border-interactive);
+  --ids-input-focus-ring-color: var(--focus-ring-color);
+  --ids-input-focus-ring-width: var(--focus-ring-width);
+  --ids-input-focus-ring-offset: var(--focus-ring-offset);
+
+  /* Estados de Validación y Soporte Emocional (Trauma-Informed) */
+  /* Estado de Error: Claro pero sin alarmas visuales estridentes */
+  --ids-input-invalid-border: var(--color-status-danger);
+  --ids-input-invalid-color: var(--color-text-primary);
+  --ids-input-invalid-bg: var(--color-surface-background);
+  --ids-input-invalid-focus-ring: var(--color-status-danger);
+
+  /* Estado de Éxito / Confirmación */
+  --ids-input-valid-border: var(--color-status-success);
+  --ids-input-valid-focus-ring: var(--color-status-success);
+
+  /* Estado de Advertencia */
+  --ids-input-warning-border: var(--color-status-warning);
+  --ids-input-warning-focus-ring: var(--color-status-warning);
+
+  /* Estado Informativo */
+  --ids-input-info-border: var(--color-status-info);
+  --ids-input-info-focus-ring: var(--color-status-info);
+
+  /* Estado Deshabilitado / Solo Lectura */
+  --ids-input-disabled-bg: var(--color-surface-muted);
+  --ids-input-disabled-color: var(--color-text-secondary);
+  --ids-input-disabled-border: var(--color-border-subtle);
+  --ids-input-disabled-opacity: var(--opacity-disabled);
+
+  /* ------------------------------------------------------------------------
+     1.2 CASILLAS DE VERIFICACIÓN (Checkboxes)
+     ------------------------------------------------------------------------ */
+  --ids-checkbox-size: var(--control-checkbox-size);
+  --ids-checkbox-target-size: var(--control-target-size);
+  --ids-checkbox-radius: var(--radius-sm);
+  --ids-checkbox-border-width: var(--control-border-width);
+  --ids-checkbox-border-color: var(--color-border-subtle);
+  --ids-checkbox-bg: var(--color-surface-background);
+  --ids-checkbox-hover-border: var(--color-border-interactive);
+
+  /* Estado Seleccionado (Checked) e Indeterminado */
+  --ids-checkbox-checked-bg: var(--color-action-primary);
+  --ids-checkbox-checked-border: var(--color-action-primary);
+  --ids-checkbox-checked-hover-bg: var(--color-action-hover);
+  --ids-checkbox-checked-hover-border: var(--color-action-hover);
+  --ids-checkbox-mark-color: var(--color-surface-background);
+
+  /* Estado Deshabilitado */
+  --ids-checkbox-disabled-bg: var(--color-surface-muted);
+  --ids-checkbox-disabled-border: var(--color-border-subtle);
+  --ids-checkbox-disabled-mark: var(--color-text-secondary);
+
+  /* ------------------------------------------------------------------------
+     1.3 BOTONES DE RADIO (Radio Buttons)
+     ------------------------------------------------------------------------ */
+  --ids-radio-size: var(--control-radio-size);
+  --ids-radio-target-size: var(--control-target-size);
+  --ids-radio-radius: var(--radius-full);
+  --ids-radio-border-width: var(--control-border-width);
+  --ids-radio-border-color: var(--color-border-subtle);
+  --ids-radio-bg: var(--color-surface-background);
+  --ids-radio-hover-border: var(--color-border-interactive);
+
+  /* Estado Seleccionado */
+  --ids-radio-checked-bg: var(--color-surface-background);
+  --ids-radio-checked-border: var(--color-action-primary);
+  --ids-radio-checked-hover-border: var(--color-action-hover);
+  --ids-radio-checked-dot-color: var(--color-action-primary);
+  --ids-radio-checked-dot-hover: var(--color-action-hover);
+  --ids-radio-checked-dot-size: calc(var(--control-radio-size) * 0.45);
+
+  /* Estado Deshabilitado */
+  --ids-radio-disabled-bg: var(--color-surface-muted);
+  --ids-radio-disabled-border: var(--color-border-subtle);
+  --ids-radio-disabled-dot: var(--color-text-secondary);
+
+  /* ------------------------------------------------------------------------
+     1.4 TEXTAREA Y SELECT
+     ------------------------------------------------------------------------ */
+  --ids-textarea-min-height: calc(var(--target-size-min) * 2.5);
+  --ids-select-icon-color: var(--color-text-secondary);
+}
+
+/* Sobrescrituras temáticas específicas para máxima accesibilidad y baja estimulación */
+[data-theme="high-contrast"] {
+  --ids-checkbox-mark-color: var(--color-surface-background);
+  --ids-checkbox-border-color: var(--color-border-subtle);
+  --ids-radio-border-color: var(--color-border-subtle);
+  --ids-input-border-color: var(--color-border-subtle);
+}
+
+[data-theme="low-stimulation"] {
+  --ids-checkbox-mark-color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE DE ENTRADAS (.ids-input)
+   Lógica de accesibilidad, proporción y heurística WCAG AAA.
+   -------------------------------------------------------------------------- */
+.ids-input {
+  /* Variables de instancia local */
+  --input-current-bg: var(--ids-input-bg);
+  --input-current-color: var(--ids-input-color);
+  --input-current-border: var(--ids-input-border-color);
+  --input-current-hover-border: var(--ids-input-hover-border);
+  --input-current-hover-bg: var(--ids-input-hover-bg);
+  --input-current-focus-border: var(--ids-input-focus-border);
+  --input-current-focus-ring: var(--ids-input-focus-ring-color);
+
+  /* Modelo de caja y alineación */
+  display: block;
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  /* WCAG AAA Target Size: Área táctil accesible mínima */
+  min-block-size: var(--ids-input-min-height);
+  padding-block: var(--ids-input-padding-y);
+  padding-inline: var(--ids-input-padding-x);
+
+  /* Geometría plana (Clean / Flat, sin sombras complejas) */
+  border-radius: var(--ids-input-radius);
+  border-width: var(--ids-input-border-width);
+  border-style: var(--ids-input-border-style);
+  border-color: var(--input-current-border);
+  background-color: var(--input-current-bg);
+  color: var(--input-current-color);
+
+  /* Tipografía y legibilidad */
+  font-family: var(--ids-input-font-family);
+  font-size: var(--ids-input-font-size);
+  font-weight: var(--ids-input-font-weight);
+  line-height: var(--ids-input-line-height);
+  vertical-align: middle;
+
+  /* Controles ergonómicos nativos */
+  appearance: none;
+  -webkit-appearance: none;
+
+  /* Placeholder legible con contraste suficiente */
+  &::placeholder {
+    color: var(--ids-input-placeholder-color);
+    opacity: 1; /* Previene desvanecimiento excesivo en Firefox */
+  }
+
+  /* Movimiento suave y condicionado (Diseño Informado en el Trauma) */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, border-color, color, outline-offset, outline-color;
+    transition-duration: var(--ids-input-transition-speed);
+    transition-timing-function: var(--ids-input-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Interacción Hover */
+  &:hover:not(:disabled):not([aria-disabled="true"]):not(:read-only) {
+    border-color: var(--input-current-hover-border);
+    background-color: var(--input-current-hover-bg);
+  }
+
+  /* Foco de Accesibilidad WCAG AAA (Mínimo 2px, contraste 3:1) */
+  &:focus {
+    border-color: var(--input-current-focus-border);
+    outline: none; /* Asegura control por :focus-visible */
+  }
+
+  &:focus-visible {
+    border-color: var(--input-current-focus-border);
+    outline-width: var(--ids-input-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--input-current-focus-ring);
+    outline-offset: var(--ids-input-focus-ring-offset);
+  }
+
+  /* Estado Inactivo / Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    background-color: var(--ids-input-disabled-bg);
+    border-color: var(--ids-input-disabled-border);
+    color: var(--ids-input-disabled-color);
+    opacity: var(--ids-input-disabled-opacity);
+    user-select: none;
+  }
+
+  /* Estado de Solo Lectura (Readonly) */
+  &:read-only:not(:disabled) {
+    cursor: default;
+    background-color: var(--color-surface-card);
+    border-color: var(--ids-input-border-color);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 ESTADOS DE VALIDACIÓN (Trauma-Informed & Modern Web Guidance)
+     Se emplean :user-invalid y :user-valid junto con selectores ARIA
+     ------------------------------------------------------------------------ */
+  /* Estado de Error / Inválido */
+  &:user-invalid,
+  &[aria-invalid="true"],
+  &--error,
+  &--invalid {
+    --input-current-border: var(--ids-input-invalid-border);
+    --input-current-hover-border: var(--ids-input-invalid-border);
+    --input-current-focus-border: var(--ids-input-invalid-border);
+    --input-current-focus-ring: var(--ids-input-invalid-focus-ring);
+  }
+
+  /* Estado de Éxito / Válido */
+  &:user-valid:not(:placeholder-shown),
+  &[aria-invalid="false"],
+  &--success {
+    --input-current-border: var(--ids-input-valid-border);
+    --input-current-hover-border: var(--ids-input-valid-border);
+    --input-current-focus-border: var(--ids-input-valid-border);
+    --input-current-focus-ring: var(--ids-input-valid-focus-ring);
+  }
+
+  /* Estado de Advertencia */
+  &--warning {
+    --input-current-border: var(--ids-input-warning-border);
+    --input-current-hover-border: var(--ids-input-warning-border);
+    --input-current-focus-border: var(--ids-input-warning-border);
+    --input-current-focus-ring: var(--ids-input-warning-focus-ring);
+  }
+
+  /* Estado Informativo */
+  &--info {
+    --input-current-border: var(--ids-input-info-border);
+    --input-current-hover-border: var(--ids-input-info-border);
+    --input-current-focus-border: var(--ids-input-info-border);
+    --input-current-focus-ring: var(--ids-input-info-focus-ring);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 MODIFICADORES DE TAMAÑO
+     ------------------------------------------------------------------------ */
+  &--sm {
+    min-block-size: var(--ids-input-min-height-sm);
+    padding-block: var(--ids-input-padding-y-sm);
+    padding-inline: var(--ids-input-padding-x-sm);
+    font-size: var(--ids-input-font-size-sm);
+  }
+
+  &--lg {
+    min-block-size: var(--ids-input-min-height-lg);
+    padding-block: var(--ids-input-padding-y-lg);
+    padding-inline: var(--ids-input-padding-x-lg);
+    font-size: var(--ids-input-font-size-lg);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 VARIANTES: TEXTAREA Y SELECT
+     ------------------------------------------------------------------------ */
+  &--textarea {
+    min-block-size: var(--ids-textarea-min-height);
+    resize: vertical;
+    line-height: var(--ids-input-line-height);
+  }
+
+  /* Nota: Las variantes y envoltorios de select (.ids-select, .ids-input--select, .ids-select-wrapper)
+     se gestionan íntegramente en el átomo dedicado 02-atoms/_select.scss */
+}
+
+/* --------------------------------------------------------------------------
+   3. ESQUELETO Y ESTRUCTURA DE CASILLAS DE VERIFICACIÓN (.ids-checkbox)
+   Control nativo accesible con apariencia personalizada y target WCAG AAA.
+   -------------------------------------------------------------------------- */
+.ids-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-grid;
+  place-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin: 0;
+
+  /* Geometría visible del átomo */
+  inline-size: var(--ids-checkbox-size);
+  block-size: var(--ids-checkbox-size);
+  border-radius: var(--ids-checkbox-radius);
+  border-width: var(--ids-checkbox-border-width);
+  border-style: solid;
+  border-color: var(--ids-checkbox-border-color);
+  background-color: var(--ids-checkbox-bg);
+  cursor: pointer;
+
+  /* Área táctil mínima accesible WCAG AAA (44px) mediante pseudo-elemento */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: calc((var(--ids-checkbox-target-size) - var(--ids-checkbox-size)) / -2);
+    border-radius: var(--radius-sm);
+    pointer-events: auto;
+  }
+
+  /* Marca de verificación geométrica pura (Checkmark) */
+  &::after {
+    content: "";
+    inline-size: calc(var(--ids-checkbox-size) * 0.55);
+    block-size: calc(var(--ids-checkbox-size) * 0.55);
+    background-color: var(--ids-checkbox-mark-color);
+    clip-path: polygon(14% 44%, 0 58%, 38% 96%, 100% 16%, 86% 2%, 38% 68%);
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  /* Movimiento suave y condicionado */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, border-color, outline-color;
+    transition-duration: var(--ids-input-transition-speed);
+    transition-timing-function: var(--ids-input-transition-ease);
+
+    &::after {
+      transition-property: opacity, transform;
+      transition-duration: var(--ids-input-transition-speed);
+      transition-timing-function: var(--ids-input-transition-ease);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &::after {
+      transition: none;
+    }
+  }
+
+  /* Estado Hover */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    border-color: var(--ids-checkbox-hover-border);
+  }
+
+  /* Foco de Accesibilidad WCAG AAA */
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline-width: var(--ids-input-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--ids-input-focus-ring-color);
+    outline-offset: var(--ids-input-focus-ring-offset);
+  }
+
+  /* Estado Seleccionado (:checked) */
+  &:checked {
+    background-color: var(--ids-checkbox-checked-bg);
+    border-color: var(--ids-checkbox-checked-border);
+
+    &::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--ids-checkbox-checked-hover-bg);
+      border-color: var(--ids-checkbox-checked-hover-border);
+    }
+  }
+
+  /* Estado Indeterminado (:indeterminate / Selección parcial consentida) */
+  &:indeterminate,
+  &[aria-checked="mixed"] {
+    background-color: var(--ids-checkbox-checked-bg);
+    border-color: var(--ids-checkbox-checked-border);
+
+    &::after {
+      opacity: 1;
+      transform: scale(1);
+      clip-path: polygon(0 35%, 100% 35%, 100% 65%, 0 65%);
+    }
+  }
+
+  /* Estado Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    background-color: var(--ids-checkbox-disabled-bg);
+    border-color: var(--ids-checkbox-disabled-border);
+    opacity: var(--ids-input-disabled-opacity);
+
+    &::after {
+      background-color: var(--ids-checkbox-disabled-mark);
+    }
+  }
+
+  /* Estado de Error / Inválido */
+  &:user-invalid,
+  &[aria-invalid="true"],
+  &--error {
+    border-color: var(--ids-input-invalid-border);
+
+    &:focus-visible {
+      outline-color: var(--ids-input-invalid-focus-ring);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ESQUELETO Y ESTRUCTURA DE BOTONES DE RADIO (.ids-radio)
+   Control nativo accesible con apariencia circular proporcional y target WCAG AAA.
+   -------------------------------------------------------------------------- */
+.ids-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-grid;
+  place-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin: 0;
+
+  /* Geometría visible circular */
+  inline-size: var(--ids-radio-size);
+  block-size: var(--ids-radio-size);
+  border-radius: var(--ids-radio-radius);
+  border-width: var(--ids-radio-border-width);
+  border-style: solid;
+  border-color: var(--ids-radio-border-color);
+  background-color: var(--ids-radio-bg);
+  cursor: pointer;
+
+  /* Área táctil mínima accesible WCAG AAA (44px) */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: calc((var(--ids-radio-target-size) - var(--ids-radio-size)) / -2);
+    border-radius: var(--radius-full);
+    pointer-events: auto;
+  }
+
+  /* Punto interior del radio button */
+  &::after {
+    content: "";
+    inline-size: var(--ids-radio-checked-dot-size);
+    block-size: var(--ids-radio-checked-dot-size);
+    border-radius: var(--radius-full);
+    background-color: var(--ids-radio-checked-dot-color);
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  /* Movimiento suave y condicionado */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, border-color, outline-color;
+    transition-duration: var(--ids-input-transition-speed);
+    transition-timing-function: var(--ids-input-transition-ease);
+
+    &::after {
+      transition-property: opacity, transform;
+      transition-duration: var(--ids-input-transition-speed);
+      transition-timing-function: var(--ids-input-transition-ease);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &::after {
+      transition: none;
+    }
+  }
+
+  /* Estado Hover */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    border-color: var(--ids-radio-hover-border);
+  }
+
+  /* Foco de Accesibilidad WCAG AAA */
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline-width: var(--ids-input-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--ids-input-focus-ring-color);
+    outline-offset: var(--ids-input-focus-ring-offset);
+  }
+
+  /* Estado Seleccionado (:checked) */
+  &:checked {
+    border-color: var(--ids-radio-checked-border);
+    background-color: var(--ids-radio-checked-bg);
+
+    &::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      border-color: var(--ids-radio-checked-hover-border);
+      &::after {
+        background-color: var(--ids-radio-checked-dot-hover);
+      }
+    }
+  }
+
+  /* Estado Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    background-color: var(--ids-radio-disabled-bg);
+    border-color: var(--ids-radio-disabled-border);
+    opacity: var(--ids-input-disabled-opacity);
+
+    &::after {
+      background-color: var(--ids-radio-disabled-dot);
+    }
+  }
+
+  /* Estado de Error / Inválido */
+  &:user-invalid,
+  &[aria-invalid="true"],
+  &--error {
+    border-color: var(--ids-input-invalid-border);
+
+    &:focus-visible {
+      outline-color: var(--ids-input-invalid-focus-ring);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. CONTENEDORES DE OPCIÓN, ETIQUETAS Y CONSENTIMIENTO (.ids-choice)
+   Estructuras para casillas y radios que garantizan target táctil ergonómico
+   y ergonomía cognitiva conforme a Trauma-Informed Design.
+   -------------------------------------------------------------------------- */
+.ids-choice {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  min-block-size: var(--control-target-size);
+  padding-block: var(--spacing-xs);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+
+  /* Contenedor del contenido textual */
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding-block-start: calc((var(--ids-checkbox-size) - (var(--font-size-body) * var(--line-height-tight))) / 2);
+  }
+
+  /* Etiqueta del control */
+  &__label {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-base);
+  }
+
+  /* Texto de apoyo o metadatos */
+  &__description {
+    font-size: var(--font-size-caption);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-base);
+  }
+
+  /* Estado deshabilitado en el contenedor */
+  &--disabled {
+    cursor: not-allowed;
+    opacity: var(--ids-input-disabled-opacity);
+    pointer-events: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     5.1 TARJETA DE CONSENTIMIENTO (Tecnología Consentida)
+     Diseño explícito con idéntica jerarquía para aceptación y rechazo,
+     libre de patrones oscuros (Dark Patterns).
+     ------------------------------------------------------------------------ */
+  &--card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-card);
+    border-width: var(--ids-input-border-width);
+    border-style: solid;
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-card);
+    inline-size: 100%;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: border-color, background-color;
+      transition-duration: var(--ids-input-transition-speed);
+      transition-timing-function: var(--ids-input-transition-ease);
+    }
+
+    &:hover:not(.ids-choice--disabled) {
+      border-color: var(--color-border-interactive);
+    }
+
+    /* Estado seleccionado con tarjeta */
+    &:has(.ids-checkbox:checked),
+    &:has(.ids-radio:checked) {
+      border-color: var(--color-action-primary);
+      background-color: var(--color-surface-muted);
+    }
+
+    /* Foco visible en tarjeta */
+    &:has(:focus-visible) {
+      outline-width: var(--ids-input-focus-ring-width);
+      outline-style: solid;
+      outline-color: var(--ids-input-focus-ring-color);
+      outline-offset: var(--ids-input-focus-ring-offset);
+    }
+  }
+}
+
+/* Agrupaciones de Controles */
+.ids-choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  &--horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+
+    @media (min-width: 48rem) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+      align-items: center;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. COMPLEMENTOS DE ENTRADA
+   (Nota: .ids-label, .ids-help-text y .ids-input-message se definen en 02-atoms/_labels.scss)
+   -------------------------------------------------------------------------- */
+/* 6.1 Contenedor con Prefijo o Sufijo (Iconos o Botones como Ver Contraseña) */
+.ids-input-affix-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+
+  .ids-input {
+    inline-size: 100%;
+  }
+
+  &--has-prefix .ids-input {
+    padding-inline-start: calc(var(--ids-input-padding-x) + var(--spacing-lg));
+  }
+
+  &--has-suffix .ids-input {
+    padding-inline-end: calc(var(--ids-input-padding-x) + var(--spacing-lg));
+  }
+
+  &__prefix,
+  &__suffix {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    line-height: var(--line-height-tight);
+
+    svg {
+      inline-size: var(--spacing-md);
+      block-size: var(--spacing-md);
+      fill: currentColor;
+    }
+  }
+
+  &__prefix {
+    inset-inline-start: var(--ids-input-padding-x);
+  }
+
+  &__suffix {
+    inset-inline-end: var(--ids-input-padding-x);
+    
+    /* Si el sufijo contiene un botón interactivo (ej. mostrar contraseña) */
+    &--interactive {
+      pointer-events: auto;
+
+      button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        color: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &:focus-visible {
+          outline: var(--focus-ring-width) solid var(--focus-ring-color);
+          outline-offset: var(--focus-ring-offset);
+          border-radius: var(--radius-sm);
+        }
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ADAPTACIONES PARA ACCESIBILIDAD AVANZADA Y ALTO CONTRASTE DEL SO
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-checkbox {
+    border: var(--focus-ring-width) solid ButtonText;
+
+    &:checked {
+      background-color: Highlight;
+      border-color: Highlight;
+
+      &::after {
+        background-color: HighlightText;
+      }
+    }
+  }
+
+  .ids-radio {
+    border: var(--focus-ring-width) solid ButtonText;
+
+    &:checked {
+      border-color: Highlight;
+
+      &::after {
+        background-color: Highlight;
+      }
+    }
+  }
+
+  .ids-input {
+    border: var(--focus-ring-width) solid ButtonText;
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid Highlight;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ADAPTACIONES RESPONSIVAS NATIVAS (@media) - Mobile-First
+   La disposición agrupada horizontal se define en columna compacta por
+   defecto para móvil y se despliega en fila a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+
+
+@media (pointer: coarse) {
+  .ids-input {
+    min-block-size: calc(var(--ids-input-min-height) + var(--spacing-xs));
+  }
+}

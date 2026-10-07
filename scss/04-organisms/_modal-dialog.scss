@@ -1,0 +1,1319 @@
+/* ==========================================================================
+   04-organisms/_modal-dialog.scss
+   Identity Design System (IDS) - Organismo de Ventanas Modales y Diálogos
+   Soporte multivariable:
+     - Diferentes posiciones: Centro, Superior (Top), Inferior (Bottom / Sheet),
+       Lateral Izquierda (Drawer Left) y Lateral Derecha (Drawer Right), Fullscreen.
+     - Diferentes direcciones cinemáticas de entrada/salida accesibles.
+     - Modos con scroll (Scrollable interno en Body o de Página) y sin scroll (Fijo).
+     - Modos de fondo: Interactivo normal, Fondo estático no-bloqueante/fijo y Sin fondo.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO MODAL (Contrato de Tokens)
+   Estricta prohibición de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color o espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Escala de Anchura (Max-Widths) */
+  --ids-modal-max-width-sm: 24rem;          /* 384px - Alertas y confirmaciones breves */
+  --ids-modal-max-width-md: 36rem;          /* 576px - Diálogo estándar */
+  --ids-modal-max-width-lg: 50rem;          /* 800px - Formularios y flujos asistidos */
+  --ids-modal-max-width-xl: 68rem;          /* 1088px - Tablas de datos y vistas amplias */
+  --ids-modal-drawer-width: 28rem;          /* 448px - Paneles laterales / Drawer */
+  --ids-modal-min-width: 18rem;             /* 288px - Ancho mínimo de seguridad */
+
+  /* Curvaturas y Bordes (Flat/Clean, sin sombras complejas) */
+  --ids-modal-radius: var(--radius-modal);
+  --ids-modal-radius-sm: var(--radius-sm);
+  --ids-modal-border-width: var(--focus-ring-width);
+  --ids-modal-border-style: solid;
+  --ids-modal-border-color: var(--color-border-subtle);
+
+  /* Capas de Profundidad (Z-Index) */
+  --ids-modal-backdrop-z-index: var(--z-index-overlay); /* 900 */
+  --ids-modal-z-index: var(--z-index-modal);             /* 1000 */
+
+  /* Espaciado Interno (Paddings Semánticos) */
+  --ids-modal-header-padding-y: var(--spacing-md);
+  --ids-modal-header-padding-x: var(--spacing-xl);
+  --ids-modal-body-padding-y: var(--spacing-lg);
+  --ids-modal-body-padding-x: var(--spacing-xl);
+  --ids-modal-footer-padding-y: var(--spacing-md);
+  --ids-modal-footer-padding-x: var(--spacing-xl);
+  --ids-modal-gap: var(--spacing-md);
+  --ids-modal-offset-edge: var(--spacing-xl);
+
+  /* Tipografía Semántica */
+  --ids-modal-font-family: var(--font-family-base);
+  --ids-modal-title-font-size: var(--font-size-h4);
+  --ids-modal-title-font-weight: var(--font-weight-semibold);
+  --ids-modal-title-line-height: var(--line-height-tight);
+  --ids-modal-subtitle-font-size: var(--font-size-caption);
+  --ids-modal-body-font-size: var(--font-size-body);
+  --ids-modal-body-line-height: var(--line-height-base); /* Mínimo 1.5 WCAG AAA */
+
+  /* Piel y Mapeo de Superficies Base */
+  --ids-modal-bg: var(--color-surface-card);
+  --ids-modal-header-bg: var(--color-surface-card);
+  --ids-modal-footer-bg: var(--color-surface-muted);
+  --ids-modal-color: var(--color-text-primary);
+  --ids-modal-body-color: var(--color-text-secondary);
+  --ids-modal-divider-color: var(--color-border-subtle);
+  --ids-modal-backdrop-bg: var(--overlay-backdrop-bg);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-modal-current-bg: var(--ids-modal-bg);
+  --ids-modal-current-header-bg: var(--ids-modal-header-bg);
+  --ids-modal-current-footer-bg: var(--ids-modal-footer-bg);
+  --ids-modal-current-border: var(--ids-modal-border-color);
+  --ids-modal-current-color: var(--ids-modal-color);
+  --ids-modal-current-body-color: var(--ids-modal-body-color);
+  --ids-modal-current-divider: var(--ids-modal-divider-color);
+
+  /* Botón de Cierre Accesible (Target mínimo 44px x 44px WCAG AAA) */
+  --ids-modal-close-size: var(--target-size-min);
+  --ids-modal-close-color: var(--color-text-secondary);
+  --ids-modal-close-hover-color: var(--color-text-primary);
+  --ids-modal-close-hover-bg: var(--color-surface-hover);
+
+  /* Cinemática y Transiciones */
+  --ids-modal-transition-speed: var(--transition-speed-base);
+  --ids-modal-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. TELÓN DE FONDO / OVERLAY (.ids-modal-backdrop & dialog::backdrop)
+   Soporta implementación nativa (<dialog>::backdrop) y wrapper accesible (.ids-modal-backdrop).
+   -------------------------------------------------------------------------- */
+.ids-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  inline-size: 100vw;
+  block-size: 100vh;
+  block-size: 100dvh;
+  z-index: var(--ids-modal-backdrop-z-index);
+  background-color: var(--ids-modal-backdrop-bg);
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  /* Estados de visibilidad por clase o atributo */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--ids-modal-transition-speed) var(--ids-modal-transition-ease),
+                visibility var(--ids-modal-transition-speed) var(--ids-modal-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &.is-open,
+  &[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+/* Soporte Nativo para Pseudo-elemento ::backdrop en HTML5 <dialog> */
+dialog.ids-modal-dialog::backdrop {
+  background-color: var(--ids-modal-backdrop-bg);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--ids-modal-transition-speed) var(--ids-modal-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. MODOS DE FONDO: ESTÁTICO, NORMAL Y SIN FONDO
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Fondo Normal (Dismissible) */
+.ids-modal-backdrop--dismissible {
+  cursor: pointer;
+
+  /* Evitar que el clic en el diálogo cierre el modal */
+  & > .ids-modal-dialog {
+    cursor: default;
+  }
+}
+
+/* 3.2 Fondo Estático (.ids-modal-backdrop--static / data-backdrop="static")
+   Previene cierre accidental que cause pérdida de progreso (Trauma-Informed Design). */
+.ids-modal-backdrop--static,
+.ids-modal-backdrop[data-backdrop="static"] {
+  cursor: default;
+}
+
+/* Feedback Estático Suave (Sin sacudidas agresivas ni estrobos) */
+.ids-modal-dialog--static-bounce,
+.ids-modal-dialog.is-static-feedback {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ids-modal-static-pulse var(--transition-speed-fast) var(--transition-ease);
+  }
+}
+
+@keyframes ids-modal-static-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 3.3 Sin Fondo / Fondo Transparente (.ids-modal-backdrop--transparent / --none)
+   Ideal para modales de inspección simultánea o avisos no-bloqueantes. */
+.ids-modal-backdrop--transparent,
+.ids-modal-backdrop--none {
+  background-color: transparent;
+  pointer-events: none;
+
+  & > .ids-modal-dialog {
+    pointer-events: auto;
+  }
+}
+
+dialog.ids-modal-dialog--no-backdrop::backdrop {
+  background-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   4. ESQUELETO Y ESTRUCTURA BASE DEL DIÁLOGO (.ids-modal-dialog)
+   Compatible con elemento nativo <dialog> o contenedor con role="dialog".
+   -------------------------------------------------------------------------- */
+.ids-modal-dialog {
+  /* Reseteo para elemento nativo <dialog> y contenedores de diálogo */
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  z-index: var(--ids-modal-z-index);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: var(--ids-modal-max-width-md);
+  min-inline-size: var(--ids-modal-min-width);
+  background-color: var(--ids-modal-current-bg);
+  color: var(--ids-modal-current-color);
+  font-family: var(--ids-modal-font-family);
+  border: var(--ids-modal-border-width) var(--ids-modal-border-style) var(--ids-modal-current-border);
+  border-radius: var(--ids-modal-radius);
+
+  /* Geometría Plana (Clean / Flat, sin sombras complejas) */
+  box-shadow: none;
+
+  /* Reseteo de interacción y desbordamiento inicial */
+  pointer-events: auto;
+  outline: none;
+
+  /* Contención de scroll para evitar encadenamiento al documento */
+  overscroll-behavior: contain;
+
+  /* Cinemática Base */
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--ids-modal-transition-speed) var(--ids-modal-transition-ease),
+                opacity var(--ids-modal-transition-speed) var(--ids-modal-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    animation: none !important;
+  }
+
+  /* Anillo de Foco Accesible (:focus-visible) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* Modales personalizados basados en <div> dentro de .ids-modal-backdrop */
+div.ids-modal-dialog {
+  position: relative;
+}
+
+/* Reseteo y posicionamiento en Top Layer para elemento nativo HTML5 <dialog>
+   Evita que el navegador desplace o resetee la posición de scroll del documento al activarse */
+dialog.ids-modal-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  overflow: visible;
+  overscroll-behavior: contain;
+
+  &:not([open]) {
+    display: none;
+  }
+
+  &[open] {
+    display: flex;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MODIFICADORES DE TAMAÑO (Sizes)
+   -------------------------------------------------------------------------- */
+.ids-modal-dialog--sm {
+  max-inline-size: var(--ids-modal-max-width-sm);
+}
+
+.ids-modal-dialog--md {
+  max-inline-size: var(--ids-modal-max-width-md);
+}
+
+.ids-modal-dialog--lg {
+  max-inline-size: var(--ids-modal-max-width-lg);
+}
+
+.ids-modal-dialog--xl {
+  max-inline-size: var(--ids-modal-max-width-xl);
+}
+
+/* --------------------------------------------------------------------------
+   6. POSICIONES Y DIRECCIONES CINEMÁTICAS
+   -------------------------------------------------------------------------- */
+
+/* 6.1 POSICIÓN CENTRO (Default / Center) */
+.ids-modal-backdrop--center,
+.ids-modal-backdrop:not([class*="--top"]):not([class*="--bottom"]):not([class*="--left"]):not([class*="--right"]) {
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.ids-modal-dialog--center,
+.ids-modal-dialog:not([class*="--top"]):not([class*="--bottom"]):not([class*="--left"]):not([class*="--right"]):not([class*="--fullscreen"]) {
+  margin-inline: auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: scale(0.96);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--center,
+dialog.ids-modal-dialog:not([class*="--top"]):not([class*="--bottom"]):not([class*="--sheet"]):not([class*="--left"]):not([class*="--right"]):not([class*="--drawer"]):not([class*="--fullscreen"]) {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+
+/* 6.2 POSICIÓN SUPERIOR (Top)
+   Alineado al margen superior con desplazamiento descendente. */
+.ids-modal-backdrop--top {
+  justify-content: center;
+  align-items: flex-start;
+  padding-block-start: var(--ids-modal-offset-edge);
+  padding-inline: var(--spacing-md);
+}
+
+.ids-modal-dialog--top {
+  margin-block-start: 0;
+  margin-inline: auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateY(calc(-1 * var(--spacing-xl)));
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--top {
+  position: fixed;
+  inset-block-start: var(--ids-modal-offset-edge);
+  inset-block-end: auto;
+  inset-inline: 0;
+  margin-block: 0;
+  margin-inline: auto;
+}
+
+/* 6.3 POSICIÓN INFERIOR / HOJA INFERIOR (Bottom / Sheet)
+   Alineado a la base de la pantalla, ideal para dispositivos móviles y ergonomía táctil. */
+.ids-modal-backdrop--bottom,
+.ids-modal-backdrop--sheet {
+  justify-content: center;
+  align-items: flex-end;
+  padding-block-end: 0;
+  padding-inline: 0;
+}
+
+.ids-modal-dialog--bottom,
+.ids-modal-dialog--sheet,
+.ids-modal-dialog--sheet-bottom,
+.ids-modal-dialog--bottom-sheet {
+  margin-block-end: 0;
+  margin-inline: auto;
+  inline-size: 100%;
+  max-inline-size: var(--ids-modal-max-width-md);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: var(--ids-modal-radius);
+  border-top-right-radius: var(--ids-modal-radius);
+  border-block-end: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateY(100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--bottom,
+dialog.ids-modal-dialog--sheet,
+dialog.ids-modal-dialog--sheet-bottom,
+dialog.ids-modal-dialog--bottom-sheet {
+  position: fixed;
+  inset-block-start: auto;
+  inset-block-end: 0;
+  inset-inline: 0;
+  margin-block: 0;
+  margin-inline: auto;
+}
+
+/* 6.3.2 HOJA INFERIOR ANCHO COMPLETO (Full-Width Bottom Sheet)
+   Abarca toda la longitud horizontal (width 100% / 100vw) de la pantalla.
+   Diseñada para bandejas multi-acción, paneles táctiles de ancho total
+   y consolas de resguardo rápido en Tech For Human Rights. */
+.ids-modal-dialog--sheet-full,
+.ids-modal-dialog--sheet-full-width,
+.ids-modal-dialog--bottom-full,
+.ids-modal-dialog--bottom-sheet-full,
+.ids-modal-dialog--sheet.ids-modal-dialog--full-width,
+.ids-modal-dialog--sheet.ids-modal-dialog--full,
+.ids-modal-dialog--bottom.ids-modal-dialog--full-width,
+.ids-modal-dialog--bottom.ids-modal-dialog--full,
+.ids-modal-dialog--sheet[data-width="full"] {
+  inline-size: 100vw;
+  inline-size: 100%;
+  max-inline-size: 100vw !important;
+  max-inline-size: 100% !important;
+  margin-inline: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: var(--ids-modal-radius);
+  border-top-right-radius: var(--ids-modal-radius);
+  border-inline: none !important;
+  border-block-end: none !important;
+  border-block-start: var(--ids-modal-border-width) var(--ids-modal-border-style) var(--ids-modal-current-border);
+  max-block-size: calc(100vh - var(--spacing-xxl));
+  max-block-size: calc(100dvh - var(--spacing-xxl));
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateY(100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--sheet-full,
+dialog.ids-modal-dialog--sheet-full-width,
+dialog.ids-modal-dialog--bottom-full,
+dialog.ids-modal-dialog--bottom-sheet-full,
+dialog.ids-modal-dialog--sheet.ids-modal-dialog--full-width,
+dialog.ids-modal-dialog--sheet.ids-modal-dialog--full,
+dialog.ids-modal-dialog--bottom.ids-modal-dialog--full-width,
+dialog.ids-modal-dialog--bottom.ids-modal-dialog--full,
+dialog.ids-modal-dialog--sheet[data-width="full"] {
+  position: fixed;
+  inset-block-start: auto;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-inline: 0;
+  margin-block: 0;
+  margin-inline: 0 !important;
+  inline-size: 100vw;
+  inline-size: 100%;
+  max-inline-size: 100vw !important;
+  max-inline-size: 100% !important;
+  box-sizing: border-box;
+}
+
+.ids-modal-backdrop--sheet-full,
+.ids-modal-backdrop--bottom-full {
+  justify-content: stretch;
+  align-items: flex-end;
+  padding: 0;
+}
+
+/* Tirador / Handle Táctil para Hojas Inferiores (Accesible y Tokenizado) */
+.ids-modal-dialog__handle {
+  display: block;
+  inline-size: var(--spacing-xxl);
+  block-size: var(--spacing-xs);
+  background-color: var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  margin-inline: auto;
+  margin-block-start: var(--spacing-sm);
+  margin-block-end: var(--spacing-xs);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* 6.4 POSICIÓN LATERAL IZQUIERDA (Left / Drawer / Panel Deslizante Izquierdo) */
+.ids-modal-backdrop--left,
+.ids-modal-backdrop--drawer-left {
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+}
+
+.ids-modal-dialog--left,
+.ids-modal-dialog--drawer-left {
+  inline-size: var(--ids-modal-drawer-width);
+  max-inline-size: 100vw;
+  block-size: 100vh;
+  block-size: 100dvh;
+  max-block-size: 100vh;
+  max-block-size: 100dvh;
+  margin: 0;
+  border-radius: 0;
+  border-block: none;
+  border-inline-start: none;
+  border-inline-end: var(--ids-modal-border-width) var(--ids-modal-border-style) var(--ids-modal-current-border);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateX(-100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--left,
+dialog.ids-modal-dialog--drawer-left {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  margin: 0;
+}
+
+/* 6.5 POSICIÓN LATERAL DERECHA (Right / Drawer / Panel Deslizante Derecho) */
+.ids-modal-backdrop--right,
+.ids-modal-backdrop--drawer-right {
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+}
+
+.ids-modal-dialog--right,
+.ids-modal-dialog--drawer-right {
+  inline-size: var(--ids-modal-drawer-width);
+  max-inline-size: 100vw;
+  block-size: 100vh;
+  block-size: 100dvh;
+  max-block-size: 100vh;
+  max-block-size: 100dvh;
+  margin: 0;
+  border-radius: 0;
+  border-block: none;
+  border-inline-end: none;
+  border-inline-start: var(--ids-modal-border-width) var(--ids-modal-border-style) var(--ids-modal-current-border);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateX(100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--right,
+dialog.ids-modal-dialog--drawer-right {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  margin: 0;
+}
+
+/* 6.6 PANTALLA COMPLETA (Fullscreen) */
+.ids-modal-dialog--fullscreen {
+  inline-size: 100vw;
+  max-inline-size: 100vw;
+  block-size: 100vh;
+  block-size: 100dvh;
+  max-block-size: 100vh;
+  max-block-size: 100dvh;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transform: scale(0.98);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+dialog.ids-modal-dialog--fullscreen {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   PREVENCIÓN DE DESPLAZAMIENTO DEL FONDO (Scroll Lock Accesible)
+   Garantiza que la página de fondo no sufra desplazamientos involuntarios
+   hacia el inicio ni pérdidas de contexto espacial mientras el modal está activo.
+   -------------------------------------------------------------------------- */
+body:has(dialog.ids-modal-dialog[open]),
+body.ids-modal-is-active {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+/* 6.7 MODIFICADORES DE DIRECCIÓN EXPLÍCITA */
+.ids-modal-dialog--slide-down {
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateY(-100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+.ids-modal-dialog--slide-up {
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateY(100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+.ids-modal-dialog--slide-left {
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateX(100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+.ids-modal-dialog--slide-right {
+  @media (prefers-reduced-motion: no-preference) {
+    transform: translateX(-100%);
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+.ids-modal-dialog--fade {
+  @media (prefers-reduced-motion: no-preference) {
+    transform: none;
+    opacity: 0;
+
+    .ids-modal-backdrop.is-open &,
+    .ids-modal-backdrop[aria-hidden="false"] &,
+    &[open] {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. MODOS DE SCROLL: CON Y SIN SCROLL
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Scroll Interno en el Cuerpo (.ids-modal-dialog--scrollable / .ids-modal-dialog__body--scrollable)
+   Mantiene Header y Footer fijos para no perder orientación ni acciones clave. */
+.ids-modal-dialog--scrollable {
+  max-block-size: calc(100vh - 2 * var(--spacing-xl));
+  max-block-size: calc(100dvh - 2 * var(--spacing-xl));
+
+  & > .ids-modal-dialog__content {
+    display: flex;
+    flex-direction: column;
+    max-block-size: inherit;
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  .ids-modal-dialog__header,
+  .ids-modal-dialog__footer {
+    flex-shrink: 0;
+  }
+
+  .ids-modal-dialog__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+
+    /* Integración Estricta con Átomo Scrollbar (_scrollbar.scss) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+
+    &::-webkit-scrollbar {
+      inline-size: var(--ids-scrollbar-size-vertical);
+      width: var(--ids-scrollbar-size-vertical);
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--ids-scrollbar-track-bg);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--ids-scrollbar-thumb-bg);
+      border-radius: var(--ids-scrollbar-thumb-radius);
+      border: var(--ids-scrollbar-thumb-border-width) solid var(--ids-scrollbar-thumb-border);
+      background-clip: padding-box;
+
+      &:hover {
+        background-color: var(--ids-scrollbar-thumb-hover-bg);
+      }
+    }
+  }
+}
+
+/* Modificador directo sobre el cuerpo */
+.ids-modal-dialog__body--scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  max-block-size: 55vh;
+  max-block-size: 55dvh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    width: var(--ids-scrollbar-size-vertical);
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--ids-scrollbar-track-bg);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-thumb-bg);
+    border-radius: var(--ids-scrollbar-thumb-radius);
+    border: var(--ids-scrollbar-thumb-border-width) solid var(--ids-scrollbar-thumb-border);
+
+    &:hover {
+      background-color: var(--ids-scrollbar-thumb-hover-bg);
+    }
+  }
+}
+
+/* 7.2 Scroll de Página / Telón (.ids-modal-backdrop--scrollable)
+   El modal completo fluye y la página se desplaza si la ventana es pequeña. */
+.ids-modal-backdrop--scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    width: var(--ids-scrollbar-size-vertical);
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--ids-scrollbar-track-bg);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-thumb-bg);
+    border-radius: var(--ids-scrollbar-thumb-radius);
+  }
+
+  .ids-modal-dialog {
+    margin-block: auto;
+  }
+}
+
+/* 7.3 Sin Scroll (.ids-modal-dialog--no-scroll / .ids-modal-dialog__body--no-scroll)
+   Para modales compactos de confirmación sin desbordamiento. */
+.ids-modal-dialog--no-scroll {
+  max-block-size: none;
+
+  .ids-modal-dialog__body {
+    overflow: hidden;
+  }
+}
+
+.ids-modal-dialog__body--no-scroll {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   8. SUBCOMPONENTES ATÓMICOS DEL DIÁLOGO
+   -------------------------------------------------------------------------- */
+
+/* 8.1 Contenedor Estructural Interior (.ids-modal-dialog__content) */
+.ids-modal-dialog__content {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  block-size: 100%;
+  box-sizing: border-box;
+}
+
+/* 8.2 Encabezado del Modal (.ids-modal-dialog__header) */
+.ids-modal-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-modal-gap);
+  padding-block: var(--ids-modal-header-padding-y);
+  padding-inline: var(--ids-modal-header-padding-x);
+  background-color: var(--ids-modal-current-header-bg);
+  border-block-end: var(--divider-thickness) var(--divider-style) var(--ids-modal-current-divider);
+  box-sizing: border-box;
+}
+
+.ids-modal-dialog__header-content,
+.ids-modal-dialog__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+/* Título Accesible */
+.ids-modal-dialog__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--ids-modal-title-font-size);
+  font-weight: var(--ids-modal-title-font-weight);
+  line-height: var(--ids-modal-title-line-height);
+  color: var(--ids-modal-current-color);
+  word-wrap: break-word;
+}
+
+/* Subtítulo / Descripción Contextual */
+.ids-modal-dialog__subtitle {
+  margin: 0;
+  font-size: var(--ids-modal-subtitle-font-size);
+  color: var(--ids-modal-current-body-color);
+  line-height: var(--line-height-base);
+}
+
+/* 8.3 Botón de Cierre Accesible (.ids-modal-dialog__close)
+   Basado rigurosamente en tokens de .ids-button y WCAG AAA Target Area. */
+.ids-modal-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--ids-modal-close-size);
+  min-block-size: var(--ids-modal-close-size);
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: var(--focus-ring-width) solid transparent;
+  background-color: transparent;
+  color: var(--ids-modal-close-color);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease),
+                outline-offset var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-modal-close-hover-bg);
+    color: var(--ids-modal-close-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Soporte SVG interno */
+  svg,
+  .ids-icon {
+    inline-size: var(--ids-icon-size, 1.25rem);
+    block-size: var(--ids-icon-size, 1.25rem);
+    width: var(--ids-icon-size, 1.25rem);
+    height: var(--ids-icon-size, 1.25rem);
+    max-inline-size: var(--ids-icon-size, 1.25rem);
+    max-block-size: var(--ids-icon-size, 1.25rem);
+    max-width: var(--ids-icon-size, 1.25rem);
+    max-height: var(--ids-icon-size, 1.25rem);
+    fill: currentColor;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+/* 8.4 Cuerpo de Contenido (.ids-modal-dialog__body) */
+.ids-modal-dialog__body {
+  padding-block: var(--ids-modal-body-padding-y);
+  padding-inline: var(--ids-modal-body-padding-x);
+  color: var(--ids-modal-current-body-color);
+  font-size: var(--ids-modal-body-font-size);
+  line-height: var(--ids-modal-body-line-height);
+  box-sizing: border-box;
+  word-wrap: break-word;
+
+  /* Reseteo espaciado entre párrafos (Trauma-Informed) */
+  & > *:first-child {
+    margin-block-start: 0;
+  }
+
+  & > *:last-child {
+    margin-block-end: 0;
+  }
+
+  p {
+    margin-block-end: var(--spacing-md);
+    line-height: var(--line-height-base);
+  }
+}
+
+/* 8.5 Pie de Acciones (.ids-modal-dialog__footer) */
+.ids-modal-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--ids-modal-gap);
+  padding-block: var(--ids-modal-footer-padding-y);
+  padding-inline: var(--ids-modal-footer-padding-x);
+  background-color: var(--ids-modal-current-footer-bg);
+  border-block-start: var(--divider-thickness) var(--divider-style) var(--ids-modal-current-divider);
+  box-sizing: border-box;
+
+  /* Integración con botones del sistema */
+  .ids-button {
+    margin: 0;
+  }
+}
+
+/* 8.6 Pie Simétrico para Tecnología Consentida (.ids-modal-dialog__footer--consent)
+   Equidad visual estricta entre Aceptar y Rechazar para erradicar patrones oscuros. */
+.ids-modal-dialog__footer--consent {
+  justify-content: stretch;
+
+  & > .ids-button {
+    flex: 1 1 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. VARIANTES SEMÁNTICAS DE ESTADO (WCAG AAA & Trauma-Informed)
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Estado Peligro / Atención Crítica (Danger - Trauma-Informed)
+   Confirmación afirmativa, sin opciones ambiguas. */
+.ids-modal-dialog--danger {
+  --ids-modal-current-border: var(--color-status-danger);
+  --ids-modal-current-header-bg: var(--color-surface-muted);
+
+  .ids-modal-dialog__header {
+    border-block-end-color: var(--color-status-danger);
+  }
+
+  .ids-modal-dialog__title {
+    color: var(--color-status-danger);
+  }
+}
+
+/* 9.2 Estado Advertencia (Warning) */
+.ids-modal-dialog--warning {
+  --ids-modal-current-border: var(--color-status-warning);
+
+  .ids-modal-dialog__header {
+    border-block-end-color: var(--color-status-warning);
+  }
+}
+
+/* 9.3 Estado Éxito (Success) */
+.ids-modal-dialog--success {
+  --ids-modal-current-border: var(--color-status-success);
+
+  .ids-modal-dialog__header {
+    border-block-end-color: var(--color-status-success);
+  }
+}
+
+/* 9.4 Estado Informativo / Protocolo Neutral (Info) */
+.ids-modal-dialog--info {
+  --ids-modal-current-border: var(--color-status-info);
+
+  .ids-modal-dialog__header {
+    border-block-end-color: var(--color-status-info);
+  }
+}
+
+/* 9.5 Estado Consentimiento Activo (Consent) */
+.ids-modal-dialog--consent {
+  --ids-modal-current-border: var(--color-border-interactive);
+}
+
+/* --------------------------------------------------------------------------
+   10. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens de _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 10.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-modal-backdrop {
+    background-color: var(--color-overlay-sensitive);
+  }
+
+  .ids-modal-dialog {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+
+  .ids-modal-dialog__header {
+    background-color: var(--color-surface-muted);
+    border-block-end-color: var(--color-border-subtle);
+  }
+
+  .ids-modal-dialog__footer {
+    background-color: var(--color-surface-muted);
+    border-block-start-color: var(--color-border-subtle);
+  }
+
+  .ids-modal-dialog__close:focus-visible {
+    outline-color: var(--focus-ring-color);
+  }
+
+  .ids-modal-dialog--danger {
+    --ids-modal-current-border: var(--color-action-danger-bg);
+  }
+}
+
+/* 10.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-modal-backdrop {
+    transition: none;
+  }
+
+  .ids-modal-dialog {
+    transition: none;
+    box-shadow: none;
+  }
+}
+
+/* 10.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-modal-dialog {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-modal-dialog__header {
+    background-color: var(--color-surface-muted);
+  }
+
+  .ids-modal-dialog__footer {
+    background-color: var(--color-surface-muted);
+  }
+}
+
+/* 10.4 Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-modal-backdrop {
+    background-color: var(--overlay-backdrop-bg);
+  }
+
+  .ids-modal-dialog {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-modal-dialog__header {
+    border-block-end: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-modal-dialog__footer {
+    border-block-start: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-modal-dialog__close:focus-visible {
+    outline: 0.1875rem solid Highlight;
+    outline-offset: 0.125rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* Movimiento Reducido (Accesibilidad Vestibular Universal) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-modal-backdrop,
+  .ids-modal-dialog,
+  .ids-modal-dialog__close {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   12. ADAPTABILIDAD RESPONSIVA - MOBILE-FIRST
+   ========================================================================== */
+
+/* Estilos compactos móviles por defecto */
+.ids-modal-backdrop--center {
+  padding-inline: var(--spacing-sm);
+}
+
+.ids-modal-dialog {
+  max-inline-size: calc(100vw - 2 * var(--spacing-sm));
+}
+
+.ids-modal-dialog--sheet,
+.ids-modal-dialog--sheet-bottom,
+.ids-modal-dialog--bottom,
+.ids-modal-dialog--bottom-sheet,
+.ids-modal-dialog--sheet-full,
+.ids-modal-dialog--sheet-full-width,
+.ids-modal-dialog--bottom-full,
+.ids-modal-dialog--bottom-sheet-full,
+.ids-modal-dialog--full-width {
+  inline-size: 100vw;
+  inline-size: 100%;
+  max-inline-size: 100vw !important;
+  max-inline-size: 100% !important;
+  margin-inline: 0 !important;
+  border-inline: none !important;
+}
+
+.ids-modal-dialog--left,
+.ids-modal-dialog--right {
+  inline-size: 100vw;
+  max-inline-size: 100vw;
+}
+
+.ids-modal-dialog--fullscreen-sm {
+  inline-size: 100vw;
+  max-inline-size: 100vw;
+  block-size: 100vh;
+  block-size: 100dvh;
+  max-block-size: 100vh;
+  max-block-size: 100dvh;
+  border-radius: 0;
+  border: none;
+}
+
+.ids-modal-dialog__header {
+  padding-inline: var(--spacing-md);
+}
+
+.ids-modal-dialog__body {
+  padding-inline: var(--spacing-md);
+}
+
+.ids-modal-dialog__footer {
+  padding-inline: var(--spacing-md);
+  flex-direction: column-reverse;
+  align-items: stretch;
+
+  & > .ids-button {
+    inline-size: 100%;
+  }
+}
+
+/* Despliegue en pantallas medianas y de escritorio */
+@media (min-width: 48rem) {
+  .ids-modal-backdrop--center {
+    padding-inline: var(--spacing-md);
+  }
+
+  .ids-modal-dialog {
+    max-inline-size: var(--ids-modal-max-width-md);
+  }
+
+  .ids-modal-dialog--sm {
+    max-inline-size: var(--ids-modal-max-width-sm);
+  }
+
+  .ids-modal-dialog--md {
+    max-inline-size: var(--ids-modal-max-width-md);
+  }
+
+  .ids-modal-dialog--lg {
+    max-inline-size: var(--ids-modal-max-width-lg);
+  }
+
+  .ids-modal-dialog--xl {
+    max-inline-size: var(--ids-modal-max-width-xl);
+  }
+
+  .ids-modal-dialog--sheet,
+  .ids-modal-dialog--sheet-bottom,
+  .ids-modal-dialog--bottom,
+  .ids-modal-dialog--bottom-sheet,
+  .ids-modal-dialog--sheet-full,
+  .ids-modal-dialog--sheet-full-width,
+  .ids-modal-dialog--bottom-full,
+  .ids-modal-dialog--bottom-sheet-full,
+  .ids-modal-dialog--full-width {
+    inline-size: 100%;
+    margin-inline: auto;
+    border-inline: var(--ids-modal-border-width) var(--ids-modal-border-style) var(--ids-modal-current-border);
+  }
+
+  .ids-modal-dialog--left,
+  .ids-modal-dialog--right {
+    inline-size: var(--ids-modal-drawer-width);
+    max-inline-size: 100vw;
+  }
+
+  .ids-modal-dialog--fullscreen-sm {
+    inline-size: 100%;
+    block-size: auto;
+    max-block-size: calc(100vh - 2 * var(--spacing-md));
+    max-block-size: calc(100dvh - 2 * var(--spacing-md));
+    border-radius: var(--ids-modal-radius);
+    border: var(--ids-modal-border-width) var(--ids-modal-border-style) var(--ids-modal-current-border);
+  }
+
+  .ids-modal-dialog__header {
+    padding-inline: var(--ids-modal-header-padding-x);
+  }
+
+  .ids-modal-dialog__body {
+    padding-inline: var(--ids-modal-body-padding-x);
+  }
+
+  .ids-modal-dialog__footer {
+    padding-inline: var(--ids-modal-footer-padding-x);
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+
+    & > .ids-button {
+      inline-size: auto;
+    }
+  }
+}
+

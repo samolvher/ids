@@ -1,0 +1,71 @@
+// ids-system/src/scss/main.scss
+
+/* ==========================================================================
+   0. TIPOGRAFÍA LOCAL (Lexend Variable Font)
+   Inyección local de la fuente variable sin dependencias de CDN externos.
+   Soporte para todo el eje wght (100 - 900).
+   ========================================================================== */
+@font-face {
+  font-family: 'Lexend';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../font/Lexend-VariableFont_wght.ttf') format('truetype-variations'),
+       url('../font/Lexend-VariableFont_wght.ttf') format('truetype');
+}
+
+@import '00-tokens/global';
+@import '00-tokens/semantics';
+@import '00-tokens/themes';
+
+@import '01-base/reset';
+@import '01-base/typography';
+
+@import '02-atoms/buttons';
+@import '02-atoms/labels';
+@import '02-atoms/inputs';
+@import '02-atoms/select';
+@import '02-atoms/text-area';
+@import '02-atoms/range';
+@import '02-atoms/progress';
+@import '02-atoms/spinners';
+@import '02-atoms/tooltips';
+@import '02-atoms/images';
+@import '02-atoms/table';
+@import '02-atoms/formas';
+@import '02-atoms/icons';
+@import '02-atoms/toggle';
+@import '02-atoms/dividers';
+@import '02-atoms/scrollbar';
+
+@import '03-molecules/form-group';
+@import '03-molecules/alerts';
+@import '03-molecules/button-group';
+@import '03-molecules/paso';
+@import '03-molecules/breadcrump';
+@import '03-molecules/dropdown';
+@import '03-molecules/list-group';
+@import '03-molecules/pagination';
+@import '03-molecules/popover';
+@import '03-molecules/fab';
+@import '03-molecules/snackbar';
+@import '03-molecules/toolbar';
+@import '03-molecules/consent-card';
+@import '04-organisms/modal-dialog';
+@import '04-organisms/accordeon';
+@import '04-organisms/offcanvas';
+@import '04-organisms/card';
+@import '04-organisms/carousel';
+@import '04-organisms/collapse';
+@import '04-organisms/toast';
+@import '04-organisms/menu-laterales';
+@import '04-organisms/navbs-tabs';
+@import '04-organisms/global-nav';
+
+@import '05-templates/layout';
+@import '05-templates/flex';
+@import '05-templates/wizards';
+
+/*
+@import '04-organisms/orca-card';
+*/

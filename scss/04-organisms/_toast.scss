@@ -1,0 +1,1009 @@
+/* ==========================================================================
+   04-organisms/_toast.scss
+   Identity Design System (IDS) - Organismo de Notificaciones Push (Toast)
+   Soporte multivariable:
+     - 9 posiciones de pantalla (esquinas, centros y centro absoluto).
+     - 5 variantes cromáticas: primary, success, danger, warning, info.
+     - 3 niveles de opacidad/transparencia: solid, translucent, glass.
+     - Botón de cierre accesible (aria-label, focus-visible, 44px touch target).
+     - Acción secundaria opcional (undo, ver, etc.).
+     - Barra de progreso de auto-descarte (Trauma-Informed: controlable).
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO TOAST (Contrato de Tokens)
+   Prohibición estricta de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color y espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones Base (Flat / Clean) */
+  --ids-toast-radius:              var(--radius-toast);
+  --ids-toast-border-width:        var(--focus-ring-width);
+  --ids-toast-border-style:        solid;
+  --ids-toast-min-width:           18rem;
+  --ids-toast-max-width:           26rem;
+
+  /* Espaciado Interno */
+  --ids-toast-padding-y:           var(--spacing-sm);
+  --ids-toast-padding-x:           var(--spacing-md);
+  --ids-toast-gap:                 var(--spacing-sm);
+
+  /* Piel Base (Sólida - Opacidad 1) */
+  --ids-toast-bg:                  var(--color-surface-card);
+  --ids-toast-color:               var(--color-text-primary);
+  --ids-toast-border-color:        var(--color-border-subtle);
+
+  /* Tipografía */
+  --ids-toast-font-family:         var(--font-family-base);
+  --ids-toast-title-font-size:     var(--font-size-body);
+  --ids-toast-title-font-weight:   var(--font-weight-semibold);
+  --ids-toast-title-line-height:   var(--line-height-base);
+  --ids-toast-body-font-size:      var(--font-size-caption);
+  --ids-toast-body-line-height:    var(--line-height-base);          /* Mínimo 1.5 WCAG AAA */
+
+  /* Ícono de Estado */
+  --ids-toast-icon-size:           var(--icon-size-lg);              /* 1.5rem = 24px */
+
+  /* Botón de Cierre */
+  --ids-toast-close-size:          var(--target-size-min);           /* 44px WCAG AAA Touch Target */
+  --ids-toast-close-hover-bg:      var(--toast-close-hover-bg);
+
+  /* Barra de Progreso de Auto-descarte */
+  --ids-toast-progress-height:     var(--progress-height-xs);        /* 0.25rem */
+  --ids-toast-progress-bg:         var(--color-border-subtle);
+  --ids-toast-progress-fill:       var(--color-action-primary);
+  --ids-toast-progress-duration:   5s;
+  --ids-toast-progress-track-contrast:         var(--toast-progress-track-bg);
+  --ids-toast-progress-track-contrast-warning: var(--toast-progress-track-warning-bg);
+
+  /* Separador entre cuerpo e icono/cierre */
+  --ids-toast-divider-color:       var(--color-border-subtle);
+  --ids-toast-divider-thickness:   var(--divider-thickness);
+
+  /* Desplazamiento del Contenedor de Posición */
+  --ids-toast-stack-offset:        var(--spacing-md);
+  --ids-toast-stack-gap:           var(--spacing-sm);
+
+  /* Cinemática y Transiciones */
+  --ids-toast-transition-speed:    var(--transition-speed-base);
+  --ids-toast-transition-ease:     var(--transition-ease);
+  --ids-toast-enter-speed:         var(--transition-speed-slow);
+
+  /* Z-Index — sobre modales si el sistema lo requiere */
+  --ids-toast-z-index:             var(--z-index-toast);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR DE POSICIÓN (.ids-toast-container)
+   Región de accesibilidad: aria-live="polite" aria-atomic="false"
+   Gestiona la pila (stack) de múltiples toasts simultáneos.
+   -------------------------------------------------------------------------- */
+.ids-toast-container {
+  position: fixed;
+  z-index: var(--ids-toast-z-index);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-toast-stack-gap);
+  box-sizing: border-box;
+  pointer-events: none;           /* El contenedor no bloquea interacciones */
+  max-inline-size: var(--ids-toast-max-width);
+  inline-size: calc(100% - 2 * var(--ids-toast-stack-offset));
+
+  /* Todos los toasts hijos recuperan pointer-events */
+  > * {
+    pointer-events: auto;
+  }
+
+  /* -------------------------------------------------------------------------
+     2.1 POSICIONES DE ESQUINA Y CENTRO
+     Basadas en propiedades lógicas (inset-block / inset-inline)
+     para soporte de RTL de serie.
+     ------------------------------------------------------------------------- */
+
+  /* Esquina superior izquierda */
+  &.ids-toast-container--top-start {
+    inset-block-start: var(--ids-toast-stack-offset);
+    inset-inline-start: var(--ids-toast-stack-offset);
+    align-items: flex-start;
+  }
+
+  /* Esquina superior derecha (predeterminada) */
+  &.ids-toast-container--top-end,
+  &:not([class*="ids-toast-container--"]) {
+    inset-block-start: var(--ids-toast-stack-offset);
+    inset-inline-end: var(--ids-toast-stack-offset);
+    align-items: flex-end;
+  }
+
+  /* Centro superior */
+  &.ids-toast-container--top-center {
+    inset-block-start: var(--ids-toast-stack-offset);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+
+  /* Esquina inferior izquierda */
+  &.ids-toast-container--bottom-start {
+    inset-block-end: var(--ids-toast-stack-offset);
+    inset-inline-start: var(--ids-toast-stack-offset);
+    align-items: flex-start;
+    flex-direction: column-reverse;
+  }
+
+  /* Esquina inferior derecha */
+  &.ids-toast-container--bottom-end {
+    inset-block-end: var(--ids-toast-stack-offset);
+    inset-inline-end: var(--ids-toast-stack-offset);
+    align-items: flex-end;
+    flex-direction: column-reverse;
+  }
+
+  /* Centro inferior */
+  &.ids-toast-container--bottom-center {
+    inset-block-end: var(--ids-toast-stack-offset);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    flex-direction: column-reverse;
+  }
+
+  /* Centro izquierda (lateral) */
+  &.ids-toast-container--middle-start {
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    inset-inline-start: var(--ids-toast-stack-offset);
+    align-items: flex-start;
+  }
+
+  /* Centro derecha (lateral) */
+  &.ids-toast-container--middle-end {
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    inset-inline-end: var(--ids-toast-stack-offset);
+    align-items: flex-end;
+  }
+
+  /* Centro absoluto de pantalla */
+  &.ids-toast-container--center {
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ELEMENTO TOAST (.ids-toast)
+   Estructura semántica:
+     <output role="status" aria-live="polite"> o
+     <output role="alert" aria-live="assertive"> para peligro crítico.
+   -------------------------------------------------------------------------- */
+.ids-toast {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  max-inline-size: var(--ids-toast-max-width);
+  min-inline-size: var(--ids-toast-min-width);
+  box-sizing: border-box;
+  overflow: hidden;
+
+  /* Piel base */
+  background-color: var(--ids-toast-bg);
+  color: var(--ids-toast-color);
+  border: var(--ids-toast-border-width) var(--ids-toast-border-style) var(--ids-toast-border-color);
+  border-radius: var(--ids-toast-radius);
+
+  /* Tipografía */
+  font-family: var(--ids-toast-font-family);
+  font-size: var(--ids-toast-body-font-size);
+  line-height: var(--ids-toast-body-line-height);
+
+  /* Estado Inicial (oculto, listo para entrar) */
+  opacity: 0;
+  transform: translateY(0.5rem);
+  visibility: hidden;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      opacity var(--ids-toast-enter-speed) var(--ids-toast-transition-ease),
+      transform var(--ids-toast-enter-speed) var(--ids-toast-transition-ease),
+      visibility 0s var(--ids-toast-enter-speed);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: opacity var(--ids-toast-enter-speed) linear,
+                visibility 0s var(--ids-toast-enter-speed);
+    transform: none !important;
+  }
+
+  /* Estado VISIBLE (añadir .is-visible o .is-open por JS) */
+  &.is-visible,
+  &.is-open {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity var(--ids-toast-enter-speed) var(--ids-toast-transition-ease),
+        transform var(--ids-toast-enter-speed) var(--ids-toast-transition-ease);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: opacity var(--ids-toast-enter-speed) linear;
+      transform: none !important;
+    }
+  }
+
+  /* Estado SALIENDO (añadir .is-dismissing por JS antes de eliminar del DOM) */
+  &.is-dismissing {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Visibilidad de Foco (:focus-within — al navegar al botón de cierre) */
+  &:focus-within {
+    border-color: var(--color-border-interactive);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. CUERPO PRINCIPAL DEL TOAST (.ids-toast__body)
+   Flex horizontal: [ícono] [texto] [botón cierre]
+   -------------------------------------------------------------------------- */
+.ids-toast__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ids-toast-gap);
+  padding-block: var(--ids-toast-padding-y);
+  padding-inline: var(--ids-toast-padding-x);
+}
+
+/* --------------------------------------------------------------------------
+   5. ÍCONO DE ESTADO (.ids-toast__icon)
+   SVG semántico; aria-hidden="true" obligatorio (el estado lo comunica el texto).
+   -------------------------------------------------------------------------- */
+.ids-toast__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--ids-toast-icon-size);
+  block-size: var(--ids-toast-icon-size);
+  width: var(--ids-toast-icon-size);
+  height: var(--ids-toast-icon-size);
+  color: inherit;
+
+  svg {
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--icon-stroke-width);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. TEXTO DEL TOAST (.ids-toast__content)
+   Área de título + descripción.
+   -------------------------------------------------------------------------- */
+.ids-toast__content {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.ids-toast__title {
+  margin: 0;
+  font-size: var(--ids-toast-title-font-size);
+  font-weight: var(--ids-toast-title-font-weight);
+  line-height: var(--ids-toast-title-line-height);
+  color: inherit;
+  word-break: break-word;
+}
+
+.ids-toast__message {
+  margin: 0;
+  font-size: var(--ids-toast-body-font-size);
+  line-height: var(--ids-toast-body-line-height);
+  color: inherit;
+  word-break: break-word;
+}
+
+/* --------------------------------------------------------------------------
+   7. ACCIÓN SECUNDARIA (.ids-toast__actions)
+   Botón de "Deshacer" u otras acciones (Trauma-Informed: no bloqueante).
+   -------------------------------------------------------------------------- */
+.ids-toast__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-block-start: var(--spacing-xs);
+
+  /* Heredar colores del tema del toast */
+  .ids-button,
+  button {
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-semibold);
+    color: inherit;
+    text-decoration: underline;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    min-block-size: var(--target-size-min);
+    touch-action: manipulation;
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+      border-radius: var(--radius-sm);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. BOTÓN DE CIERRE (.ids-toast__close)
+   Touch Target mínimo: 44px (WCAG AAA 2.5.5).
+   aria-label obligatorio; icono con aria-hidden="true".
+   -------------------------------------------------------------------------- */
+.ids-toast__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  align-self: flex-start;
+  min-inline-size: var(--ids-toast-close-size);
+  min-block-size: var(--ids-toast-close-size);
+  width: var(--ids-toast-close-size);
+  height: var(--ids-toast-close-size);
+  margin-block-start: calc(-1 * var(--ids-toast-padding-y));
+  margin-inline-end: calc(-1 * var(--ids-toast-padding-x));
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  opacity: 0.7;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity var(--ids-toast-transition-speed) var(--ids-toast-transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    opacity: 1;
+    background-color: var(--ids-toast-close-hover-bg);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    opacity: 1;
+  }
+
+  svg,
+  .ids-icon {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--icon-stroke-width);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. BARRA DE PROGRESO DE AUTO-DESCARTE (.ids-toast__progress)
+   Ubicada al pie del toast. Representa el tiempo restante antes de cerrarse.
+   Trauma-Informed: se pausa en hover/focus para dar control total al usuario.
+   -------------------------------------------------------------------------- */
+.ids-toast__progress {
+  inline-size: 100%;
+  block-size: var(--ids-toast-progress-height);
+  background-color: var(--ids-toast-progress-bg);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ids-toast__progress-bar {
+  inline-size: 100%;
+  block-size: 100%;
+  background-color: var(--ids-toast-progress-fill);
+  transform-origin: left center;
+  transform: scaleX(1);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ids-toast-progress var(--ids-toast-progress-duration) linear forwards;
+  }
+}
+
+/* Pausa del progreso al hacer hover o focus sobre el toast */
+.ids-toast:hover .ids-toast__progress-bar,
+.ids-toast:focus-within .ids-toast__progress-bar {
+  animation-play-state: paused;
+}
+
+@keyframes ids-toast-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* Toast sin auto-descarte */
+.ids-toast--persistent {
+  .ids-toast__progress {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   10. VARIANTES CROMÁTICAS (5 Estados de Color)
+   Cada variante tiene 3 sub-variantes de opacidad:
+     (A) Sólida  → --solid (predeterminada)
+     (B) Traslúcida → --translucent
+     (C) Vidrio / Glassmorphism → --glass
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   10.1 VARIANTE: PRIMARY (.ids-toast--primary)
+   -------------------------------------------------------------------------- */
+.ids-toast--primary {
+  background-color: var(--color-action-primary);
+  color: var(--color-action-primary-text);
+  border-color: var(--color-action-primary);
+
+  .ids-toast__progress-bar {
+    background-color: var(--color-action-primary-text);
+  }
+
+  .ids-toast__progress {
+    background-color: var(--ids-toast-progress-track-contrast);
+  }
+
+  /* Traslúcida */
+  &.ids-toast--translucent {
+    background-color: color-mix(in srgb, var(--color-action-primary) 75%, transparent);
+    color: var(--color-action-primary-text);
+    border-color: color-mix(in srgb, var(--color-action-primary) 60%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+
+  /* Vidrio */
+  &.ids-toast--glass {
+    background-color: color-mix(in srgb, var(--color-action-primary) 30%, transparent);
+    color: var(--color-action-primary);
+    border-color: color-mix(in srgb, var(--color-action-primary) 40%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+
+    .ids-toast__title {
+      color: var(--color-action-primary);
+    }
+
+    .ids-toast__progress-bar {
+      background-color: var(--color-action-primary);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10.2 VARIANTE: SUCCESS (.ids-toast--success)
+   -------------------------------------------------------------------------- */
+.ids-toast--success {
+  background-color: var(--color-status-success);
+  color: var(--color-status-success-text);
+  border-color: var(--color-status-success);
+
+  .ids-toast__progress-bar {
+    background-color: var(--color-status-success-text);
+  }
+
+  .ids-toast__progress {
+    background-color: var(--ids-toast-progress-track-contrast);
+  }
+
+  /* Traslúcida */
+  &.ids-toast--translucent {
+    background-color: color-mix(in srgb, var(--color-status-success) 75%, transparent);
+    color: var(--color-status-success-text);
+    border-color: color-mix(in srgb, var(--color-status-success) 60%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+
+  /* Vidrio */
+  &.ids-toast--glass {
+    background-color: color-mix(in srgb, var(--color-status-success) 20%, transparent);
+    color: var(--color-status-success);
+    border-color: color-mix(in srgb, var(--color-status-success) 40%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+
+    .ids-toast__title {
+      color: var(--color-status-success);
+    }
+
+    .ids-toast__progress-bar {
+      background-color: var(--color-status-success);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10.3 VARIANTE: DANGER (.ids-toast--danger)
+   aria-live="assertive" obligatorio en el HTML del toast de peligro.
+   -------------------------------------------------------------------------- */
+.ids-toast--danger {
+  background-color: var(--color-status-danger);
+  color: var(--color-status-danger-text);
+  border-color: var(--color-status-danger);
+
+  .ids-toast__progress-bar {
+    background-color: var(--color-status-danger-text);
+  }
+
+  .ids-toast__progress {
+    background-color: var(--ids-toast-progress-track-contrast);
+  }
+
+  /* Traslúcida */
+  &.ids-toast--translucent {
+    background-color: color-mix(in srgb, var(--color-status-danger) 75%, transparent);
+    color: var(--color-status-danger-text);
+    border-color: color-mix(in srgb, var(--color-status-danger) 60%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+
+  /* Vidrio */
+  &.ids-toast--glass {
+    background-color: color-mix(in srgb, var(--color-status-danger) 20%, transparent);
+    color: var(--color-status-danger);
+    border-color: color-mix(in srgb, var(--color-status-danger) 40%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+
+    .ids-toast__title {
+      color: var(--color-status-danger);
+    }
+
+    .ids-toast__progress-bar {
+      background-color: var(--color-status-danger);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10.4 VARIANTE: WARNING (.ids-toast--warning)
+   -------------------------------------------------------------------------- */
+.ids-toast--warning {
+  background-color: var(--color-status-warning);
+  color: var(--color-status-warning-text);
+  border-color: var(--color-status-warning);
+
+  .ids-toast__progress-bar {
+    background-color: var(--color-status-warning-text);
+  }
+
+  .ids-toast__progress {
+    background-color: var(--ids-toast-progress-track-contrast-warning);
+  }
+
+  /* Traslúcida */
+  &.ids-toast--translucent {
+    background-color: color-mix(in srgb, var(--color-status-warning) 75%, transparent);
+    color: var(--color-status-warning-text);
+    border-color: color-mix(in srgb, var(--color-status-warning) 60%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+
+  /* Vidrio */
+  &.ids-toast--glass {
+    background-color: color-mix(in srgb, var(--color-status-warning) 20%, transparent);
+    color: var(--color-status-warning);
+    border-color: color-mix(in srgb, var(--color-status-warning) 40%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+
+    .ids-toast__title {
+      color: var(--color-status-warning);
+    }
+
+    .ids-toast__progress-bar {
+      background-color: var(--color-status-warning);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10.5 VARIANTE: INFO (.ids-toast--info)
+   -------------------------------------------------------------------------- */
+.ids-toast--info {
+  background-color: var(--color-status-info);
+  color: var(--color-status-info-text);
+  border-color: var(--color-status-info);
+
+  .ids-toast__progress-bar {
+    background-color: var(--color-status-info-text);
+  }
+
+  .ids-toast__progress {
+    background-color: var(--ids-toast-progress-track-contrast);
+  }
+
+  /* Traslúcida */
+  &.ids-toast--translucent {
+    background-color: color-mix(in srgb, var(--color-status-info) 75%, transparent);
+    color: var(--color-status-info-text);
+    border-color: color-mix(in srgb, var(--color-status-info) 60%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+
+  /* Vidrio */
+  &.ids-toast--glass {
+    background-color: color-mix(in srgb, var(--color-status-info) 20%, transparent);
+    color: var(--color-status-info);
+    border-color: color-mix(in srgb, var(--color-status-info) 40%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+
+    .ids-toast__title {
+      color: var(--color-status-info);
+    }
+
+    .ids-toast__progress-bar {
+      background-color: var(--color-status-info);
+    }
+  }
+}
+
+/* ==========================================================================
+   11. VARIANTE NEUTRA / BASE (Sin modificador de color)
+   Toast neutral con la superficie del sistema (predeterminado).
+   ========================================================================== */
+.ids-toast--neutral {
+  background-color: var(--color-surface-card);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-subtle);
+
+  /* Traslúcida */
+  &.ids-toast--translucent {
+    background-color: color-mix(in srgb, var(--color-surface-card) 80%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+
+  /* Vidrio */
+  &.ids-toast--glass {
+    background-color: color-mix(in srgb, var(--color-surface-card) 40%, transparent);
+    border-color: color-mix(in srgb, var(--color-border-subtle) 60%, transparent);
+    backdrop-filter: blur(var(--tooltip-blur-glass));
+    -webkit-backdrop-filter: blur(var(--tooltip-blur-glass));
+  }
+}
+
+/* ==========================================================================
+   12. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens de _themes.scss.
+   ========================================================================== */
+
+/* 12.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-toast {
+    border-width: 0.125rem;
+    border-color: var(--color-border-subtle);
+  }
+
+  /* En alto contraste las variantes sólidas conservan su fondo,
+     pero se refuerzan los bordes y el texto para garantizar 7:1. */
+  .ids-toast--primary,
+  .ids-toast--success,
+  .ids-toast--danger,
+  .ids-toast--warning,
+  .ids-toast--info {
+    border-width: 0.125rem;
+  }
+
+  /* Glassmorphism se desactiva en alto contraste (degradaría legibilidad) */
+  .ids-toast--glass,
+  .ids-toast--translucent {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: var(--color-surface-background);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-interactive);
+  }
+
+  .ids-toast__close {
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+  }
+}
+
+/* 12.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-toast,
+  .ids-toast__close,
+  .ids-toast__progress-bar {
+    transition: none;
+    animation: none;
+  }
+
+  /* Progreso sin animación: barra fija, no gradual */
+  .ids-toast__progress-bar {
+    transform: scaleX(0.5); /* Visual estático, sin movimiento */
+  }
+
+  /* Glassmorphism reducido: menos estimulación visual */
+  .ids-toast--glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* 12.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  /* En modo sigilo los toasts de color llamativo se neutralizan */
+  .ids-toast--primary,
+  .ids-toast--success,
+  .ids-toast--danger,
+  .ids-toast--warning,
+  .ids-toast--info {
+    background-color: var(--color-surface-card);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-subtle);
+
+    .ids-toast__progress-bar {
+      background-color: var(--color-action-primary);
+    }
+  }
+
+  .ids-toast--glass,
+  .ids-toast--translucent {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: var(--color-surface-card);
+  }
+}
+
+/* ==========================================================================
+   13. MODO FORZADO DE COLORES DEL SISTEMA (Windows High Contrast / Assistive Tech)
+   ========================================================================== */
+@media (forced-colors: active) {
+  .ids-toast {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-toast--primary,
+  .ids-toast--success,
+  .ids-toast--danger,
+  .ids-toast--warning,
+  .ids-toast--info {
+    background-color: Highlight;
+    color: HighlightText;
+    border-color: CanvasText;
+  }
+
+  .ids-toast--glass,
+  .ids-toast--translucent {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-toast__close {
+    background-color: Canvas;
+    color: CanvasText;
+    border: 0.125rem solid CanvasText;
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+  }
+
+  .ids-toast__progress-bar {
+    background-color: HighlightText;
+  }
+}
+
+/* ==========================================================================
+/* ==========================================================================
+   14. RESPONSIVIDAD NATIVA - MOBILE-FIRST
+   En pantallas móviles el toast ocupa el ancho completo disponible por defecto.
+   A partir de 48rem se despliegan las variantes de escritorio flotantes.
+   ========================================================================== */
+.ids-toast-container {
+  max-inline-size: 100%;
+  inline-size: 100%;
+
+  /* Todas las posiciones colapsan al ancho total en móvil */
+  &.ids-toast-container--top-start,
+  &.ids-toast-container--top-end,
+  &.ids-toast-container--top-center,
+  &:not([class*="ids-toast-container--"]) {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    transform: none;
+    align-items: stretch;
+  }
+
+  &.ids-toast-container--bottom-start,
+  &.ids-toast-container--bottom-end,
+  &.ids-toast-container--bottom-center {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    transform: none;
+    align-items: stretch;
+  }
+
+  &.ids-toast-container--middle-start,
+  &.ids-toast-container--middle-end,
+  &.ids-toast-container--center {
+    inset-block-start: auto;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    transform: none;
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+}
+
+.ids-toast {
+  min-inline-size: unset;
+  max-inline-size: 100%;
+  border-radius: 0;
+}
+
+@media (min-width: 48rem) {
+  .ids-toast-container {
+    max-inline-size: var(--ids-toast-max-width);
+    inline-size: calc(100% - 2 * var(--ids-toast-stack-offset));
+
+    &.ids-toast-container--top-start {
+      inset-block-start: var(--ids-toast-stack-offset);
+      inset-inline-start: var(--ids-toast-stack-offset);
+      inset-inline-end: auto;
+      align-items: flex-start;
+    }
+
+    &.ids-toast-container--top-end,
+    &:not([class*="ids-toast-container--"]) {
+      inset-block-start: var(--ids-toast-stack-offset);
+      inset-inline-end: var(--ids-toast-stack-offset);
+      inset-inline-start: auto;
+      align-items: flex-end;
+    }
+
+    &.ids-toast-container--top-center {
+      inset-block-start: var(--ids-toast-stack-offset);
+      inset-inline-start: 50%;
+      inset-inline-end: auto;
+      transform: translateX(-50%);
+      align-items: center;
+    }
+
+    &.ids-toast-container--bottom-start {
+      inset-block-end: var(--ids-toast-stack-offset);
+      inset-inline-start: var(--ids-toast-stack-offset);
+      inset-inline-end: auto;
+      align-items: flex-start;
+      flex-direction: column-reverse;
+    }
+
+    &.ids-toast-container--bottom-end {
+      inset-block-end: var(--ids-toast-stack-offset);
+      inset-inline-end: var(--ids-toast-stack-offset);
+      inset-inline-start: auto;
+      align-items: flex-end;
+      flex-direction: column-reverse;
+    }
+
+    &.ids-toast-container--bottom-center {
+      inset-block-end: var(--ids-toast-stack-offset);
+      inset-inline-start: 50%;
+      inset-inline-end: auto;
+      transform: translateX(-50%);
+      align-items: center;
+      flex-direction: column-reverse;
+    }
+
+    &.ids-toast-container--middle-start {
+      inset-block-start: 50%;
+      inset-block-end: auto;
+      transform: translateY(-50%);
+      inset-inline-start: var(--ids-toast-stack-offset);
+      inset-inline-end: auto;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    &.ids-toast-container--middle-end {
+      inset-block-start: 50%;
+      inset-block-end: auto;
+      transform: translateY(-50%);
+      inset-inline-end: var(--ids-toast-stack-offset);
+      inset-inline-start: auto;
+      align-items: flex-end;
+      flex-direction: column;
+    }
+
+    &.ids-toast-container--center {
+      inset-block-start: 50%;
+      inset-block-end: auto;
+      inset-inline-start: 50%;
+      inset-inline-end: auto;
+      transform: translate(-50%, -50%);
+      align-items: center;
+      flex-direction: column;
+    }
+  }
+
+  .ids-toast {
+    min-inline-size: var(--ids-toast-min-width);
+    max-inline-size: var(--ids-toast-max-width);
+    border-radius: var(--ids-toast-radius);
+  }
+}
+
+/* ==========================================================================
+   15. MOVIMIENTO REDUCIDO — Bloque consolidado final
+   Garantía universal: ninguna transición ni animación activa si el usuario
+   lo ha solicitado en la configuración del sistema.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ids-toast,
+  .ids-toast__close,
+  .ids-toast__progress-bar,
+  .ids-toast__icon {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Toast visible instantáneamente sin animación de entrada */
+  .ids-toast.is-visible,
+  .ids-toast.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Toast en salida desaparece sin movimiento */
+  .ids-toast.is-dismissing {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

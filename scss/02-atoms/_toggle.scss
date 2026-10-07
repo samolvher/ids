@@ -1,0 +1,696 @@
+/* ==========================================================================
+   02-atoms/_toggle.scss
+   Identity Design System (IDS) - Átomo de Interruptor Booleano (Toggle Switch)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL INTERRUPTOR (TOGGLE SWITCH)
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones de la Pista (Track) */
+  --ids-toggle-width: var(--toggle-width);
+  --ids-toggle-height: var(--toggle-height);
+  --ids-toggle-track-radius: var(--toggle-track-radius);
+  --ids-toggle-border-width: var(--toggle-border-width);
+
+  /* Geometría del Deslizador (Thumb) */
+  --ids-toggle-thumb-size: var(--toggle-thumb-size);
+  --ids-toggle-thumb-radius: var(--toggle-thumb-radius);
+  --ids-toggle-thumb-offset: var(--toggle-thumb-offset);
+
+  /* Escalas de Tamaño (Modificadores) */
+  --ids-toggle-width-sm: var(--toggle-width-sm);
+  --ids-toggle-height-sm: var(--toggle-height-sm);
+  --ids-toggle-thumb-size-sm: var(--toggle-thumb-size-sm);
+  --ids-toggle-thumb-offset-sm: var(--toggle-thumb-offset-sm);
+
+  --ids-toggle-width-lg: var(--toggle-width-lg);
+  --ids-toggle-height-lg: var(--toggle-height-lg);
+  --ids-toggle-thumb-size-lg: var(--toggle-thumb-size-lg);
+  --ids-toggle-thumb-offset-lg: var(--toggle-thumb-offset-lg);
+
+  /* Área táctil mínima accesible WCAG AAA (Mínimo 44px x 44px) */
+  --ids-toggle-target-size: var(--toggle-target-size);
+
+  /* Espaciado y Tipografía de Etiquetas */
+  --ids-toggle-gap: var(--toggle-gap);
+  --ids-toggle-label-font-size: var(--toggle-label-font-size);
+  --ids-toggle-label-line-height: var(--toggle-label-line-height);
+  --ids-toggle-description-font-size: var(--toggle-description-font-size);
+
+  /* Movimiento y Transición Consciente */
+  --ids-toggle-transition-speed: var(--transition-speed-fast);
+  --ids-toggle-transition-ease: var(--transition-ease);
+
+  /* Piel y Mapeo Cromático - Estado Inactivo (Off / Unchecked) */
+  --ids-toggle-track-bg: var(--toggle-track-bg);
+  --ids-toggle-track-border: var(--toggle-track-border);
+  --ids-toggle-thumb-bg: var(--toggle-thumb-bg);
+  --ids-toggle-thumb-border: var(--toggle-thumb-border);
+
+  /* Piel y Mapeo Cromático - Estado Hover Inactivo */
+  --ids-toggle-track-hover-bg: var(--toggle-track-hover-bg);
+  --ids-toggle-track-hover-border: var(--toggle-track-hover-border);
+
+  /* Piel y Mapeo Cromático - Estado Activo (On / Checked) */
+  --ids-toggle-track-active-bg: var(--toggle-track-active-bg);
+  --ids-toggle-track-active-border: var(--toggle-track-active-border);
+  --ids-toggle-thumb-active-bg: var(--toggle-thumb-active-bg);
+  --ids-toggle-thumb-active-border: var(--toggle-thumb-active-border);
+
+  /* Piel y Mapeo Cromático - Estado Hover Activo */
+  --ids-toggle-track-active-hover-bg: var(--toggle-track-active-hover-bg);
+  --ids-toggle-track-active-hover-border: var(--toggle-track-active-hover-border);
+
+  /* Foco Accesible WCAG AAA (Mínimo 2px, contraste 3:1) */
+  --ids-toggle-focus-ring-color: var(--focus-ring-color);
+  --ids-toggle-focus-ring-width: var(--focus-ring-width);
+  --ids-toggle-focus-ring-offset: var(--focus-ring-offset);
+
+  /* Piel y Mapeo Cromático - Estado Deshabilitado */
+  --ids-toggle-disabled-opacity: var(--toggle-disabled-opacity);
+  --ids-toggle-disabled-track-bg: var(--toggle-disabled-track-bg);
+  --ids-toggle-disabled-track-border: var(--toggle-disabled-track-border);
+  --ids-toggle-disabled-thumb-bg: var(--toggle-disabled-thumb-bg);
+  --ids-toggle-disabled-thumb-border: var(--toggle-disabled-thumb-border);
+  --ids-toggle-disabled-label-color: var(--toggle-disabled-label-color);
+
+  /* Variantes Semánticas por Estado */
+  --ids-toggle-success-bg: var(--toggle-success-bg);
+  --ids-toggle-success-border: var(--toggle-success-border);
+  --ids-toggle-danger-bg: var(--toggle-danger-bg);
+  --ids-toggle-danger-border: var(--toggle-danger-border);
+  --ids-toggle-warning-bg: var(--toggle-warning-bg);
+  --ids-toggle-warning-border: var(--toggle-warning-border);
+  --ids-toggle-info-bg: var(--toggle-info-bg);
+  --ids-toggle-info-border: var(--toggle-info-border);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-toggle)
+   Soporte universal:
+   A) Contenedor compuesto (<label class="ids-toggle"> o <button class="ids-toggle">)
+   B) Input nativo independiente (<input type="checkbox" role="switch" class="ids-toggle">)
+   -------------------------------------------------------------------------- */
+
+/* 2.1 Contenedor Interactivo Ergonómico */
+.ids-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ids-toggle-gap);
+  min-block-size: var(--ids-toggle-target-size);
+  min-inline-size: var(--ids-toggle-target-size);
+  box-sizing: border-box;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  line-height: var(--ids-toggle-label-line-height);
+  vertical-align: middle;
+
+  /* Reseteo si se aplica a etiqueta <button> */
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: start;
+
+  /* ------------------------------------------------------------------------
+     2.2 Input Nativo Accesible Oculto dentro del Contenedor
+     ------------------------------------------------------------------------ */
+  &__input {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    z-index: 1;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 Pista Visual (Track)
+     ------------------------------------------------------------------------ */
+  &__track {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    inline-size: var(--ids-toggle-width);
+    block-size: var(--ids-toggle-height);
+    background-color: var(--ids-toggle-track-bg);
+    border: var(--ids-toggle-border-width) solid var(--ids-toggle-track-border);
+    border-radius: var(--ids-toggle-track-radius);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: background-color, border-color;
+      transition-duration: var(--ids-toggle-transition-speed);
+      transition-timing-function: var(--ids-toggle-transition-ease);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.4 Puntero Deslizante (Thumb)
+     ------------------------------------------------------------------------ */
+  &__thumb {
+    display: block;
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: var(--ids-toggle-thumb-offset);
+    transform: translateY(-50%);
+    inline-size: var(--ids-toggle-thumb-size);
+    block-size: var(--ids-toggle-thumb-size);
+    background-color: var(--ids-toggle-thumb-bg);
+    border: var(--ids-toggle-border-width) solid var(--ids-toggle-thumb-border);
+    border-radius: var(--ids-toggle-thumb-radius);
+    box-sizing: border-box;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: transform, background-color, border-color;
+      transition-duration: var(--ids-toggle-transition-speed);
+      transition-timing-function: var(--ids-toggle-transition-ease);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.5 Indicadores Visuales No Dependientes del Color (WCAG 1.4.1)
+     Iconos o símbolos de estado (I / O, Check / Cross) integrados en la pista
+     ------------------------------------------------------------------------ */
+  &__glyph-on,
+  &__glyph-off {
+    position: absolute;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--ids-toggle-thumb-size) * 0.6);
+    line-height: 1;
+    font-weight: var(--font-weight-bold);
+    pointer-events: none;
+    box-sizing: border-box;
+    transition: opacity var(--ids-toggle-transition-speed) var(--ids-toggle-transition-ease);
+
+    svg {
+      inline-size: calc(var(--ids-toggle-thumb-size) * 0.7);
+      block-size: calc(var(--ids-toggle-thumb-size) * 0.7);
+      fill: currentColor;
+    }
+  }
+
+  &__glyph-on {
+    inset-inline-start: calc(var(--ids-toggle-thumb-offset) + var(--spacing-xs));
+    color: var(--color-action-primary-text);
+    opacity: 0;
+  }
+
+  &__glyph-off {
+    inset-inline-end: calc(var(--ids-toggle-thumb-offset) + var(--spacing-xs));
+    color: var(--color-text-secondary);
+    opacity: 1;
+  }
+
+  /* ------------------------------------------------------------------------
+     2.6 Contenedor de Etiquetas y Textos Descriptivos
+     ------------------------------------------------------------------------ */
+  &__content {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    box-sizing: border-box;
+  }
+
+  &__label {
+    font-size: var(--ids-toggle-label-font-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    line-height: var(--ids-toggle-label-line-height);
+  }
+
+  &__description {
+    font-size: var(--ids-toggle-description-font-size);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-base);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ESTADOS DE INTERACCIÓN DEL INTERRUPTOR
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Estado Hover (Inactivo) */
+.ids-toggle:hover:not(.ids-toggle--disabled):not(:disabled):not([aria-disabled="true"]) {
+  .ids-toggle__track {
+    background-color: var(--ids-toggle-track-hover-bg);
+    border-color: var(--ids-toggle-track-hover-border);
+  }
+}
+
+/* 3.2 Estado Activo (Checked / aria-checked="true") */
+.ids-toggle:has(.ids-toggle__input:checked),
+.ids-toggle[aria-checked="true"],
+.ids-toggle--active {
+  .ids-toggle__track {
+    background-color: var(--ids-toggle-track-active-bg);
+    border-color: var(--ids-toggle-track-active-border);
+  }
+
+  .ids-toggle__thumb {
+    transform: translateY(-50%) translateX(calc(var(--ids-toggle-width) - var(--ids-toggle-thumb-size) - (var(--ids-toggle-border-width) * 2) - (var(--ids-toggle-thumb-offset) * 2)));
+    background-color: var(--ids-toggle-thumb-active-bg);
+    border-color: var(--ids-toggle-thumb-active-border);
+  }
+
+  .ids-toggle__glyph-on {
+    opacity: 1;
+  }
+
+  .ids-toggle__glyph-off {
+    opacity: 0;
+  }
+
+  &:hover:not(.ids-toggle--disabled):not(:disabled):not([aria-disabled="true"]) {
+    .ids-toggle__track {
+      background-color: var(--ids-toggle-track-active-hover-bg);
+      border-color: var(--ids-toggle-track-active-hover-border);
+    }
+  }
+}
+
+/* 3.3 Foco Accesible WCAG AAA (Mínimo 2px, contraste 3:1) */
+.ids-toggle:has(.ids-toggle__input:focus-visible),
+.ids-toggle:focus-visible {
+  outline: none;
+
+  .ids-toggle__track {
+    outline-width: var(--ids-toggle-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--ids-toggle-focus-ring-color);
+    outline-offset: var(--ids-toggle-focus-ring-offset);
+  }
+}
+
+/* 3.4 Estado Deshabilitado / Inactivo */
+.ids-toggle--disabled,
+.ids-toggle:has(.ids-toggle__input:disabled),
+.ids-toggle:disabled,
+.ids-toggle[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: var(--ids-toggle-disabled-opacity);
+  pointer-events: none;
+
+  .ids-toggle__track {
+    background-color: var(--ids-toggle-disabled-track-bg);
+    border-color: var(--ids-toggle-disabled-track-border);
+  }
+
+  .ids-toggle__thumb {
+    background-color: var(--ids-toggle-disabled-thumb-bg);
+    border-color: var(--ids-toggle-disabled-thumb-border);
+  }
+
+  .ids-toggle__label,
+  .ids-toggle__description {
+    color: var(--ids-toggle-disabled-label-color);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. INPUT INDEPENDIENTE PURA (input[type="checkbox"][role="switch"].ids-toggle)
+   Permite usar el componente sin etiquetas envolventes adicionales.
+   -------------------------------------------------------------------------- */
+input[type="checkbox"][role="switch"].ids-toggle,
+input[type="checkbox"].ids-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: inline-block;
+  inline-size: var(--ids-toggle-width);
+  block-size: var(--ids-toggle-height);
+  background-color: var(--ids-toggle-track-bg);
+  border: var(--ids-toggle-border-width) solid var(--ids-toggle-track-border);
+  border-radius: var(--ids-toggle-track-radius);
+  position: relative;
+  cursor: pointer;
+  vertical-align: middle;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, border-color;
+    transition-duration: var(--ids-toggle-transition-speed);
+    transition-timing-function: var(--ids-toggle-transition-ease);
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: var(--ids-toggle-thumb-offset);
+    transform: translateY(-50%);
+    inline-size: var(--ids-toggle-thumb-size);
+    block-size: var(--ids-toggle-thumb-size);
+    background-color: var(--ids-toggle-thumb-bg);
+    border: var(--ids-toggle-border-width) solid var(--ids-toggle-thumb-border);
+    border-radius: var(--ids-toggle-thumb-radius);
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: transform, background-color, border-color;
+      transition-duration: var(--ids-toggle-transition-speed);
+      transition-timing-function: var(--ids-toggle-transition-ease);
+    }
+  }
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: var(--ids-toggle-track-hover-bg);
+    border-color: var(--ids-toggle-track-hover-border);
+  }
+
+  &:checked {
+    background-color: var(--ids-toggle-track-active-bg);
+    border-color: var(--ids-toggle-track-active-border);
+
+    &::after {
+      transform: translateY(-50%) translateX(calc(var(--ids-toggle-width) - var(--ids-toggle-thumb-size) - (var(--ids-toggle-border-width) * 2) - (var(--ids-toggle-thumb-offset) * 2)));
+      background-color: var(--ids-toggle-thumb-active-bg);
+      border-color: var(--ids-toggle-thumb-active-border);
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--ids-toggle-track-active-hover-bg);
+      border-color: var(--ids-toggle-track-active-hover-border);
+    }
+  }
+
+  &:focus-visible {
+    outline-width: var(--ids-toggle-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--ids-toggle-focus-ring-color);
+    outline-offset: var(--ids-toggle-focus-ring-offset);
+  }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--ids-toggle-disabled-opacity);
+    background-color: var(--ids-toggle-disabled-track-bg);
+    border-color: var(--ids-toggle-disabled-track-border);
+
+    &::after {
+      background-color: var(--ids-toggle-disabled-thumb-bg);
+      border-color: var(--ids-toggle-disabled-thumb-border);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MODIFICADORES DE TAMAÑO (BEM)
+   -------------------------------------------------------------------------- */
+
+/* 5.1 Tamaño Pequeño / Compacto (.ids-toggle--sm) */
+.ids-toggle--sm {
+  min-block-size: calc(var(--ids-toggle-target-size) - var(--spacing-sm));
+
+  .ids-toggle__track,
+  &.ids-toggle:is(input) {
+    inline-size: var(--ids-toggle-width-sm);
+    block-size: var(--ids-toggle-height-sm);
+  }
+
+  .ids-toggle__thumb,
+  &.ids-toggle:is(input)::after {
+    inline-size: var(--ids-toggle-thumb-size-sm);
+    block-size: var(--ids-toggle-thumb-size-sm);
+    inset-inline-start: var(--ids-toggle-thumb-offset-sm);
+  }
+
+  &:has(.ids-toggle__input:checked) .ids-toggle__thumb,
+  &[aria-checked="true"] .ids-toggle__thumb,
+  &.ids-toggle:is(input):checked::after {
+    transform: translateY(-50%) translateX(calc(var(--ids-toggle-width-sm) - var(--ids-toggle-thumb-size-sm) - (var(--ids-toggle-border-width) * 2) - (var(--ids-toggle-thumb-offset-sm) * 2)));
+  }
+
+  .ids-toggle__label {
+    font-size: var(--font-size-caption);
+  }
+}
+
+/* 5.2 Tamaño Prominente / Grande (.ids-toggle--lg) */
+.ids-toggle--lg {
+  min-block-size: calc(var(--ids-toggle-target-size) + var(--spacing-sm));
+
+  .ids-toggle__track,
+  &.ids-toggle:is(input) {
+    inline-size: var(--ids-toggle-width-lg);
+    block-size: var(--ids-toggle-height-lg);
+  }
+
+  .ids-toggle__thumb,
+  &.ids-toggle:is(input)::after {
+    inline-size: var(--ids-toggle-thumb-size-lg);
+    block-size: var(--ids-toggle-thumb-size-lg);
+    inset-inline-start: var(--ids-toggle-thumb-offset-lg);
+  }
+
+  &:has(.ids-toggle__input:checked) .ids-toggle__thumb,
+  &[aria-checked="true"] .ids-toggle__thumb,
+  &.ids-toggle:is(input):checked::after {
+    transform: translateY(-50%) translateX(calc(var(--ids-toggle-width-lg) - var(--ids-toggle-thumb-size-lg) - (var(--ids-toggle-border-width) * 2) - (var(--ids-toggle-thumb-offset-lg) * 2)));
+  }
+
+  .ids-toggle__label {
+    font-size: var(--font-size-body-large);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. VARIANTES SEMÁNTICAS DE ESTADO (Trauma-Informed & Heurística Visual)
+   -------------------------------------------------------------------------- */
+
+/* 6.1 Variante de Éxito / Confirmación Segura */
+.ids-toggle--success {
+  --ids-toggle-track-active-bg: var(--ids-toggle-success-bg);
+  --ids-toggle-track-active-border: var(--ids-toggle-success-border);
+  --ids-toggle-track-active-hover-bg: var(--ids-toggle-success-border);
+  --ids-toggle-thumb-active-border: var(--ids-toggle-success-border);
+}
+
+/* 6.2 Variante de Peligro / Acción Crítica (Trauma-Informed) */
+.ids-toggle--danger {
+  --ids-toggle-track-active-bg: var(--ids-toggle-danger-bg);
+  --ids-toggle-track-active-border: var(--ids-toggle-danger-border);
+  --ids-toggle-track-active-hover-bg: var(--ids-toggle-danger-border);
+  --ids-toggle-thumb-active-border: var(--ids-toggle-danger-border);
+}
+
+/* 6.3 Variante de Advertencia / Precaución */
+.ids-toggle--warning {
+  --ids-toggle-track-active-bg: var(--ids-toggle-warning-bg);
+  --ids-toggle-track-active-border: var(--ids-toggle-warning-border);
+  --ids-toggle-track-active-hover-bg: var(--ids-toggle-warning-border);
+  --ids-toggle-thumb-active-border: var(--ids-toggle-warning-border);
+}
+
+/* 6.4 Variante de Información Neutral */
+.ids-toggle--info {
+  --ids-toggle-track-active-bg: var(--ids-toggle-info-bg);
+  --ids-toggle-track-active-border: var(--ids-toggle-info-border);
+  --ids-toggle-track-active-hover-bg: var(--ids-toggle-info-border);
+  --ids-toggle-thumb-active-border: var(--ids-toggle-info-border);
+}
+
+/* --------------------------------------------------------------------------
+   7. MODIFICADORES DE DISPOSICIÓN Y CONTENEDOR (LAYOUT)
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Etiqueta al Inicio / Interruptor al Final (Label Start) */
+.ids-toggle--label-start {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+/* 7.2 Ancho Completo (Full Width) para Paneles y Ajustes */
+.ids-toggle--full-width {
+  display: flex;
+  inline-size: 100%;
+  justify-content: space-between;
+}
+
+/* 7.3 Tarjeta de Consentimiento (.ids-toggle--card)
+   Alineada con Tecnología Consentida: caja amplia, contenido claro, sin trampas cognitivas */
+.ids-toggle--card {
+  display: flex;
+  justify-content: space-between;
+  inline-size: 100%;
+  padding: var(--spacing-md);
+  gap: var(--spacing-sm);
+  background-color: var(--color-surface-card);
+  border: var(--ids-toggle-border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+
+  @media (min-width: 48rem) {
+    padding: var(--padding-card);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: border-color var(--ids-toggle-transition-speed) var(--ids-toggle-transition-ease),
+                background-color var(--ids-toggle-transition-speed) var(--ids-toggle-transition-ease);
+  }
+
+  &:hover:not(.ids-toggle--disabled):not(:disabled):not([aria-disabled="true"]) {
+    border-color: var(--color-border-interactive);
+  }
+
+  &:has(.ids-toggle__input:checked),
+  &[aria-checked="true"] {
+    border-color: var(--color-action-primary);
+  }
+
+  &:has(.ids-toggle__input:focus-visible),
+  &:focus-visible {
+    outline-width: var(--ids-toggle-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--ids-toggle-focus-ring-color);
+    outline-offset: var(--ids-toggle-focus-ring-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   -------------------------------------------------------------------------- */
+
+/* 8.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-toggle {
+    --ids-toggle-track-border: var(--color-border-subtle);
+    --ids-toggle-thumb-border: var(--color-border-subtle);
+    --ids-toggle-thumb-bg: var(--color-surface-background);
+
+    &__track {
+      border-width: var(--focus-ring-width);
+    }
+
+    &__thumb {
+      border-width: var(--focus-ring-width);
+    }
+  }
+
+  .ids-toggle:has(.ids-toggle__input:checked),
+  .ids-toggle[aria-checked="true"],
+  input[type="checkbox"][role="switch"].ids-toggle:checked {
+    --ids-toggle-track-active-bg: var(--color-action-primary);
+    --ids-toggle-track-active-border: var(--color-action-primary);
+    --ids-toggle-thumb-active-bg: var(--color-surface-background);
+    --ids-toggle-thumb-active-border: var(--color-surface-background);
+  }
+
+  .ids-toggle--card {
+    border-width: var(--focus-ring-width);
+    background-color: var(--color-surface-background);
+  }
+}
+
+/* 8.2 Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-toggle {
+    --ids-toggle-track-bg: var(--color-surface-muted);
+    --ids-toggle-track-border: var(--color-border-subtle);
+    --ids-toggle-thumb-bg: var(--color-surface-background);
+  }
+
+  .ids-toggle--card {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 8.3 Modo Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-toggle {
+    --ids-toggle-track-bg: var(--color-surface-muted);
+    --ids-toggle-track-border: var(--color-border-subtle);
+    --ids-toggle-thumb-bg: var(--color-surface-background);
+  }
+
+  .ids-toggle--card {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-toggle {
+    &__track,
+    &.ids-toggle:is(input) {
+      border: var(--ids-toggle-border-width) solid ButtonText;
+      background-color: Field;
+    }
+
+    &__thumb,
+    &.ids-toggle:is(input)::after {
+      border: var(--ids-toggle-border-width) solid ButtonText;
+      background-color: ButtonText;
+    }
+
+    &:has(.ids-toggle__input:checked) .ids-toggle__track,
+    &[aria-checked="true"] .ids-toggle__track,
+    &.ids-toggle:is(input):checked {
+      background-color: Highlight;
+      border-color: Highlight;
+    }
+
+    &:has(.ids-toggle__input:checked) .ids-toggle__thumb,
+    &[aria-checked="true"] .ids-toggle__thumb,
+    &.ids-toggle:is(input):checked::after {
+      background-color: HighlightText;
+      border-color: HighlightText;
+    }
+
+    &:has(.ids-toggle__input:disabled) .ids-toggle__track,
+    &:disabled .ids-toggle__track,
+    &.ids-toggle:is(input):disabled {
+      border-color: GrayText;
+      background-color: Field;
+    }
+
+    &:has(.ids-toggle__input:disabled) .ids-toggle__thumb,
+    &:disabled .ids-toggle__thumb,
+    &.ids-toggle:is(input):disabled::after {
+      background-color: GrayText;
+      border-color: GrayText;
+    }
+  }
+
+  .ids-toggle--card {
+    border: var(--ids-toggle-border-width) solid ButtonText;
+    background-color: Canvas;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE DESIGN (Nativo para cualquier resolución) - Mobile-First
+   La tarjeta toggle se define con espaciado compacto para móviles por defecto
+   y adopta padding extendido de tarjeta a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+

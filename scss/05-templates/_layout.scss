@@ -1,0 +1,1172 @@
+/* ==========================================================================
+   05-templates/_layout.scss
+   Identity Design System (IDS) - Plantillas y Sistema de Layout Integral
+   Estructuras modulares, agnósticas y universales de distribución espacial:
+     - 1. Contrato de Tokens del Layout (Containers, Grids, Gutters, Shells)
+     - 2. Contenedores Responsivos (Containers: Standard, Fluid, Prose, Narrow, CQ)
+     - 3. Sistema de Cuadrícula Moderno (CSS Grid: 12 columnas, Auto-fit/fill, Subgrid)
+     - 4. Columnas y Distribución en Grid (Grid Columns: spans, starts, offsets)
+     - 5. Sistema de Filas y Columnas Flexbox (Flexbox Row & Columns)
+     - 6. Canaletas y Espaciados de Cuadrícula (Gutters: G, GX, GY, Emotional Break)
+     - 7. Arquetipos de Layout de Plantilla (Shell, Sidebar, Centered/Auth, Split, Prose Multi-col, Dashboard)
+     - 8. Secciones Semánticas y Ritmo Vertical (Page Sections & Spacing)
+     - 9. Utilidades de Alineación, Distribución y Visibilidad
+     - 10. Soporte de Temas del Sistema (High Contrast, Low Stimulation, Discrete, Forced Colors)
+     - 11. Movimiento Reducido y Accesibilidad Universal (WCAG AAA Reflow & Scalability)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL TEMPLATE LAYOUT (Contrato de Tokens)
+   Estricta prohibición de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color o espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Anchos de Contenedores y Techos de Resolución */
+  --ids-container-sm: 36rem;                 /* 576px */
+  --ids-container-md: 48rem;                 /* 768px */
+  --ids-container-lg: 64rem;                 /* 1024px */
+  --ids-container-xl: 80rem;                 /* 1280px */
+  --ids-container-xxl: 90rem;                /* 1440px */
+  --ids-container-prose: 65ch;               /* Límite neurodivergente y WCAG AAA de fatiga visual */
+  --ids-container-narrow: 38rem;             /* 608px - Formatos compactos y diálogos en página */
+
+  /* Espaciado Interno de Contenedores (Padding Horizontal) */
+  --ids-container-padding-x: var(--spacing-md);
+  --ids-container-padding-sm-x: var(--spacing-sm);
+  --ids-container-padding-lg-x: var(--spacing-xl);
+
+  /* Configuración del Sistema de Cuadrícula (12 Columnas) */
+  --ids-grid-columns: 12;
+  --ids-grid-gutter-x: var(--spacing-md);
+  --ids-grid-gutter-y: var(--spacing-md);
+  --ids-grid-gap: var(--spacing-md);
+
+  /* Anchos Mínimos de Pistas Automáticas (Fluid Auto-fit/Auto-fill) */
+  --ids-grid-min-col-width: 16rem;           /* 256px */
+  --ids-grid-min-col-width-sm: 12rem;        /* 192px */
+  --ids-grid-min-col-width-lg: 20rem;        /* 320px */
+
+  /* Dimensiones del Shell de Aplicación y Paneles Laterales */
+  --ids-layout-header-height: 4rem;          /* 64px */
+  --ids-layout-footer-min-height: 3.5rem;    /* 56px */
+  --ids-layout-sidebar-width: 17.5rem;       /* 280px */
+  --ids-layout-sidebar-width-sm: 14rem;      /* 224px */
+  --ids-layout-sidebar-width-lg: 22rem;      /* 352px */
+  --ids-layout-sidebar-collapsed-width: 4rem;/* 64px */
+  --ids-layout-aside-width: 18rem;           /* 288px */
+
+  /* Ritmo Vertical y Espaciado de Secciones */
+  --ids-layout-section-padding-y: var(--spacing-xxl);
+  --ids-layout-section-padding-sm-y: var(--spacing-lg);
+  --ids-layout-section-padding-lg-y: var(--spacing-xxxl);
+  --ids-layout-gap-emotional: var(--spacing-emotional-break);
+
+  /* Piel y Superficies Base del Layout */
+  --ids-layout-bg: var(--color-surface-background);
+  --ids-layout-surface: var(--color-surface-card);
+  --ids-layout-surface-muted: var(--color-surface-muted);
+  --ids-layout-border: var(--color-border-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDORES RESPONSIVOS (Containers)
+   Alineación centrada y anchos acotados para evitar dispersión cognitiva.
+   -------------------------------------------------------------------------- */
+
+/* Contenedor Responsivo Estándar (Escala progresiva según breakpoint) */
+.ids-container {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+
+  @media (min-width: 36rem) {
+    max-inline-size: var(--ids-container-sm);
+  }
+
+  @media (min-width: 48rem) {
+    max-inline-size: var(--ids-container-md);
+  }
+
+  @media (min-width: 64rem) {
+    max-inline-size: var(--ids-container-lg);
+    padding-inline: var(--ids-container-padding-lg-x);
+  }
+
+  @media (min-width: 80rem) {
+    max-inline-size: var(--ids-container-xl);
+  }
+
+  @media (min-width: 90rem) {
+    max-inline-size: var(--ids-container-xxl);
+  }
+}
+
+/* Contenedores con Techo Máximo Fijo (Fixed Caps) */
+.ids-container-sm {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-sm);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+}
+
+.ids-container-md {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-md);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+}
+
+.ids-container-lg {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-lg);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+}
+
+.ids-container-xl {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-xl);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-lg-x);
+  box-sizing: border-box;
+}
+
+.ids-container-xxl {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-xxl);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-lg-x);
+  box-sizing: border-box;
+}
+
+/* Contenedor Fluido (100% en todos los puntos de quiebre) */
+.ids-container-fluid {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+
+  @media (min-width: 64rem) {
+    padding-inline: var(--ids-container-padding-lg-x);
+  }
+}
+
+/* Contenedor de Lectura Protegida (Trauma-Informed & Neurodivergente)
+   Restringe la línea a 65 caracteres para máxima ergonomía visual y retención */
+.ids-container-prose,
+.ids-container--reading {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-prose);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+}
+
+/* Contenedor Estrecho / Focused */
+.ids-container--narrow {
+  inline-size: 100%;
+  max-inline-size: var(--ids-container-narrow);
+  margin-inline: auto;
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+}
+
+/* Contenedor con Contexto de Consulta de Contenedor (Container Queries) */
+.ids-container-cq {
+  container-type: inline-size;
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   3. SISTEMA DE CUADRÍCULA MODERNO (CSS Grid System)
+   Cuadrícula nativa bidimensional con soporte para subgrid y auto-fit intrínseco.
+   -------------------------------------------------------------------------- */
+
+/* Cuadrícula Base de 12 Columnas */
+.ids-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ids-grid-columns), minmax(0, 1fr));
+  column-gap: var(--ids-grid-gutter-x);
+  row-gap: var(--ids-grid-gutter-y);
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* Cuadrículas Automáticas Intrínsecas (Auto-fit: llenado elástico sin media queries) */
+.ids-grid--auto,
+.ids-grid--auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ids-grid-min-col-width)), 1fr));
+  column-gap: var(--ids-grid-gutter-x);
+  row-gap: var(--ids-grid-gutter-y);
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* Cuadrículas Automáticas (Auto-fill: preserva ranuras vacías sin estirar excesivo) */
+.ids-grid--auto-fill {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--ids-grid-min-col-width)), 1fr));
+  column-gap: var(--ids-grid-gutter-x);
+  row-gap: var(--ids-grid-gutter-y);
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* Variantes de Escala de Tarjetas en Cuadrícula Automática */
+.ids-grid--auto-sm {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ids-grid-min-col-width-sm)), 1fr));
+}
+
+.ids-grid--auto-lg {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ids-grid-min-col-width-lg)), 1fr));
+}
+
+/* Subgrid Bidimensional (Hereda pistas de la cuadrícula padre para alineación perfecta) */
+.ids-grid--subgrid {
+  display: grid;
+  /* Fallback en la misma cascada para navegadores anteriores */
+  grid-template-columns: repeat(var(--ids-grid-columns), minmax(0, 1fr));
+  grid-template-columns: subgrid;
+}
+
+/* Columnas Fijas Explícitas */
+.ids-grid--cols-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.ids-grid--cols-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ids-grid--cols-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ids-grid--cols-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ids-grid--cols-5  { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.ids-grid--cols-6  { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.ids-grid--cols-7  { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.ids-grid--cols-8  { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.ids-grid--cols-9  { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+.ids-grid--cols-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+.ids-grid--cols-11 { grid-template-columns: repeat(11, minmax(0, 1fr)); }
+.ids-grid--cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+
+/* Cuadrículas con Columnas Fijas Responsivas (Mobile-first por Breakpoints) */
+@media (min-width: 36rem) {
+  .ids-grid--cols-sm-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .ids-grid--cols-sm-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ids-grid--cols-sm-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ids-grid--cols-sm-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ids-grid--cols-sm-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (min-width: 48rem) {
+  .ids-grid--cols-md-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .ids-grid--cols-md-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ids-grid--cols-md-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ids-grid--cols-md-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ids-grid--cols-md-6  { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .ids-grid--cols-md-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+
+@media (min-width: 64rem) {
+  .ids-grid--cols-lg-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .ids-grid--cols-lg-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ids-grid--cols-lg-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ids-grid--cols-lg-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ids-grid--cols-lg-6  { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .ids-grid--cols-lg-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+
+@media (min-width: 80rem) {
+  .ids-grid--cols-xl-1  { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .ids-grid--cols-xl-2  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ids-grid--cols-xl-3  { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ids-grid--cols-xl-4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ids-grid--cols-xl-6  { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .ids-grid--cols-xl-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+
+/* --------------------------------------------------------------------------
+   4. COLUMNAS Y DISTRIBUCIÓN EN GRID (Grid Columns)
+   Expansión, anidamiento y posicionamiento seguro de elementos hijos en el grid.
+   -------------------------------------------------------------------------- */
+
+/* Columna Base de Cuadrícula: por defecto apilada al 100% en pantallas pequeñas */
+.ids-col {
+  grid-column: span 12;
+  min-inline-size: 0; /* Previene desbordamiento con textos o códigos extensos */
+  box-sizing: border-box;
+}
+
+.ids-col-auto {
+  grid-column: auto;
+  min-inline-size: 0;
+  box-sizing: border-box;
+}
+
+.ids-col-full {
+  grid-column: 1 / -1;
+  min-inline-size: 0;
+  box-sizing: border-box;
+}
+
+/* Extensiones de Columna Universales (Spans 1 a 12) */
+.ids-col-1  { grid-column: span 1;  min-inline-size: 0; }
+.ids-col-2  { grid-column: span 2;  min-inline-size: 0; }
+.ids-col-3  { grid-column: span 3;  min-inline-size: 0; }
+.ids-col-4  { grid-column: span 4;  min-inline-size: 0; }
+.ids-col-5  { grid-column: span 5;  min-inline-size: 0; }
+.ids-col-6  { grid-column: span 6;  min-inline-size: 0; }
+.ids-col-7  { grid-column: span 7;  min-inline-size: 0; }
+.ids-col-8  { grid-column: span 8;  min-inline-size: 0; }
+.ids-col-9  { grid-column: span 9;  min-inline-size: 0; }
+.ids-col-10 { grid-column: span 10; min-inline-size: 0; }
+.ids-col-11 { grid-column: span 11; min-inline-size: 0; }
+.ids-col-12 { grid-column: span 12; min-inline-size: 0; }
+
+/* Posicionamiento Inicial de Columna (Grid Column Starts) */
+.ids-col-start-1  { grid-column-start: 1; }
+.ids-col-start-2  { grid-column-start: 2; }
+.ids-col-start-3  { grid-column-start: 3; }
+.ids-col-start-4  { grid-column-start: 4; }
+.ids-col-start-5  { grid-column-start: 5; }
+.ids-col-start-6  { grid-column-start: 6; }
+.ids-col-start-7  { grid-column-start: 7; }
+.ids-col-start-8  { grid-column-start: 8; }
+.ids-col-start-9  { grid-column-start: 9; }
+.ids-col-start-10 { grid-column-start: 10; }
+.ids-col-start-11 { grid-column-start: 11; }
+.ids-col-start-12 { grid-column-start: 12; }
+.ids-col-start-auto { grid-column-start: auto; }
+
+/* Posicionamiento Final de Columna (Grid Column Ends) */
+.ids-col-end-1  { grid-column-end: 1; }
+.ids-col-end-2  { grid-column-end: 2; }
+.ids-col-end-3  { grid-column-end: 3; }
+.ids-col-end-4  { grid-column-end: 4; }
+.ids-col-end-5  { grid-column-end: 5; }
+.ids-col-end-6  { grid-column-end: 6; }
+.ids-col-end-7  { grid-column-end: 7; }
+.ids-col-end-8  { grid-column-end: 8; }
+.ids-col-end-9  { grid-column-end: 9; }
+.ids-col-end-10 { grid-column-end: 10; }
+.ids-col-end-11 { grid-column-end: 11; }
+.ids-col-end-12 { grid-column-end: 12; }
+.ids-col-end-13 { grid-column-end: 13; }
+.ids-col-end-auto { grid-column-end: auto; }
+
+/* Expansión de Filas (Row Spans) */
+.ids-row-span-1 { grid-row: span 1; }
+.ids-row-span-2 { grid-row: span 2; }
+.ids-row-span-3 { grid-row: span 3; }
+.ids-row-span-4 { grid-row: span 4; }
+.ids-row-span-full { grid-row: 1 / -1; }
+.ids-row-auto   { grid-row: auto; }
+
+/* Extensiones Responsivas: Breakpoint SM (>= 36rem / 576px) */
+@media (min-width: 36rem) {
+  .ids-col-sm-1  { grid-column: span 1; }
+  .ids-col-sm-2  { grid-column: span 2; }
+  .ids-col-sm-3  { grid-column: span 3; }
+  .ids-col-sm-4  { grid-column: span 4; }
+  .ids-col-sm-5  { grid-column: span 5; }
+  .ids-col-sm-6  { grid-column: span 6; }
+  .ids-col-sm-7  { grid-column: span 7; }
+  .ids-col-sm-8  { grid-column: span 8; }
+  .ids-col-sm-9  { grid-column: span 9; }
+  .ids-col-sm-10 { grid-column: span 10; }
+  .ids-col-sm-11 { grid-column: span 11; }
+  .ids-col-sm-12 { grid-column: span 12; }
+  .ids-col-sm-auto { grid-column: auto; }
+  .ids-col-sm-full { grid-column: 1 / -1; }
+
+  .ids-col-start-sm-1  { grid-column-start: 1; }
+  .ids-col-start-sm-2  { grid-column-start: 2; }
+  .ids-col-start-sm-3  { grid-column-start: 3; }
+  .ids-col-start-sm-4  { grid-column-start: 4; }
+  .ids-col-start-sm-5  { grid-column-start: 5; }
+  .ids-col-start-sm-6  { grid-column-start: 6; }
+  .ids-col-start-sm-7  { grid-column-start: 7; }
+  .ids-col-start-sm-8  { grid-column-start: 8; }
+  .ids-col-start-sm-9  { grid-column-start: 9; }
+  .ids-col-start-sm-10 { grid-column-start: 10; }
+  .ids-col-start-sm-11 { grid-column-start: 11; }
+  .ids-col-start-sm-12 { grid-column-start: 12; }
+  .ids-col-start-sm-auto { grid-column-start: auto; }
+}
+
+/* Extensiones Responsivas: Breakpoint MD (>= 48rem / 768px) */
+@media (min-width: 48rem) {
+  .ids-col-md-1  { grid-column: span 1; }
+  .ids-col-md-2  { grid-column: span 2; }
+  .ids-col-md-3  { grid-column: span 3; }
+  .ids-col-md-4  { grid-column: span 4; }
+  .ids-col-md-5  { grid-column: span 5; }
+  .ids-col-md-6  { grid-column: span 6; }
+  .ids-col-md-7  { grid-column: span 7; }
+  .ids-col-md-8  { grid-column: span 8; }
+  .ids-col-md-9  { grid-column: span 9; }
+  .ids-col-md-10 { grid-column: span 10; }
+  .ids-col-md-11 { grid-column: span 11; }
+  .ids-col-md-12 { grid-column: span 12; }
+  .ids-col-md-auto { grid-column: auto; }
+  .ids-col-md-full { grid-column: 1 / -1; }
+
+  .ids-col-start-md-1  { grid-column-start: 1; }
+  .ids-col-start-md-2  { grid-column-start: 2; }
+  .ids-col-start-md-3  { grid-column-start: 3; }
+  .ids-col-start-md-4  { grid-column-start: 4; }
+  .ids-col-start-md-5  { grid-column-start: 5; }
+  .ids-col-start-md-6  { grid-column-start: 6; }
+  .ids-col-start-md-7  { grid-column-start: 7; }
+  .ids-col-start-md-8  { grid-column-start: 8; }
+  .ids-col-start-md-9  { grid-column-start: 9; }
+  .ids-col-start-md-10 { grid-column-start: 10; }
+  .ids-col-start-md-11 { grid-column-start: 11; }
+  .ids-col-start-md-12 { grid-column-start: 12; }
+  .ids-col-start-md-auto { grid-column-start: auto; }
+}
+
+/* Extensiones Responsivas: Breakpoint LG (>= 64rem / 1024px) */
+@media (min-width: 64rem) {
+  .ids-col-lg-1  { grid-column: span 1; }
+  .ids-col-lg-2  { grid-column: span 2; }
+  .ids-col-lg-3  { grid-column: span 3; }
+  .ids-col-lg-4  { grid-column: span 4; }
+  .ids-col-lg-5  { grid-column: span 5; }
+  .ids-col-lg-6  { grid-column: span 6; }
+  .ids-col-lg-7  { grid-column: span 7; }
+  .ids-col-lg-8  { grid-column: span 8; }
+  .ids-col-lg-9  { grid-column: span 9; }
+  .ids-col-lg-10 { grid-column: span 10; }
+  .ids-col-lg-11 { grid-column: span 11; }
+  .ids-col-lg-12 { grid-column: span 12; }
+  .ids-col-lg-auto { grid-column: auto; }
+  .ids-col-lg-full { grid-column: 1 / -1; }
+
+  .ids-col-start-lg-1  { grid-column-start: 1; }
+  .ids-col-start-lg-2  { grid-column-start: 2; }
+  .ids-col-start-lg-3  { grid-column-start: 3; }
+  .ids-col-start-lg-4  { grid-column-start: 4; }
+  .ids-col-start-lg-5  { grid-column-start: 5; }
+  .ids-col-start-lg-6  { grid-column-start: 6; }
+  .ids-col-start-lg-7  { grid-column-start: 7; }
+  .ids-col-start-lg-8  { grid-column-start: 8; }
+  .ids-col-start-lg-9  { grid-column-start: 9; }
+  .ids-col-start-lg-10 { grid-column-start: 10; }
+  .ids-col-start-lg-11 { grid-column-start: 11; }
+  .ids-col-start-lg-12 { grid-column-start: 12; }
+  .ids-col-start-lg-auto { grid-column-start: auto; }
+}
+
+/* Extensiones Responsivas: Breakpoint XL (>= 80rem / 1280px) */
+@media (min-width: 80rem) {
+  .ids-col-xl-1  { grid-column: span 1; }
+  .ids-col-xl-2  { grid-column: span 2; }
+  .ids-col-xl-3  { grid-column: span 3; }
+  .ids-col-xl-4  { grid-column: span 4; }
+  .ids-col-xl-5  { grid-column: span 5; }
+  .ids-col-xl-6  { grid-column: span 6; }
+  .ids-col-xl-7  { grid-column: span 7; }
+  .ids-col-xl-8  { grid-column: span 8; }
+  .ids-col-xl-9  { grid-column: span 9; }
+  .ids-col-xl-10 { grid-column: span 10; }
+  .ids-col-xl-11 { grid-column: span 11; }
+  .ids-col-xl-12 { grid-column: span 12; }
+  .ids-col-xl-auto { grid-column: auto; }
+  .ids-col-xl-full { grid-column: 1 / -1; }
+}
+
+/* Extensiones Responsivas: Breakpoint XXL (>= 90rem / 1440px) */
+@media (min-width: 90rem) {
+  .ids-col-xxl-1  { grid-column: span 1; }
+  .ids-col-xxl-2  { grid-column: span 2; }
+  .ids-col-xxl-3  { grid-column: span 3; }
+  .ids-col-xxl-4  { grid-column: span 4; }
+  .ids-col-xxl-6  { grid-column: span 6; }
+  .ids-col-xxl-12 { grid-column: span 12; }
+  .ids-col-xxl-auto { grid-column: auto; }
+  .ids-col-xxl-full { grid-column: 1 / -1; }
+}
+
+/* --------------------------------------------------------------------------
+   5. SISTEMA DE FILAS Y COLUMNAS FLEXBOX (Flexbox Row & Columns)
+   Distribución unidimensional (1D) moderna basada en gaps sin hacks de márgenes negativos.
+   -------------------------------------------------------------------------- */
+
+.ids-row {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--ids-grid-gutter-x);
+  row-gap: var(--ids-grid-gutter-y);
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* Modificadores de Comportamiento de Fila */
+.ids-row--nowrap {
+  flex-wrap: nowrap;
+}
+
+.ids-row--reverse {
+  flex-direction: row-reverse;
+}
+
+.ids-row--column {
+  flex-direction: column;
+}
+
+.ids-row--column-reverse {
+  flex-direction: column-reverse;
+}
+
+/* Columnas Flexbox (Hijos directos dentro de .ids-row) */
+.ids-flex-col {
+  flex: 1 1 0;
+  min-inline-size: 0; /* Previene desbordamiento en flexbox */
+  box-sizing: border-box;
+}
+
+.ids-flex-col-auto {
+  flex: 0 0 auto;
+  inline-size: auto;
+  box-sizing: border-box;
+}
+
+.ids-flex-col-12 {
+  flex: 0 0 100%;
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   6. CANALETAS Y ESPACIADOS DE CUADRÍCULA (Gutters)
+   Mapeo estricto a tokens de espaciado del sistema IDS.
+   -------------------------------------------------------------------------- */
+
+/* Canaletas Universales Bidimensionales (G: X e Y) */
+.ids-g-0,
+.ids-grid--g-0 {
+  --ids-grid-gutter-x: 0;
+  --ids-grid-gutter-y: 0;
+  gap: 0;
+}
+
+.ids-g-xs,
+.ids-grid--g-xs {
+  --ids-grid-gutter-x: var(--spacing-xs);
+  --ids-grid-gutter-y: var(--spacing-xs);
+  gap: var(--spacing-xs);
+}
+
+.ids-g-sm,
+.ids-grid--g-sm {
+  --ids-grid-gutter-x: var(--spacing-sm);
+  --ids-grid-gutter-y: var(--spacing-sm);
+  gap: var(--spacing-sm);
+}
+
+.ids-g-md,
+.ids-grid--g-md {
+  --ids-grid-gutter-x: var(--spacing-md);
+  --ids-grid-gutter-y: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.ids-g-lg,
+.ids-grid--g-lg {
+  --ids-grid-gutter-x: var(--spacing-lg);
+  --ids-grid-gutter-y: var(--spacing-lg);
+  gap: var(--spacing-lg);
+}
+
+.ids-g-xl,
+.ids-grid--g-xl {
+  --ids-grid-gutter-x: var(--spacing-xl);
+  --ids-grid-gutter-y: var(--spacing-xl);
+  gap: var(--spacing-xl);
+}
+
+.ids-g-xxl,
+.ids-grid--g-xxl {
+  --ids-grid-gutter-x: var(--spacing-xxl);
+  --ids-grid-gutter-y: var(--spacing-xxl);
+  gap: var(--spacing-xxl);
+}
+
+/* Pausa Cognitiva Informada por el Trauma (Espacio de descompresión emocional) */
+.ids-g-emotional,
+.ids-grid--g-emotional {
+  --ids-grid-gutter-x: var(--ids-layout-gap-emotional);
+  --ids-grid-gutter-y: var(--ids-layout-gap-emotional);
+  gap: var(--ids-layout-gap-emotional);
+}
+
+/* Canaletas Horizontales Exclusivas (GX: Column Gap) */
+.ids-gx-0   { --ids-grid-gutter-x: 0; column-gap: 0; }
+.ids-gx-xs  { --ids-grid-gutter-x: var(--spacing-xs); column-gap: var(--spacing-xs); }
+.ids-gx-sm  { --ids-grid-gutter-x: var(--spacing-sm); column-gap: var(--spacing-sm); }
+.ids-gx-md  { --ids-grid-gutter-x: var(--spacing-md); column-gap: var(--spacing-md); }
+.ids-gx-lg  { --ids-grid-gutter-x: var(--spacing-lg); column-gap: var(--spacing-lg); }
+.ids-gx-xl  { --ids-grid-gutter-x: var(--spacing-xl); column-gap: var(--spacing-xl); }
+.ids-gx-xxl { --ids-grid-gutter-x: var(--spacing-xxl); column-gap: var(--spacing-xxl); }
+
+/* Canaletas Verticales Exclusivas (GY: Row Gap) */
+.ids-gy-0   { --ids-grid-gutter-y: 0; row-gap: 0; }
+.ids-gy-xs  { --ids-grid-gutter-y: var(--spacing-xs); row-gap: var(--spacing-xs); }
+.ids-gy-sm  { --ids-grid-gutter-y: var(--spacing-sm); row-gap: var(--spacing-sm); }
+.ids-gy-md  { --ids-grid-gutter-y: var(--spacing-md); row-gap: var(--spacing-md); }
+.ids-gy-lg  { --ids-grid-gutter-y: var(--spacing-lg); row-gap: var(--spacing-lg); }
+.ids-gy-xl  { --ids-grid-gutter-y: var(--spacing-xl); row-gap: var(--spacing-xl); }
+.ids-gy-xxl { --ids-grid-gutter-y: var(--spacing-xxl); row-gap: var(--spacing-xxl); }
+
+/* Canaletas Responsivas en Pantallas Medianas (>= 48rem / 768px) */
+@media (min-width: 48rem) {
+  .ids-g-md-md {
+    --ids-grid-gutter-x: var(--spacing-md);
+    --ids-grid-gutter-y: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .ids-g-md-lg {
+    --ids-grid-gutter-x: var(--spacing-lg);
+    --ids-grid-gutter-y: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+
+  .ids-g-md-xl {
+    --ids-grid-gutter-x: var(--spacing-xl);
+    --ids-grid-gutter-y: var(--spacing-xl);
+    gap: var(--spacing-xl);
+  }
+}
+
+/* Canaletas Responsivas en Pantallas Grandes (>= 64rem / 1024px) */
+@media (min-width: 64rem) {
+  .ids-g-lg-lg {
+    --ids-grid-gutter-x: var(--spacing-lg);
+    --ids-grid-gutter-y: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+
+  .ids-g-lg-xl {
+    --ids-grid-gutter-x: var(--spacing-xl);
+    --ids-grid-gutter-y: var(--spacing-xl);
+    gap: var(--spacing-xl);
+  }
+
+  .ids-g-lg-xxl {
+    --ids-grid-gutter-x: var(--spacing-xxl);
+    --ids-grid-gutter-y: var(--spacing-xxl);
+    gap: var(--spacing-xxl);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ARQUETIPOS DE LAYOUT DE PLANTILLA (Template Layout Archetypes)
+   Estructuras completas de página para aplicaciones, dashboards y flujos críticos.
+   -------------------------------------------------------------------------- */
+
+/* 7.1 APP SHELL / HOLY GRAIL (Estructura de Aplicación Integral)
+   Apilado responsivo en dispositivos táctiles / móviles (<= 64rem);
+   cuadrícula de áreas semánticas completas en escritorio (>= 64rem). */
+.ids-layout-shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  inline-size: 100%;
+  background-color: var(--ids-layout-bg);
+  box-sizing: border-box;
+
+  @media (min-width: 64rem) {
+    display: grid;
+    grid-template-areas:
+      "header  header  header"
+      "sidebar main    aside"
+      "footer  footer  footer";
+    grid-template-columns: var(--ids-layout-sidebar-width) minmax(0, 1fr) var(--ids-layout-aside-width);
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* Variante Shell Sin Panel Lateral Secundario (Sidebar + Main + Footer) */
+.ids-layout-shell--no-aside {
+  @media (min-width: 64rem) {
+    grid-template-areas:
+      "header  header"
+      "sidebar main"
+      "footer  footer";
+    grid-template-columns: var(--ids-layout-sidebar-width) minmax(0, 1fr);
+  }
+}
+
+/* Componentes Hijos del Shell */
+.ids-layout-shell__header {
+  grid-area: header;
+  inline-size: 100%;
+  min-block-size: var(--ids-layout-header-height);
+  background-color: var(--ids-layout-surface);
+  border-block-end: var(--focus-ring-width) solid var(--ids-layout-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+  box-sizing: border-box;
+}
+
+.ids-layout-shell__sidebar {
+  grid-area: sidebar;
+  inline-size: 100%;
+  background-color: var(--ids-layout-surface);
+  border-block-end: var(--focus-ring-width) solid var(--ids-layout-border);
+  box-sizing: border-box;
+
+  @media (min-width: 64rem) {
+    border-block-end: none;
+    border-inline-end: var(--focus-ring-width) solid var(--ids-layout-border);
+  }
+}
+
+.ids-layout-shell__main {
+  grid-area: main;
+  inline-size: 100%;
+  min-inline-size: 0; /* Previene scroll horizontal con contenido extenso */
+  padding-block: var(--spacing-xl);
+  padding-inline: var(--ids-container-padding-x);
+  box-sizing: border-box;
+
+  @media (min-width: 64rem) {
+    padding-inline: var(--ids-container-padding-lg-x);
+  }
+}
+
+.ids-layout-shell__aside {
+  grid-area: aside;
+  inline-size: 100%;
+  background-color: var(--ids-layout-surface);
+  border-block-start: var(--focus-ring-width) solid var(--ids-layout-border);
+  box-sizing: border-box;
+
+  @media (min-width: 64rem) {
+    border-block-start: none;
+    border-inline-start: var(--focus-ring-width) solid var(--ids-layout-border);
+  }
+}
+
+.ids-layout-shell__footer {
+  grid-area: footer;
+  inline-size: 100%;
+  min-block-size: var(--ids-layout-footer-min-height);
+  background-color: var(--ids-layout-surface);
+  border-block-start: var(--focus-ring-width) solid var(--ids-layout-border);
+  box-sizing: border-box;
+}
+
+/* 7.2 LAYOUT DE PANEL LATERAL + CONTENIDO (Sidebar Layout) */
+.ids-layout-sidebar {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  gap: var(--spacing-xl);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.ids-layout-sidebar--end {
+  @media (min-width: 48rem) {
+    flex-direction: row-reverse;
+  }
+}
+
+.ids-layout-sidebar__aside {
+  inline-size: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    inline-size: var(--ids-layout-sidebar-width);
+  }
+}
+
+.ids-layout-sidebar__aside--sticky {
+  @media (min-width: 48rem) {
+    position: sticky;
+    top: var(--spacing-md);
+    max-block-size: calc(100dvh - var(--spacing-xl));
+    overflow-y: auto;
+  }
+}
+
+.ids-layout-sidebar__content {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* 7.3 LAYOUT CENTRADO Y FLUJO ENFOCADO (Focused Flow / Auth / Trauma-Informed Intake)
+   Centro matemático sin distracciones periféricas, ideal para denuncias, consentimientos,
+   formularios de crisis, autenticación o wizards. */
+.ids-layout-centered {
+  display: grid;
+  place-items: center;
+  min-block-size: 100dvh;
+  inline-size: 100%;
+  padding-block: var(--spacing-xl);
+  padding-inline: var(--ids-container-padding-x);
+  background-color: var(--ids-layout-bg);
+  box-sizing: border-box;
+}
+
+.ids-layout-centered__card {
+  inline-size: 100%;
+  max-inline-size: 32rem;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.ids-layout-centered--wide .ids-layout-centered__card {
+  max-inline-size: var(--ids-container-md);
+}
+
+.ids-layout-centered--narrow .ids-layout-centered__card {
+  max-inline-size: 26rem;
+}
+
+/* 7.4 LAYOUT DIVIDIDO 50/50 (Split Layout)
+   Presentación dual de dos columnas simétricas (ej. visual de acompañamiento + formulario) */
+.ids-layout-split {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ids-layout-split--60-40 {
+  @media (min-width: 48rem) {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.ids-layout-split--40-60 {
+  @media (min-width: 48rem) {
+    grid-template-columns: 2fr 3fr;
+  }
+}
+
+.ids-layout-split__pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  padding-block: var(--spacing-xxl);
+  padding-inline: var(--spacing-xl);
+  min-inline-size: 0;
+  box-sizing: border-box;
+
+  @media (min-width: 64rem) {
+    padding-inline: var(--spacing-xxxl);
+  }
+}
+
+.ids-layout-split__pane--muted {
+  background-color: var(--ids-layout-surface-muted);
+}
+
+/* 7.5 LAYOUT MULTI-COLUMNA EDITORIAL / TEXTO (Multi-column Flow)
+   Flujo continuo de lectura periodística que se adapta automáticamente */
+.ids-layout-columns {
+  columns: 1;
+  column-gap: var(--spacing-xl);
+  column-rule: var(--divider-thickness) solid var(--ids-layout-border);
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    columns: 2;
+  }
+
+  @media (min-width: 64rem) {
+    columns: 3;
+  }
+}
+
+.ids-layout-columns--2 {
+  columns: 1;
+  @media (min-width: 48rem) {
+    columns: 2;
+  }
+}
+
+.ids-layout-columns--3 {
+  columns: 1;
+  @media (min-width: 64rem) {
+    columns: 3;
+  }
+}
+
+/* 7.6 LAYOUT DASHBOARD / PANEL DE CONTROL (Bento Grid) */
+.ids-layout-dashboard {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--ids-grid-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  & > .ids-layout-dashboard__widget {
+    grid-column: span 12;
+    min-inline-size: 0;
+
+    @media (min-width: 48rem) {
+      &--half {
+        grid-column: span 6;
+      }
+      &--third {
+        grid-column: span 4;
+      }
+      &--two-thirds {
+        grid-column: span 8;
+      }
+      &--quarter {
+        grid-column: span 3;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. SECCIONES SEMÁNTICAS Y RITMO VERTICAL (Page Sections)
+   Modularidad de bloques de página con consistencia espaciada en unidades relativas.
+   -------------------------------------------------------------------------- */
+
+.ids-section {
+  inline-size: 100%;
+  padding-block: var(--ids-layout-section-padding-y);
+  box-sizing: border-box;
+}
+
+.ids-section--sm {
+  padding-block: var(--ids-layout-section-padding-sm-y);
+}
+
+.ids-section--lg {
+  padding-block: var(--ids-layout-section-padding-lg-y);
+}
+
+.ids-section--alt {
+  background-color: var(--ids-layout-surface);
+}
+
+.ids-section--muted {
+  background-color: var(--ids-layout-surface-muted);
+}
+
+/* Pausa Sensorial y Emocional Informada por el Trauma */
+.ids-section--break {
+  padding-block: var(--ids-layout-gap-emotional);
+  border-block: var(--divider-thickness) solid var(--ids-layout-border);
+  background-color: var(--ids-layout-surface-muted);
+}
+
+/* --------------------------------------------------------------------------
+   9. UTILIDADES DE ALINEACIÓN, DISTRIBUCIÓN Y VISIBILIDAD (Layout Utilities)
+   Soporte para alineación segura (safe) que previene truncamiento en zooms del 200%.
+   -------------------------------------------------------------------------- */
+
+/* Alineación en el Eje Transversal (Cross Axis / Align Items) */
+.ids-align-start    { align-items: safe start; }
+.ids-align-center   { align-items: safe center; }
+.ids-align-end      { align-items: safe end; }
+.ids-align-stretch  { align-items: stretch; }
+.ids-align-baseline { align-items: baseline; }
+
+/* Justificación en el Eje Principal (Main Axis / Justify Content) */
+.ids-justify-start   { justify-content: safe flex-start; }
+.ids-justify-center  { justify-content: safe center; }
+.ids-justify-end     { justify-content: safe flex-end; }
+.ids-justify-between { justify-content: space-between; }
+.ids-justify-around  { justify-content: space-around; }
+.ids-justify-evenly  { justify-content: space-evenly; }
+
+/* Autoalineación de Hijos Individuales (Align Self) */
+.ids-align-self-start   { align-self: safe start; }
+.ids-align-self-center  { align-self: safe center; }
+.ids-align-self-end     { align-self: safe end; }
+.ids-align-self-stretch { align-self: stretch; }
+
+/* Utilidades de Display */
+.ids-d-none         { display: none !important; }
+.ids-d-block        { display: block !important; }
+.ids-d-inline       { display: inline !important; }
+.ids-d-inline-block { display: inline-block !important; }
+.ids-d-flex         { display: flex !important; }
+.ids-d-inline-flex  { display: inline-flex !important; }
+.ids-d-grid         { display: grid !important; }
+
+/* Visibilidad Responsiva: Breakpoint SM (>= 36rem) */
+@media (min-width: 36rem) {
+  .ids-d-sm-none  { display: none !important; }
+  .ids-d-sm-block { display: block !important; }
+  .ids-d-sm-flex  { display: flex !important; }
+  .ids-d-sm-grid  { display: grid !important; }
+}
+
+/* Visibilidad Responsiva: Breakpoint MD (>= 48rem) */
+@media (min-width: 48rem) {
+  .ids-d-md-none  { display: none !important; }
+  .ids-d-md-block { display: block !important; }
+  .ids-d-md-flex  { display: flex !important; }
+  .ids-d-md-grid  { display: grid !important; }
+
+  .ids-justify-md-start   { justify-content: safe flex-start; }
+  .ids-justify-md-center  { justify-content: safe center; }
+  .ids-justify-md-end     { justify-content: safe flex-end; }
+  .ids-justify-md-between { justify-content: space-between; }
+}
+
+/* Visibilidad Responsiva: Breakpoint LG (>= 64rem) */
+@media (min-width: 64rem) {
+  .ids-d-lg-none  { display: none !important; }
+  .ids-d-lg-block { display: block !important; }
+  .ids-d-lg-flex  { display: flex !important; }
+  .ids-d-lg-grid  { display: grid !important; }
+
+  .ids-justify-lg-start   { justify-content: safe flex-start; }
+  .ids-justify-lg-center  { justify-content: safe center; }
+  .ids-justify-lg-end     { justify-content: safe flex-end; }
+  .ids-justify-lg-between { justify-content: space-between; }
+}
+
+/* --------------------------------------------------------------------------
+   10. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens cromáticos inyectados por _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 10.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-layout-shell,
+  .ids-layout-centered,
+  .ids-layout-split {
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-layout-shell__header,
+  .ids-layout-shell__footer,
+  .ids-layout-shell__sidebar,
+  .ids-layout-shell__aside,
+  .ids-layout-split__pane--muted,
+  .ids-section--alt,
+  .ids-section--muted {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-section--break {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-muted);
+  }
+}
+
+/* 10.2 Tema Baja Estimulación (Low Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-layout-shell,
+  .ids-layout-centered,
+  .ids-layout-split {
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-layout-shell__header,
+  .ids-layout-shell__footer,
+  .ids-layout-shell__sidebar,
+  .ids-layout-shell__aside,
+  .ids-section--alt {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-layout-split__pane--muted,
+  .ids-section--muted,
+  .ids-section--break {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 10.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-layout-shell,
+  .ids-layout-centered,
+  .ids-layout-split {
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-layout-shell__header,
+  .ids-layout-shell__footer,
+  .ids-layout-shell__sidebar,
+  .ids-layout-shell__aside,
+  .ids-section--alt {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-layout-split__pane--muted,
+  .ids-section--muted,
+  .ids-section--break {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 10.4 Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-layout-shell__header,
+  .ids-layout-shell__footer,
+  .ids-layout-shell__sidebar,
+  .ids-layout-shell__aside,
+  .ids-section--break,
+  .ids-layout-columns {
+    border-color: CanvasText;
+  }
+
+  .ids-layout-shell,
+  .ids-layout-centered,
+  .ids-layout-split,
+  .ids-layout-shell__header,
+  .ids-layout-shell__footer,
+  .ids-layout-shell__sidebar,
+  .ids-layout-shell__aside,
+  .ids-section {
+    background-color: Canvas;
+    color: CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. MOVIMIENTO REDUCIDO Y ACCESIBILIDAD UNIVERSAL (WCAG AAA)
+   Garantía de Reflow sin scroll horizontal hasta un zoom del 200%.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ids-container,
+  .ids-grid,
+  .ids-row,
+  .ids-layout-shell,
+  .ids-layout-sidebar,
+  .ids-layout-centered,
+  .ids-layout-split,
+  .ids-section {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,599 @@
+/* ==========================================================================
+   02-atoms/_scrollbar.scss
+   Identity Design System (IDS) - Átomo de Barra de Desplazamiento (Scrollbar X & Y)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE LA BARRA DE DESPLAZAMIENTO (SCROLLBAR)
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría o color se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Calibre Base (Eje Y: Ancho / Eje X: Alto) */
+  --ids-scrollbar-size-vertical: var(--scrollbar-size-vertical);
+  --ids-scrollbar-size-horizontal: var(--scrollbar-size-horizontal);
+  --ids-scrollbar-size: var(--scrollbar-size);
+
+  /* Variantes de Dimensión (Delgada y Amplia/Accesible) */
+  --ids-scrollbar-size-sm-vertical: var(--scrollbar-size-sm-vertical);
+  --ids-scrollbar-size-sm-horizontal: var(--scrollbar-size-sm-horizontal);
+  --ids-scrollbar-size-sm: var(--scrollbar-size-sm);
+
+  --ids-scrollbar-size-lg-vertical: var(--scrollbar-size-lg-vertical);
+  --ids-scrollbar-size-lg-horizontal: var(--scrollbar-size-lg-horizontal);
+  --ids-scrollbar-size-lg: var(--scrollbar-size-lg);
+
+  /* Curvatura, Holgura y Longitud Mínima */
+  --ids-scrollbar-track-radius: var(--scrollbar-track-radius);
+  --ids-scrollbar-thumb-radius: var(--scrollbar-thumb-radius);
+  --ids-scrollbar-thumb-border-width: var(--scrollbar-thumb-border-width);
+  --ids-scrollbar-min-length: var(--scrollbar-min-length);
+
+  /* Piel y Mapeo Cromático (Superficie y Deslizador) */
+  --ids-scrollbar-track-bg: var(--scrollbar-track-bg);
+  --ids-scrollbar-track-border: var(--scrollbar-track-border);
+  --ids-scrollbar-thumb-bg: var(--scrollbar-thumb-bg);
+  --ids-scrollbar-thumb-border: var(--scrollbar-thumb-border);
+  --ids-scrollbar-thumb-hover-bg: var(--scrollbar-thumb-hover-bg);
+  --ids-scrollbar-thumb-active-bg: var(--scrollbar-thumb-active-bg);
+  --ids-scrollbar-corner-bg: var(--scrollbar-corner-bg);
+
+  /* Variantes Cromáticas Semánticas por Estado */
+  --ids-scrollbar-primary-thumb-bg: var(--scrollbar-primary-thumb-bg);
+  --ids-scrollbar-primary-thumb-hover-bg: var(--scrollbar-primary-thumb-hover-bg);
+  --ids-scrollbar-success-thumb-bg: var(--scrollbar-success-thumb-bg);
+  --ids-scrollbar-danger-thumb-bg: var(--scrollbar-danger-thumb-bg);
+  --ids-scrollbar-warning-thumb-bg: var(--scrollbar-warning-thumb-bg);
+  --ids-scrollbar-info-thumb-bg: var(--scrollbar-info-thumb-bg);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESTILOS GLOBALES DE DESPLAZAMIENTO (Documento Raíz: html & body)
+   Aplica normalización multi-navegador y temas IDS a la ventana principal.
+   -------------------------------------------------------------------------- */
+html {
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+  scrollbar-width: thin;
+
+  /* Motor WebKit (Chrome, Edge, Safari, Opera) */
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    block-size: var(--ids-scrollbar-size-horizontal);
+    width: var(--ids-scrollbar-size-vertical);
+    height: var(--ids-scrollbar-size-horizontal);
+  }
+
+  &::-webkit-scrollbar:vertical {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    width: var(--ids-scrollbar-size-vertical);
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    block-size: var(--ids-scrollbar-size-horizontal);
+    height: var(--ids-scrollbar-size-horizontal);
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--ids-scrollbar-track-bg);
+    border-radius: var(--ids-scrollbar-track-radius);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-thumb-bg);
+    border-radius: var(--ids-scrollbar-thumb-radius);
+    border: var(--ids-scrollbar-thumb-border-width) solid var(--ids-scrollbar-thumb-border);
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-thumb:vertical {
+    min-block-size: var(--ids-scrollbar-min-length);
+    min-height: var(--ids-scrollbar-min-length);
+  }
+
+  &::-webkit-scrollbar-thumb:horizontal {
+    min-inline-size: var(--ids-scrollbar-min-length);
+    min-width: var(--ids-scrollbar-min-length);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ids-scrollbar-thumb-hover-bg);
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background-color: var(--ids-scrollbar-thumb-active-bg);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: var(--ids-scrollbar-corner-bg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. CLASE BASE DE CONTENEDOR ESCROLABLE (.ids-scrollbar)
+   Esqueleto y Piel para áreas de desplazamiento locales o anidadas.
+   -------------------------------------------------------------------------- */
+.ids-scrollbar {
+  box-sizing: border-box;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+  scrollbar-width: thin;
+
+  /* Dimensiones en WebKit */
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    block-size: var(--ids-scrollbar-size-horizontal);
+    width: var(--ids-scrollbar-size-vertical);
+    height: var(--ids-scrollbar-size-horizontal);
+  }
+
+  /* Eje Vertical (Y) */
+  &::-webkit-scrollbar:vertical {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    width: var(--ids-scrollbar-size-vertical);
+  }
+
+  /* Eje Horizontal (X) */
+  &::-webkit-scrollbar:horizontal {
+    block-size: var(--ids-scrollbar-size-horizontal);
+    height: var(--ids-scrollbar-size-horizontal);
+  }
+
+  /* Pista (Track) */
+  &::-webkit-scrollbar-track {
+    background-color: var(--ids-scrollbar-track-bg);
+    border-radius: var(--ids-scrollbar-track-radius);
+  }
+
+  /* Deslizador (Thumb) */
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-thumb-bg);
+    border-radius: var(--ids-scrollbar-thumb-radius);
+    border: var(--ids-scrollbar-thumb-border-width) solid var(--ids-scrollbar-thumb-border);
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-thumb:vertical {
+    min-block-size: var(--ids-scrollbar-min-length);
+    min-height: var(--ids-scrollbar-min-length);
+  }
+
+  &::-webkit-scrollbar-thumb:horizontal {
+    min-inline-size: var(--ids-scrollbar-min-length);
+    min-width: var(--ids-scrollbar-min-length);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ids-scrollbar-thumb-hover-bg);
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background-color: var(--ids-scrollbar-thumb-active-bg);
+  }
+
+  /* Esquina de Intersección X/Y */
+  &::-webkit-scrollbar-corner {
+    background-color: var(--ids-scrollbar-corner-bg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. MODIFICADORES DE ORIENTACIÓN: EJE Y (Vertical) Y EJE X (Horizontal)
+   -------------------------------------------------------------------------- */
+
+/* 4.1 Desplazamiento Exclusivo Vertical (Eje Y) */
+.ids-scrollbar--y {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    width: var(--ids-scrollbar-size-vertical);
+    block-size: 0;
+    height: 0;
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    display: none;
+    block-size: 0;
+    height: 0;
+  }
+
+  &::-webkit-scrollbar:vertical {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    width: var(--ids-scrollbar-size-vertical);
+  }
+}
+
+/* 4.2 Desplazamiento Exclusivo Horizontal (Eje X) */
+.ids-scrollbar--x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar {
+    block-size: var(--ids-scrollbar-size-horizontal);
+    height: var(--ids-scrollbar-size-horizontal);
+    inline-size: 0;
+    width: 0;
+  }
+
+  &::-webkit-scrollbar:vertical {
+    display: none;
+    inline-size: 0;
+    width: 0;
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    block-size: var(--ids-scrollbar-size-horizontal);
+    height: var(--ids-scrollbar-size-horizontal);
+  }
+}
+
+/* 4.3 Desplazamiento Bidireccional Simultáneo (Eje X e Y) */
+.ids-scrollbar--both {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-vertical);
+    block-size: var(--ids-scrollbar-size-horizontal);
+    width: var(--ids-scrollbar-size-vertical);
+    height: var(--ids-scrollbar-size-horizontal);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MODIFICADORES DE CALIBRE Y TAMAÑO (BEM)
+   -------------------------------------------------------------------------- */
+
+/* 5.1 Calibre Delgado / Compacto (.ids-scrollbar--thin) */
+.ids-scrollbar--thin {
+  --ids-scrollbar-size-vertical: var(--ids-scrollbar-size-sm-vertical);
+  --ids-scrollbar-size-horizontal: var(--ids-scrollbar-size-sm-horizontal);
+  --ids-scrollbar-size: var(--ids-scrollbar-size-sm);
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-sm-vertical);
+    block-size: var(--ids-scrollbar-size-sm-horizontal);
+    width: var(--ids-scrollbar-size-sm-vertical);
+    height: var(--ids-scrollbar-size-sm-horizontal);
+  }
+
+  &::-webkit-scrollbar:vertical {
+    inline-size: var(--ids-scrollbar-size-sm-vertical);
+    width: var(--ids-scrollbar-size-sm-vertical);
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    block-size: var(--ids-scrollbar-size-sm-horizontal);
+    height: var(--ids-scrollbar-size-sm-horizontal);
+  }
+}
+
+/* 5.2 Calibre Amplio / Alta Accesibilidad Motriz (.ids-scrollbar--lg) */
+.ids-scrollbar--lg,
+.ids-scrollbar--prominent {
+  --ids-scrollbar-size-vertical: var(--ids-scrollbar-size-lg-vertical);
+  --ids-scrollbar-size-horizontal: var(--ids-scrollbar-size-lg-horizontal);
+  --ids-scrollbar-size: var(--ids-scrollbar-size-lg);
+  scrollbar-width: auto;
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-lg-vertical);
+    block-size: var(--ids-scrollbar-size-lg-horizontal);
+    width: var(--ids-scrollbar-size-lg-vertical);
+    height: var(--ids-scrollbar-size-lg-horizontal);
+  }
+
+  &::-webkit-scrollbar:vertical {
+    inline-size: var(--ids-scrollbar-size-lg-vertical);
+    width: var(--ids-scrollbar-size-lg-vertical);
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    block-size: var(--ids-scrollbar-size-lg-horizontal);
+    height: var(--ids-scrollbar-size-lg-horizontal);
+  }
+}
+
+/* 5.3 Oculto pero Funcional (.ids-scrollbar--hidden / .ids-scrollbar--none)
+   Permite desplazamiento táctil o mediante teclado sin barra visible. */
+.ids-scrollbar--hidden,
+.ids-scrollbar--none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    inline-size: 0;
+    block-size: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. MODIFICADOR DE ESTABILIDAD DE LAYOUT (Trauma-Informed Design)
+   Previene saltos y desplazamientos cognitivamente molestos de la interfaz
+   al aparecer o desaparecer la barra de desplazamiento.
+   -------------------------------------------------------------------------- */
+.ids-scrollbar--stable-gutter {
+  scrollbar-gutter: stable;
+}
+
+.ids-scrollbar--stable-gutter-both {
+  scrollbar-gutter: stable both-edges;
+}
+
+/* --------------------------------------------------------------------------
+   7. MODIFICADORES DE SUPERFICIE Y PISTA SUTIL
+   -------------------------------------------------------------------------- */
+.ids-scrollbar--subtle {
+  --ids-scrollbar-track-bg: transparent;
+  --ids-scrollbar-thumb-border: transparent;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg) transparent;
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-color: transparent;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. VARIANTES CROMÁTICAS SEMÁNTICAS (BEM)
+   Permite enfatizar contenedores de código, logs, consolas o tablas críticas.
+   -------------------------------------------------------------------------- */
+
+/* 8.1 Variante Primaria / Identidad IDS */
+.ids-scrollbar--primary {
+  --ids-scrollbar-thumb-bg: var(--ids-scrollbar-primary-thumb-bg);
+  --ids-scrollbar-thumb-hover-bg: var(--ids-scrollbar-primary-thumb-hover-bg);
+  scrollbar-color: var(--ids-scrollbar-primary-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-primary-thumb-bg);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ids-scrollbar-primary-thumb-hover-bg);
+  }
+}
+
+/* 8.2 Variante Éxito / Confirmación */
+.ids-scrollbar--success {
+  --ids-scrollbar-thumb-bg: var(--ids-scrollbar-success-thumb-bg);
+  scrollbar-color: var(--ids-scrollbar-success-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-success-thumb-bg);
+  }
+}
+
+/* 8.3 Variante Peligro / Alerta Destructiva */
+.ids-scrollbar--danger {
+  --ids-scrollbar-thumb-bg: var(--ids-scrollbar-danger-thumb-bg);
+  scrollbar-color: var(--ids-scrollbar-danger-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-danger-thumb-bg);
+  }
+}
+
+/* 8.4 Variante Advertencia / Precaución */
+.ids-scrollbar--warning {
+  --ids-scrollbar-thumb-bg: var(--ids-scrollbar-warning-thumb-bg);
+  scrollbar-color: var(--ids-scrollbar-warning-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-warning-thumb-bg);
+  }
+}
+
+/* 8.5 Variante Información */
+.ids-scrollbar--info {
+  --ids-scrollbar-thumb-bg: var(--ids-scrollbar-info-thumb-bg);
+  scrollbar-color: var(--ids-scrollbar-info-thumb-bg) var(--ids-scrollbar-track-bg);
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-info-thumb-bg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. TEMATIZACIÓN DINÁMICA (4 EJES IDS)
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Alto Contraste (WCAG AAA - data-theme="high-contrast") */
+[data-theme="high-contrast"] {
+  html,
+  body,
+  .ids-scrollbar {
+    --ids-scrollbar-track-bg: var(--color-surface-muted);
+    --ids-scrollbar-thumb-bg: var(--color-border-subtle);
+    --ids-scrollbar-thumb-border: var(--color-surface-background);
+    --ids-scrollbar-thumb-hover-bg: var(--color-border-interactive);
+    --ids-scrollbar-thumb-active-bg: var(--color-action-primary);
+    --ids-scrollbar-corner-bg: var(--color-surface-background);
+
+    scrollbar-color: var(--color-border-subtle) var(--color-surface-muted);
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-surface-muted);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-border-subtle);
+      border-color: var(--color-surface-background);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-border-interactive);
+    }
+
+    &::-webkit-scrollbar-thumb:active {
+      background-color: var(--color-action-primary);
+    }
+
+    &::-webkit-scrollbar-corner {
+      background-color: var(--color-surface-background);
+    }
+  }
+}
+
+/* 9.2 Baja Estimulación (Neurodivergencia - data-theme="low-stimulation") */
+[data-theme="low-stimulation"] {
+  html,
+  body,
+  .ids-scrollbar {
+    --ids-scrollbar-track-bg: var(--color-surface-muted);
+    --ids-scrollbar-thumb-bg: var(--color-border-subtle);
+    --ids-scrollbar-thumb-border: var(--color-surface-background);
+    --ids-scrollbar-thumb-hover-bg: var(--color-border-interactive);
+    --ids-scrollbar-thumb-active-bg: var(--color-action-primary);
+    --ids-scrollbar-corner-bg: var(--color-surface-background);
+
+    scrollbar-color: var(--color-border-subtle) var(--color-surface-muted);
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-surface-muted);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-border-subtle);
+      border-color: var(--color-surface-background);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-border-interactive);
+    }
+
+    &::-webkit-scrollbar-thumb:active {
+      background-color: var(--color-action-primary);
+    }
+  }
+}
+
+/* 9.3 Modo Discreto / Stealth (Anti-Outing - data-theme="discrete") */
+[data-theme="discrete"] {
+  html,
+  body,
+  .ids-scrollbar {
+    --ids-scrollbar-track-bg: var(--color-surface-muted);
+    --ids-scrollbar-thumb-bg: var(--color-border-subtle);
+    --ids-scrollbar-thumb-border: var(--color-surface-background);
+    --ids-scrollbar-thumb-hover-bg: var(--color-border-interactive);
+    --ids-scrollbar-thumb-active-bg: var(--color-action-primary);
+    --ids-scrollbar-corner-bg: var(--color-surface-background);
+
+    scrollbar-color: var(--color-border-subtle) var(--color-surface-muted);
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-surface-muted);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-border-subtle);
+      border-color: var(--color-surface-background);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-border-interactive);
+    }
+
+    &::-webkit-scrollbar-thumb:active {
+      background-color: var(--color-action-primary);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (prefers-contrast & forced-colors)
+   -------------------------------------------------------------------------- */
+@media (prefers-contrast: more) {
+  html,
+  body,
+  .ids-scrollbar {
+    --ids-scrollbar-track-bg: var(--color-surface-background);
+    --ids-scrollbar-thumb-bg: var(--color-text-primary);
+    --ids-scrollbar-thumb-border: var(--color-surface-background);
+    --ids-scrollbar-thumb-hover-bg: var(--color-action-hover);
+
+    scrollbar-color: var(--color-text-primary) var(--color-surface-background);
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--color-surface-background);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-text-primary);
+      border-color: var(--color-surface-background);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-action-hover);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  html,
+  body,
+  .ids-scrollbar {
+    scrollbar-color: ButtonText Field;
+
+    &::-webkit-scrollbar-track {
+      background-color: Field;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: ButtonText;
+      border-color: Field;
+    }
+
+    &::-webkit-scrollbar-thumb:hover,
+    &::-webkit-scrollbar-thumb:active {
+      background-color: Highlight;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background-color: Canvas;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. MOVIMIENTO REDUCIDO (Trauma-Informed Design)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  .ids-scrollbar {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. DISEÑO RESPONSIVO (Nativo mediante @media queries) - Mobile-First
+   -------------------------------------------------------------------------- */
+.ids-scrollbar {
+  /* En pantallas móviles se adopta calibre delgado por defecto para maximizar el área visible */
+  --ids-scrollbar-size-vertical: var(--ids-scrollbar-size-sm-vertical);
+  --ids-scrollbar-size-horizontal: var(--ids-scrollbar-size-sm-horizontal);
+
+  @media (min-width: 48rem) {
+    /* En pantallas tablet/desktop a partir de 48rem se despliega el calibre estándar */
+    --ids-scrollbar-size-vertical: var(--scrollbar-size-vertical);
+    --ids-scrollbar-size-horizontal: var(--scrollbar-size-horizontal);
+  }
+}

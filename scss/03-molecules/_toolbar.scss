@@ -1,0 +1,662 @@
+/* ==========================================================================
+   03-molecules/_toolbar.scss
+   Identity Design System (IDS) - Molécula de Barras de Herramientas (Toolbar)
+   Contenedor estructurado de acciones, utilidades y navegación contextual,
+   con soporte para orientación horizontal y vertical, acople docked o flotante,
+   e integración nativa con Botones de Acción Flotante (FAB).
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE LA BARRA DE HERRAMIENTAS
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Dimensiones Base (Garantía táctil WCAG AAA: mínimo 2.75rem) */
+  --ids-toolbar-min-height: calc(var(--target-size-min) + var(--spacing-sm) * 2);
+  --ids-toolbar-min-width: calc(var(--target-size-min) + var(--spacing-sm) * 2);
+  --ids-toolbar-padding-x: var(--spacing-md);
+  --ids-toolbar-padding-y: var(--spacing-sm);
+  --ids-toolbar-gap: var(--spacing-sm);
+  --ids-toolbar-group-gap: var(--spacing-xs);
+
+  /* Curvaturas y Bordes */
+  --ids-toolbar-radius: var(--radius-card);
+  --ids-toolbar-radius-pill: var(--radius-full);
+  --ids-toolbar-border-width: var(--focus-ring-width);
+  --ids-toolbar-border-style: solid;
+  --ids-toolbar-z-index: var(--z-index-sticky);     /* 100 - Capa pegajosa o acoplada */
+  --ids-toolbar-z-index-floating: 950;              /* Capa flotante contextual */
+
+  /* Coordenadas de Posición Flotante */
+  --ids-toolbar-floating-offset: var(--spacing-lg);
+  --ids-toolbar-floating-offset-mobile: var(--spacing-sm);
+
+  /* Piel y Colores Base (Flat / Clean) */
+  --ids-toolbar-bg: var(--color-surface-card);
+  --ids-toolbar-color: var(--color-text-primary);
+  --ids-toolbar-border-color: var(--color-border-subtle);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-toolbar-current-bg: var(--ids-toolbar-bg);
+  --ids-toolbar-current-color: var(--ids-toolbar-color);
+  --ids-toolbar-current-border: var(--ids-toolbar-border-color);
+
+  /* Separadores Internos */
+  --ids-toolbar-divider-color: var(--color-border-subtle);
+  --ids-toolbar-divider-thickness: var(--divider-thickness);
+  --ids-toolbar-divider-length: 1.75rem;
+
+  /* Controles Interactivos Internos */
+  --ids-toolbar-btn-size: var(--target-size-min);   /* Área táctil mínima accesible */
+  --ids-toolbar-btn-radius: var(--radius-sm);
+  --ids-toolbar-btn-hover-bg: var(--color-surface-hover);
+  --ids-toolbar-btn-active-bg: var(--color-surface-muted);
+  --ids-toolbar-btn-color: var(--color-text-primary);
+
+  /* Integración con FAB Sobresaliente */
+  --ids-toolbar-fab-gap: var(--spacing-md);
+  --ids-toolbar-fab-overhang: calc(var(--spacing-md) * -1);
+
+  /* Transición */
+  --ids-toolbar-transition-speed: var(--transition-speed-fast);
+  --ids-toolbar-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-toolbar / .toolbar)
+   Contenedor modular con rol WAI-ARIA role="toolbar" para navegación por teclado.
+   -------------------------------------------------------------------------- */
+.ids-toolbar,
+.toolbar {
+  display: flex;
+  box-sizing: border-box;
+  background-color: var(--ids-toolbar-current-bg);
+  color: var(--ids-toolbar-current-color);
+  border: var(--ids-toolbar-border-width) var(--ids-toolbar-border-style) var(--ids-toolbar-current-border);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  user-select: none;
+  transition: background-color var(--ids-toolbar-transition-speed) var(--ids-toolbar-transition-ease),
+              border-color var(--ids-toolbar-transition-speed) var(--ids-toolbar-transition-ease);
+
+  /* ------------------------------------------------------------------------
+     2.1 Orientación Horizontal (.ids-toolbar--horizontal / Default)
+     ------------------------------------------------------------------------ */
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  min-block-size: var(--ids-toolbar-min-height);
+  padding-block: var(--ids-snackbar-padding-y, var(--ids-toolbar-padding-y));
+  padding-inline: var(--ids-toolbar-padding-x);
+  gap: var(--ids-toolbar-gap);
+
+  /* Subgrupos Funcionales de Controles */
+  &__group {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ids-toolbar-group-gap);
+    flex-shrink: 0;
+  }
+
+  /* Secciones de Distribución (Inicio, Centro, Fin) */
+  &__start {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ids-toolbar-group-gap);
+    margin-inline-end: auto;
+  }
+
+  &__center {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ids-toolbar-group-gap);
+  }
+
+  &__end {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ids-toolbar-group-gap);
+    margin-inline-start: auto;
+  }
+
+  /* Espaciador Elástico Flexible */
+  &__spacer {
+    flex: 1 1 auto;
+    min-inline-size: var(--spacing-sm);
+  }
+
+  /* Separador Interno de Grupos (Horizontal) */
+  &__divider {
+    display: block;
+    inline-size: var(--ids-toolbar-divider-thickness);
+    block-size: var(--ids-toolbar-divider-length);
+    background-color: var(--ids-toolbar-divider-color);
+    border: none;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  /* Botón Atómico Específico del Toolbar */
+  &__button,
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    min-inline-size: var(--ids-toolbar-btn-size);
+    min-block-size: var(--ids-toolbar-btn-size);
+    inline-size: auto;
+    block-size: var(--ids-toolbar-btn-size);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+    box-sizing: border-box;
+    background: transparent;
+    border: var(--focus-ring-width) solid transparent;
+    border-radius: var(--ids-toolbar-btn-radius);
+    color: var(--ids-toolbar-btn-color);
+    font-family: inherit;
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-tight);
+    cursor: pointer;
+    touch-action: manipulation;
+    text-decoration: none;
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease),
+                border-color var(--transition-speed-fast) var(--transition-ease);
+
+    .ids-icon {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Variante Solo Icono */
+    &--icon-only {
+      padding: 0;
+      inline-size: var(--ids-toolbar-btn-size);
+    }
+
+    /* Estado Activo / Seleccionado (WAI-ARIA aria-pressed="true" / aria-current) */
+    &.is-active,
+    &[aria-pressed="true"],
+    &[aria-current="page"] {
+      background-color: var(--ids-toolbar-btn-active-bg);
+      border-color: var(--color-border-interactive);
+      color: var(--color-action-primary);
+    }
+
+    &:hover:not(:disabled):not(.is-active) {
+      background-color: var(--ids-toolbar-btn-hover-bg);
+      color: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+      z-index: 2;
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--ids-toolbar-btn-active-bg);
+    }
+
+    &:disabled,
+    &[aria-disabled="true"] {
+      opacity: var(--opacity-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  /* Etiqueta o Título de la Barra */
+  &__title {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: inherit;
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ORIENTACIÓN VERTICAL (.ids-toolbar--vertical)
+   Barras laterales para paletas de herramientas, lienzos forenses o docks.
+   -------------------------------------------------------------------------- */
+.ids-toolbar--vertical,
+.toolbar--vertical {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-inline-size: var(--ids-toolbar-min-width);
+  min-block-size: auto;
+  inline-size: max-content;
+  block-size: auto;
+  padding-block: var(--ids-toolbar-padding-x);
+  padding-inline: var(--ids-toolbar-padding-y);
+  gap: var(--ids-toolbar-gap);
+
+  .ids-toolbar__group,
+  .toolbar__group {
+    flex-direction: column;
+    inline-size: 100%;
+  }
+
+  .ids-toolbar__start,
+  .toolbar__start {
+    flex-direction: column;
+    margin-inline-end: 0;
+    margin-block-end: auto;
+    inline-size: 100%;
+  }
+
+  .ids-toolbar__center,
+  .toolbar__center {
+    flex-direction: column;
+    inline-size: 100%;
+  }
+
+  .ids-toolbar__end,
+  .toolbar__end {
+    flex-direction: column;
+    margin-inline-start: 0;
+    margin-block-start: auto;
+    inline-size: 100%;
+  }
+
+  .ids-toolbar__spacer,
+  .toolbar__spacer {
+    min-block-size: var(--spacing-sm);
+    min-inline-size: auto;
+  }
+
+  /* Separador Horizontal en Toolbar Vertical */
+  .ids-toolbar__divider,
+  .toolbar__divider {
+    inline-size: var(--ids-toolbar-divider-length);
+    block-size: var(--ids-toolbar-divider-thickness);
+  }
+
+  .ids-toolbar__button,
+  .toolbar__button {
+    inline-size: var(--ids-toolbar-btn-size);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. MODALIDADES: DOCKED (ACOPLADO) VS FLOATING (FLOTANTE)
+   -------------------------------------------------------------------------- */
+
+/* 4.1 Barra Acoplada (Docked): Adherida a un extremo del contenedor o pantalla */
+.ids-toolbar--docked,
+.toolbar--docked {
+  border-radius: 0;
+  inline-size: 100%;
+
+  /* Acople Superior */
+  &.ids-toolbar--docked-top,
+  &.toolbar--docked-top {
+    border-inline-start: none;
+    border-inline-end: none;
+    border-block-start: none;
+    border-block-end: var(--ids-toolbar-border-width) var(--ids-toolbar-border-style) var(--ids-toolbar-current-border);
+  }
+
+  /* Acople Inferior (e.g. Mobile Bottom App Bar) */
+  &.ids-toolbar--docked-bottom,
+  &.toolbar--docked-bottom {
+    border-inline-start: none;
+    border-inline-end: none;
+    border-block-end: none;
+    border-block-start: var(--ids-toolbar-border-width) var(--ids-toolbar-border-style) var(--ids-toolbar-current-border);
+  }
+
+  /* Acople Lateral Izquierdo / Start */
+  &.ids-toolbar--docked-start,
+  &.ids-toolbar--docked-left,
+  &.toolbar--docked-start,
+  &.toolbar--docked-left {
+    border-block-start: none;
+    border-block-end: none;
+    border-inline-start: none;
+    border-inline-end: var(--ids-toolbar-border-width) var(--ids-toolbar-border-style) var(--ids-toolbar-current-border);
+    block-size: 100%;
+  }
+
+  /* Acople Lateral Derecho / End */
+  &.ids-toolbar--docked-end,
+  &.ids-toolbar--docked-right,
+  &.toolbar--docked-end,
+  &.toolbar--docked-right {
+    border-block-start: none;
+    border-block-end: none;
+    border-inline-end: none;
+    border-inline-start: var(--ids-toolbar-border-width) var(--ids-toolbar-border-style) var(--ids-toolbar-current-border);
+    block-size: 100%;
+  }
+}
+
+/* 4.2 Barra Flotante (Floating): Isla aislada con curvatura completa */
+.ids-toolbar--floating,
+.toolbar--floating {
+  border-radius: var(--ids-toolbar-radius);
+  box-shadow: none; /* Estricta adhesión Flat/Clean de IDS sin sombras proyectadas complejas */
+  inline-size: calc(100% - var(--ids-toolbar-floating-offset-mobile) * 2);
+  max-inline-size: 100%;
+
+  /* Formato Píldora / Cápsula */
+  &.ids-toolbar--pill,
+  &.toolbar--pill {
+    border-radius: var(--ids-toolbar-radius-pill);
+    padding-inline: var(--spacing-lg);
+  }
+}
+
+/* Fijado Absoluto/Fijo en Pantalla (.ids-toolbar--fixed) */
+.ids-toolbar--fixed,
+.toolbar--fixed {
+  position: fixed;
+  z-index: var(--ids-toolbar-z-index-floating);
+
+  &.ids-toolbar--bottom-center,
+  &.toolbar--bottom-center {
+    inset-block-end: var(--ids-toolbar-floating-offset);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.ids-toolbar--top-center,
+  &.toolbar--top-center {
+    inset-block-start: var(--ids-toolbar-floating-offset);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.ids-toolbar--start-center,
+  &.ids-toolbar--left-center,
+  &.toolbar--start-center,
+  &.toolbar--left-center {
+    inset-inline-start: var(--ids-toolbar-floating-offset);
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+  }
+
+  &.ids-toolbar--end-center,
+  &.ids-toolbar--right-center,
+  &.toolbar--end-center,
+  &.toolbar--right-center {
+    inset-inline-end: var(--ids-toolbar-floating-offset);
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. INTEGRACIÓN CON FAB (CON Y SIN FAB)
+   -------------------------------------------------------------------------- */
+
+/* Contenedor o Slot de FAB Integrado */
+.ids-toolbar__fab,
+.toolbar__fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-inline: var(--spacing-xs);
+
+  .ids-fab {
+    z-index: 2;
+  }
+}
+
+/* FAB Sobresaliente / Protruding (e.g. Botón de Emergencia o Caso Nuevo) */
+.ids-toolbar--with-fab,
+.toolbar--with-fab {
+  /* FAB sobresaliendo hacia arriba en barra inferior */
+  .ids-toolbar__fab--overhanging,
+  .toolbar__fab--overhanging {
+    margin-block-start: var(--ids-toolbar-fab-overhang);
+
+    .ids-fab {
+      border-color: var(--color-surface-background);
+      border-width: var(--focus-ring-width);
+    }
+  }
+
+  /* Notch / Escotadura visual accesible */
+  .ids-toolbar__fab-notch,
+  .toolbar__fab-notch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--spacing-xs);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. DENSIDADES DE TAMAÑO (.ids-toolbar--sm / --lg)
+   -------------------------------------------------------------------------- */
+.ids-toolbar--sm,
+.toolbar--sm {
+  --ids-toolbar-btn-size: var(--target-size-min); /* Respeta área táctil mínima WCAG AAA */
+  padding-inline: var(--spacing-sm);
+  padding-block: var(--spacing-xs);
+  gap: var(--spacing-xs);
+
+  .ids-toolbar__button,
+  .toolbar__button {
+    font-size: calc(var(--font-size-caption) * 0.9);
+  }
+}
+
+.ids-toolbar--lg,
+.toolbar--lg {
+  --ids-toolbar-btn-size: 3.25rem;
+  padding-inline: var(--spacing-lg);
+  padding-block: var(--spacing-md);
+  gap: var(--spacing-md);
+
+  .ids-toolbar__button,
+  .toolbar__button {
+    font-size: var(--font-size-body);
+
+    .ids-icon {
+      inline-size: 1.5rem;
+      block-size: 1.5rem;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ADAPTABILIDAD A LOS 4 EJES TEMÁTICOS DEL IDS
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-toolbar,
+  .toolbar {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+    border-width: var(--focus-ring-width);
+    color: var(--color-text-primary);
+
+    .ids-toolbar__divider,
+    .toolbar__divider {
+      background-color: var(--color-border-subtle);
+      inline-size: var(--focus-ring-width);
+    }
+
+    .ids-toolbar__button,
+    .toolbar__button {
+      border-color: transparent;
+      color: var(--color-text-primary);
+
+      &:hover:not(:disabled) {
+        border-color: var(--color-border-interactive);
+        color: var(--color-action-primary);
+        outline: var(--focus-ring-width) solid var(--color-border-interactive);
+      }
+
+      &.is-active,
+      &[aria-pressed="true"],
+      &[aria-current="page"] {
+        border-color: var(--color-border-interactive);
+        background-color: var(--color-surface-muted);
+        color: var(--color-action-primary);
+      }
+    }
+  }
+}
+
+/* 7.2 Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-toolbar,
+  .toolbar {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    .ids-toolbar__divider,
+    .toolbar__divider {
+      background-color: CanvasText;
+    }
+
+    .ids-toolbar__button,
+    .toolbar__button {
+      border: 0.0625rem solid transparent;
+      color: ButtonText;
+
+      &:hover:not(:disabled) {
+        border-color: Highlight;
+        background-color: Highlight;
+        color: HighlightText;
+      }
+
+      &.is-active,
+      &[aria-pressed="true"] {
+        border-color: Highlight;
+        color: Highlight;
+      }
+    }
+  }
+}
+
+/* 7.3 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-toolbar,
+  .toolbar {
+    transition: none;
+    border-color: var(--color-border-subtle);
+
+    .ids-toolbar__button,
+    .toolbar__button {
+      transition: none;
+    }
+  }
+}
+
+/* 7.4 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-toolbar,
+  .toolbar {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    .ids-toolbar__button,
+    .toolbar__button {
+      color: var(--color-text-primary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+      }
+
+      &.is-active,
+      &[aria-pressed="true"] {
+        background-color: var(--color-surface-muted);
+        border-color: var(--color-border-subtle);
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* Movimiento Reducido (Accesibilidad Vestibular) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-toolbar,
+  .toolbar,
+  .ids-toolbar__button,
+  .toolbar__button {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ADAPTABILIDAD RESPONSIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+
+/* Desplazamiento Horizontal sin Recorte de Controles en Móvil por defecto */
+.ids-toolbar--scroll-mobile,
+.toolbar--scroll-mobile {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    overflow-x: visible;
+  }
+}
+
+/* Barra Flotante Compacta Móvil y Despliegue en Escritorio */
+.ids-toolbar--floating,
+.toolbar--floating {
+  &.ids-toolbar--fixed,
+  &.toolbar--fixed {
+    inset-inline: var(--ids-toolbar-floating-offset-mobile);
+    transform: none;
+  }
+
+  @media (min-width: 48rem) {
+    inline-size: max-content;
+    max-inline-size: calc(100% - var(--ids-toolbar-floating-offset) * 2);
+
+    &.ids-toolbar--fixed,
+    &.toolbar--fixed {
+      inset-inline: auto;
+
+      &.ids-toolbar--bottom-center,
+      &.toolbar--bottom-center,
+      &.ids-toolbar--top-center,
+      &.toolbar--top-center {
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+      }
+
+      &.ids-toolbar--start-center,
+      &.ids-toolbar--left-center,
+      &.toolbar--start-center,
+      &.toolbar--left-center,
+      &.ids-toolbar--end-center,
+      &.ids-toolbar--right-center,
+      &.toolbar--end-center,
+      &.toolbar--right-center {
+        transform: translateY(-50%);
+      }
+    }
+  }
+}
+

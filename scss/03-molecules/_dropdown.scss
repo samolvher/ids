@@ -1,0 +1,540 @@
+/* ==========================================================================
+   03-molecules/_dropdown.scss
+   Identity Design System (IDS) - Molécula de Menú Desplegable (Dropdown)
+   Variantes con y sin divisor, navegación accesible WAI-ARIA y soporte táctil
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE DROPDOWN
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Posicionamiento y Profundidad */
+  --ids-dropdown-z-index: var(--z-index-dropdown);
+  --ids-dropdown-offset-y: var(--spacing-xs);
+  --ids-dropdown-min-width: 14rem;
+  --ids-dropdown-max-width: 22rem;
+
+  /* Superficie, Bordes y Geometría del Menú Flotante */
+  --ids-dropdown-bg: var(--color-surface-card);
+  --ids-dropdown-border-width: var(--focus-ring-width);
+  --ids-dropdown-border-color: var(--color-border-subtle);
+  --ids-dropdown-radius: var(--radius-card);
+  --ids-dropdown-padding-y: var(--spacing-xs);
+  --ids-dropdown-padding-x: 0;
+
+  /* Ítems del Menú */
+  --ids-dropdown-item-padding-y: var(--spacing-sm);
+  --ids-dropdown-item-padding-x: var(--spacing-md);
+  --ids-dropdown-item-gap: var(--spacing-sm);
+  --ids-dropdown-item-min-height: calc(var(--target-size-min) * 0.85); /* Touch Target AAA */
+  --ids-dropdown-item-radius: var(--radius-sm);
+  --ids-dropdown-item-color: var(--color-text-primary);
+  --ids-dropdown-item-desc-color: var(--color-text-secondary);
+  --ids-dropdown-item-bg-hover: var(--color-surface-hover);
+  --ids-dropdown-item-color-hover: var(--color-text-primary);
+  --ids-dropdown-item-bg-active: var(--color-surface-muted);
+
+  /* Estado Seleccionado / Activo */
+  --ids-dropdown-item-selected-bg: var(--color-surface-muted);
+  --ids-dropdown-item-selected-color: var(--color-action-primary);
+
+  /* Variante Destructiva / Peligro Reversible (Trauma-Informed) */
+  --ids-dropdown-item-danger-color: var(--color-status-danger);
+  --ids-dropdown-item-danger-hover-bg: var(--color-surface-hover);
+  --ids-dropdown-item-danger-hover-color: var(--color-status-danger);
+
+  /* Encabezados y Metadatos de Sección */
+  --ids-dropdown-header-padding-y: var(--spacing-xs);
+  --ids-dropdown-header-padding-x: var(--spacing-md);
+  --ids-dropdown-header-color: var(--color-text-secondary);
+  --ids-dropdown-header-font-size: var(--font-size-caption);
+  --ids-dropdown-header-font-weight: var(--font-weight-semibold);
+
+  /* Divisores Internos (Dropdown con divisor) */
+  --ids-dropdown-divider-margin-y: var(--spacing-xs);
+  --ids-dropdown-divider-margin-x: 0;
+  --ids-dropdown-divider-color: var(--color-border-subtle);
+  --ids-dropdown-divider-thickness: var(--divider-thickness);
+
+  /* Indicadores e Íconos */
+  --ids-dropdown-icon-size: var(--font-size-caption);
+  --ids-dropdown-chevron-size: var(--font-size-caption);
+
+  /* Animación y Cinemática */
+  --ids-dropdown-transition-speed: var(--transition-speed-fast);
+  --ids-dropdown-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR RELATIVO PRINCIPAL (.ids-dropdown)
+   Ancla de posicionamiento absoluto para el menú desplegable.
+   -------------------------------------------------------------------------- */
+.ids-dropdown {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   3. BOTÓN DISPARADOR (.ids-dropdown__trigger)
+   Consume el átomo .ids-button, integrando el indicador chevron rotativo.
+   -------------------------------------------------------------------------- */
+.ids-dropdown__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+
+  /* Ícono Chevron Desplegable */
+  .ids-dropdown__chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--ids-dropdown-chevron-size);
+    height: var(--ids-dropdown-chevron-size);
+    transition: transform var(--ids-dropdown-transition-speed) var(--ids-dropdown-transition-ease);
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  /* Rotación cuando el menú está abierto */
+  &[aria-expanded="true"] .ids-dropdown__chevron,
+  .ids-dropdown.is-open & .ids-dropdown__chevron {
+    transform: rotate(180deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. PANEL / MENÚ DESPLEGABLE (.ids-dropdown__menu)
+   Superficie flotante accesible bajo rol menu o listbox.
+   -------------------------------------------------------------------------- */
+.ids-dropdown__menu {
+  position: absolute;
+  top: calc(100% + var(--ids-dropdown-offset-y));
+  left: 0;
+  z-index: var(--ids-dropdown-z-index);
+  min-width: var(--ids-dropdown-min-width);
+  max-width: calc(100vw - var(--spacing-xl));
+  width: max-content;
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    max-width: var(--ids-dropdown-max-width);
+  }
+  margin: 0;
+  padding-block: var(--ids-dropdown-padding-y);
+  padding-inline: var(--ids-dropdown-padding-x);
+  list-style: none;
+  background-color: var(--ids-dropdown-bg);
+  border: var(--ids-dropdown-border-width) solid var(--ids-dropdown-border-color);
+  border-radius: var(--ids-dropdown-radius);
+  font-family: var(--font-family-base);
+
+  /* Oculto por defecto para lectores de pantalla y foco */
+  display: none;
+  flex-direction: column;
+
+  /* Estados de Apertura */
+  .ids-dropdown.is-open &,
+  .ids-dropdown__trigger[aria-expanded="true"] + &,
+  &.is-visible {
+    display: flex;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MODIFICADORES DE POSICIONAMIENTO Y ALINEACIÓN
+   -------------------------------------------------------------------------- */
+/* Alineación a la Derecha (.ids-dropdown__menu--end) */
+.ids-dropdown__menu--end,
+.ids-dropdown__menu--right {
+  left: auto;
+  right: 0;
+}
+
+/* Apertura hacia Arriba / Dropup (.ids-dropdown__menu--up o .ids-dropdown--dropup) */
+.ids-dropdown--dropup .ids-dropdown__menu,
+.ids-dropdown__menu--up {
+  top: auto;
+  bottom: calc(100% + var(--ids-dropdown-offset-y));
+}
+
+/* Ancho Completo al Disparador (.ids-dropdown--full-width) */
+.ids-dropdown--full-width {
+  display: block;
+  width: 100%;
+
+  .ids-dropdown__trigger {
+    width: 100%;
+  }
+
+  .ids-dropdown__menu {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. ÍTEMS DEL MENÚ (.ids-dropdown__item)
+   Botones o enlaces interactivos con área táctil accesible y foco visible.
+   -------------------------------------------------------------------------- */
+.ids-dropdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-dropdown-item-gap);
+  width: 100%;
+  min-height: var(--ids-dropdown-item-min-height);
+  padding-block: var(--ids-dropdown-item-padding-y);
+  padding-inline: var(--ids-dropdown-item-padding-x);
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--ids-dropdown-item-color);
+  font-family: inherit;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-base);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color var(--ids-dropdown-transition-speed) var(--ids-dropdown-transition-ease),
+              color var(--ids-dropdown-transition-speed) var(--ids-dropdown-transition-ease);
+
+  /* Hover & Focus Suave */
+  &:hover,
+  &:focus {
+    background-color: var(--ids-dropdown-item-bg-hover);
+    color: var(--ids-dropdown-item-color-hover);
+    outline: none;
+  }
+
+  /* Visibilidad de Foco Estricta WCAG AAA */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: calc(var(--focus-ring-offset) * -1);
+    border-radius: var(--ids-dropdown-item-radius);
+    background-color: var(--ids-dropdown-item-bg-hover);
+  }
+
+  /* Estado Activo / Seleccionado (aria-selected="true" o .is-active) */
+  &[aria-selected="true"],
+  &.is-active {
+    background-color: var(--ids-dropdown-item-selected-bg);
+    color: var(--ids-dropdown-item-selected-color);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* Estado Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"],
+  &.is-disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* Contenido Interno del Ítem */
+.ids-dropdown__item-content {
+  display: flex;
+  align-items: center;
+  gap: var(--ids-dropdown-item-gap);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Ícono Atómico dentro del Ítem */
+.ids-dropdown__item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--ids-dropdown-icon-size);
+  height: var(--ids-dropdown-icon-size);
+  color: currentColor;
+
+  .ids-icon {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Texto y Descripción de Apoyo */
+.ids-dropdown__item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ids-dropdown__item-label {
+  font-weight: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ids-dropdown__item-desc {
+  font-size: var(--font-size-caption);
+  color: var(--ids-dropdown-item-desc-color);
+  line-height: var(--line-height-base);
+  white-space: normal;
+}
+
+/* Atajos de Teclado o Metadatos Adicionales */
+.ids-dropdown__item-shortcut {
+  font-size: var(--font-size-caption);
+  color: var(--ids-dropdown-item-desc-color);
+  flex-shrink: 0;
+  margin-inline-start: var(--spacing-md);
+}
+
+/* --------------------------------------------------------------------------
+   7. VARIANTE DESTRUIDORA / PELIGRO REVERSIBLE (TRAUMA-INFORMED)
+   Aísla visualmente acciones críticas evitando pulsaciones accidentales.
+   -------------------------------------------------------------------------- */
+.ids-dropdown__item--danger {
+  color: var(--ids-dropdown-item-danger-color);
+
+  &:hover,
+  &:focus {
+    background-color: var(--ids-dropdown-item-danger-hover-bg);
+    color: var(--ids-dropdown-item-danger-hover-color);
+  }
+
+  &:focus-visible {
+    outline-color: var(--ids-dropdown-item-danger-color);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ENCABEZADO DE SECCIÓN / GRUPO (.ids-dropdown__header)
+   Clasificación accesible sin rol interactivo (role="presentation").
+   -------------------------------------------------------------------------- */
+.ids-dropdown__header {
+  display: block;
+  padding-block: var(--ids-dropdown-header-padding-y);
+  padding-inline: var(--ids-dropdown-header-padding-x);
+  font-size: var(--ids-dropdown-header-font-size);
+  font-weight: var(--ids-dropdown-header-font-weight);
+  color: var(--ids-dropdown-header-color);
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   9. DROPDOWNS CON Y SIN DIVISOR (REQUERIMIENTO EXPLÍCITO)
+   -------------------------------------------------------------------------- */
+
+/* A. DROPDOWN CON DIVISOR:
+   - Uso de elementos explícitos: <hr class="ids-dropdown__divider" role="separator">
+   - Modificador contenedor: .ids-dropdown--with-dividers o .ids-dropdown__menu--divided
+   Permite segmentar acciones ordinarias de acciones críticas o de configuración. */
+.ids-dropdown__divider {
+  display: block;
+  box-sizing: border-box;
+  margin-block: var(--ids-dropdown-divider-margin-y);
+  margin-inline: var(--ids-dropdown-divider-margin-x);
+  border: none;
+  border-block-start: var(--ids-dropdown-divider-thickness) solid var(--ids-dropdown-divider-color);
+  padding: 0;
+  height: 0;
+  width: 100%;
+}
+
+/* Modificador de lista dividida continua (.ids-dropdown__menu--divided) */
+.ids-dropdown__menu--divided {
+  .ids-dropdown__item:not(:last-child) {
+    border-block-end: var(--ids-dropdown-divider-thickness) solid var(--ids-dropdown-divider-color);
+  }
+}
+
+/* B. DROPDOWN SIN DIVISOR:
+   - Menú continuo, plano, sin líneas divisorias (.ids-dropdown--no-dividers)
+   - Máxima pureza geométrica Flat/Clean con espaciado homogéneo entre ítems. */
+.ids-dropdown--no-dividers,
+.ids-dropdown__menu--no-dividers {
+  .ids-dropdown__divider {
+    display: none;
+  }
+
+  .ids-dropdown__item {
+    border-block-end: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. VARIANTES DE TAMAÑO / ESCALA
+   -------------------------------------------------------------------------- */
+/* Tamaño Compacto / Pequeño (.ids-dropdown--sm) */
+.ids-dropdown--sm {
+  .ids-dropdown__menu {
+    --ids-dropdown-min-width: 11rem;
+    --ids-dropdown-item-min-height: calc(var(--target-size-min) * 0.75);
+    font-size: var(--font-size-caption);
+  }
+
+  .ids-dropdown__item {
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+    font-size: var(--font-size-caption);
+  }
+}
+
+/* Tamaño Grande (.ids-dropdown--lg) */
+.ids-dropdown--lg {
+  .ids-dropdown__menu {
+    --ids-dropdown-min-width: 16rem;
+    --ids-dropdown-item-min-height: var(--target-size-min);
+  }
+
+  .ids-dropdown__item {
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-lg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
+   11. DISEÑO RESPONSIVO (RESPONSIVE DESIGN) - Mobile-First
+   -------------------------------------------------------------------------- */
+.ids-dropdown--mobile-full {
+  width: 100%;
+
+  .ids-dropdown__trigger {
+    width: 100%;
+  }
+
+  .ids-dropdown__menu {
+    width: 100%;
+    min-width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  @media (min-width: 48rem) {
+    width: auto;
+
+    .ids-dropdown__trigger {
+      width: auto;
+    }
+
+    .ids-dropdown__menu {
+      width: max-content;
+      min-width: var(--ids-dropdown-min-width);
+      right: auto;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. TEMATIZACIÓN DINÁMICA (4 EJES IDS)
+   -------------------------------------------------------------------------- */
+
+/* 1. TEMA DE ALTO CONTRASTE (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-dropdown__menu {
+    --ids-dropdown-bg: var(--color-surface-background);
+    --ids-dropdown-border-color: var(--color-border-subtle);
+    --ids-dropdown-border-width: var(--focus-ring-width);
+    --ids-dropdown-item-color: var(--color-text-primary);
+    --ids-dropdown-item-bg-hover: var(--color-surface-hover);
+    --ids-dropdown-item-color-hover: var(--color-text-primary);
+    --ids-dropdown-item-selected-bg: var(--color-surface-muted);
+    --ids-dropdown-item-selected-color: var(--color-action-primary);
+    --ids-dropdown-divider-color: var(--color-border-subtle);
+    --ids-dropdown-header-color: var(--color-text-secondary);
+
+    .ids-dropdown__item:focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      background-color: var(--color-surface-hover);
+    }
+
+    .ids-dropdown__item--danger {
+      color: var(--color-status-danger);
+
+      &:hover,
+      &:focus {
+        background-color: var(--color-surface-hover);
+        color: var(--color-status-danger);
+      }
+    }
+  }
+}
+
+/* Soporte Nativo de Sistema Operativo para Alto Contraste */
+@media (forced-colors: active) {
+  .ids-dropdown__menu {
+    border: 2px solid CanvasText;
+    background-color: Canvas;
+
+    .ids-dropdown__item {
+      color: CanvasText;
+
+      &:hover,
+      &:focus {
+        background-color: Highlight;
+        color: HighlightText;
+      }
+
+      &:focus-visible {
+        outline: 2px solid Highlight;
+      }
+    }
+
+    .ids-dropdown__divider {
+      border-block-start: 1px solid CanvasText;
+    }
+
+    .ids-dropdown__header {
+      color: CanvasText;
+      font-weight: bold;
+    }
+  }
+}
+
+/* 2. TEMA DE BAJA ESTIMULACIÓN (NEURODIVERGENCIA / CERO RESPLANDOR) */
+[data-theme="low-stimulation"] {
+  .ids-dropdown__menu {
+    --ids-dropdown-bg: var(--color-surface-card);
+    --ids-dropdown-border-color: var(--color-border-subtle);
+    --ids-dropdown-item-color: var(--color-text-primary);
+    --ids-dropdown-item-bg-hover: var(--color-surface-muted);
+    --ids-dropdown-item-color-hover: var(--color-text-primary);
+    --ids-dropdown-item-selected-bg: var(--color-surface-muted);
+    --ids-dropdown-item-selected-color: var(--color-text-primary);
+    --ids-dropdown-divider-color: var(--color-border-subtle);
+  }
+}
+
+/* 3. TEMA DISCRETO / STEALTH (ANTI-OUTING / SOFTWARE CORPORATIVO) */
+[data-theme="discrete"] {
+  .ids-dropdown__menu {
+    --ids-dropdown-bg: var(--color-surface-card);
+    --ids-dropdown-border-color: var(--color-border-subtle);
+    --ids-dropdown-item-color: var(--color-text-primary);
+    --ids-dropdown-item-bg-hover: var(--color-surface-hover);
+    --ids-dropdown-item-color-hover: var(--color-text-primary);
+    --ids-dropdown-item-selected-bg: var(--color-surface-muted);
+    --ids-dropdown-item-selected-color: var(--color-action-primary);
+    --ids-dropdown-divider-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. CONTROL DE MOVIMIENTO (PREFERS-REDUCED-MOTION)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-dropdown__trigger .ids-dropdown__chevron,
+  .ids-dropdown__menu,
+  .ids-dropdown__item {
+    transition: none !important;
+  }
+}

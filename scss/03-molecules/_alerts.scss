@@ -1,0 +1,610 @@
+/* ==========================================================================
+   03-molecules/_alerts.scss
+   Identity Design System (IDS) - Molécula de Banners y Alertas Contextuales
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE ALERTAS Y BANNERS
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones Espaciales (Esqueleto) */
+  --ids-alert-padding-y: var(--spacing-md);
+  --ids-alert-padding-x: var(--spacing-lg);
+  --ids-alert-padding-compact-y: var(--spacing-sm);
+  --ids-alert-padding-compact-x: var(--spacing-md);
+  --ids-alert-gap: var(--spacing-md);
+  --ids-alert-content-gap: var(--spacing-xs);
+  --ids-alert-margin-bottom: var(--spacing-md);
+
+  /* Curvaturas de Borde (Radii) */
+  --ids-alert-radius: var(--radius-card);
+  --ids-alert-radius-banner: 0;
+  --ids-alert-radius-toast: var(--radius-toast);
+
+  /* Bordes y Acentos */
+  --ids-alert-border-width: var(--focus-ring-width);
+  --ids-alert-accent-border-width: var(--spacing-xs);
+
+  /* Dimensiones de Iconos y Controles */
+  --ids-alert-icon-size: var(--icon-size-lg);
+  --ids-alert-close-size: var(--target-size-min);
+
+  /* Tipografía Semántica */
+  --ids-alert-font-family: var(--font-family-base);
+  --ids-alert-title-font-size: var(--font-size-body-large);
+  --ids-alert-title-font-weight: var(--font-weight-semibold);
+  --ids-alert-body-font-size: var(--font-size-body);
+  --ids-alert-body-line-height: var(--line-height-base);
+  --ids-alert-caption-font-size: var(--font-size-caption);
+
+  /* Variables Cromáticas por Defecto (Info como estado base) */
+  --ids-alert-current-bg: var(--status-info-bg);
+  --ids-alert-current-border: var(--status-info-border);
+  --ids-alert-current-color: var(--color-text-primary);
+  --ids-alert-current-icon-color: var(--status-info);
+  --ids-alert-current-focus-ring: var(--focus-ring-color);
+
+  /* Estados de Validación y Feedback Emocional (Mapeados de tokens semánticos) */
+  /* 1.1 Estado Informativo (Neutral / Orientativo) */
+  --ids-alert-info-bg: var(--status-info-bg);
+  --ids-alert-info-border: var(--status-info-border);
+  --ids-alert-info-color: var(--color-text-primary);
+  --ids-alert-info-icon-color: var(--status-info);
+
+  /* 1.2 Estado de Éxito / Confirmación Segura */
+  --ids-alert-success-bg: var(--status-success-bg);
+  --ids-alert-success-border: var(--status-success-border);
+  --ids-alert-success-color: var(--color-text-primary);
+  --ids-alert-success-icon-color: var(--status-success);
+
+  /* 1.3 Estado de Advertencia / Precaución Sin Alarma */
+  --ids-alert-warning-bg: var(--status-warning-bg);
+  --ids-alert-warning-border: var(--status-warning-border);
+  --ids-alert-warning-color: var(--color-text-primary);
+  --ids-alert-warning-icon-color: var(--status-warning);
+
+  /* 1.4 Estado de Peligro / Error Empático (Trauma-Informed) */
+  --ids-alert-danger-bg: var(--status-danger-bg);
+  --ids-alert-danger-border: var(--status-danger-border);
+  --ids-alert-danger-color: var(--color-text-primary);
+  --ids-alert-danger-icon-color: var(--status-danger);
+
+  /* 1.5 Estado Neutral / Protocolo Institucional */
+  --ids-alert-neutral-bg: var(--status-neutral-bg);
+  --ids-alert-neutral-border: var(--status-neutral-border);
+  --ids-alert-neutral-color: var(--color-text-primary);
+  --ids-alert-neutral-icon-color: var(--status-neutral-text);
+
+  /* 1.6 Protocolo de Salida Rápida (Safety Exit / Anti-Monitoreo) */
+  --ids-alert-safety-exit-bg: var(--color-surface-card);
+  --ids-alert-safety-exit-border: var(--status-danger-border);
+  --ids-alert-safety-exit-color: var(--color-text-primary);
+
+  /* Movimiento */
+  --ids-alert-transition-speed: var(--transition-speed-fast);
+  --ids-alert-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-alert)
+   Unidad de comunicación contextual no invasiva accesible (WCAG AAA).
+   -------------------------------------------------------------------------- */
+.ids-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  inline-size: 100%;
+  box-sizing: border-box;
+  position: relative;
+  margin-block-end: var(--ids-alert-margin-bottom);
+  padding-block: var(--ids-alert-padding-compact-y);
+  padding-inline: var(--ids-alert-padding-compact-x);
+
+  @media (min-width: 48rem) {
+    gap: var(--ids-alert-gap);
+    padding-block: var(--ids-alert-padding-y);
+    padding-inline: var(--ids-alert-padding-x);
+  }
+
+  /* Geometría plana (Clean / Flat, sin sombras complejas) */
+  border-radius: var(--ids-alert-radius);
+  border-width: var(--ids-alert-border-width);
+  border-style: solid;
+  border-color: var(--ids-alert-current-border);
+  background-color: var(--ids-alert-current-bg);
+  color: var(--ids-alert-current-color);
+
+  /* Tipografía y legibilidad de bloque de lectura */
+  font-family: var(--ids-alert-font-family);
+  font-size: var(--ids-alert-body-font-size);
+  line-height: var(--ids-alert-body-line-height);
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 ELEMENTOS INTERNOS DE LA ALERTA
+     ------------------------------------------------------------------------ */
+
+  /* Icono contextual de estado */
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ids-alert-current-icon-color);
+    line-height: var(--line-height-tight);
+
+    svg,
+    .ids-icon {
+      inline-size: var(--ids-alert-icon-size);
+      block-size: var(--ids-alert-icon-size);
+      fill: currentColor;
+    }
+
+    .ids-icon-box {
+      flex-shrink: 0;
+    }
+  }
+
+  /* Contenedor central del mensaje */
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-alert-content-gap);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  /* Título de la alerta */
+  &__title {
+    font-size: var(--ids-alert-title-font-size);
+    font-weight: var(--ids-alert-title-font-weight);
+    line-height: var(--line-height-tight);
+    color: inherit;
+    margin: 0;
+  }
+
+  /* Cuerpo explicativo y párrafo de lectura */
+  &__body,
+  &__text,
+  &__description {
+    font-size: var(--ids-alert-body-font-size);
+    line-height: var(--ids-alert-body-line-height);
+    color: inherit;
+    margin: 0;
+
+    p {
+      margin: 0;
+      line-height: var(--ids-alert-body-line-height);
+
+      + p {
+        margin-block-start: var(--spacing-xs);
+      }
+    }
+  }
+
+  /* Zona de acciones integradas (Reversibilidad / Deshacer / Salida) */
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+    margin-block-start: var(--spacing-xs);
+    inline-size: 100%;
+
+    .ids-button,
+    button {
+      inline-size: 100%;
+      justify-content: center;
+    }
+
+    @media (min-width: 48rem) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+
+      .ids-button,
+      button {
+        inline-size: auto;
+      }
+    }
+  }
+
+  /* Botón interactivo de cierre / descarte (WCAG AAA Target Size) */
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--ids-alert-close-size);
+    block-size: var(--ids-alert-close-size);
+    min-inline-size: var(--ids-alert-close-size);
+    min-block-size: var(--ids-alert-close-size);
+    margin-block: calc((var(--ids-alert-close-size) - var(--ids-alert-icon-size)) / -2);
+    margin-inline-end: calc((var(--ids-alert-padding-x) - var(--spacing-sm)) * -0.5);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    line-height: var(--line-height-tight);
+    padding: 0;
+    user-select: none;
+
+    svg {
+      inline-size: var(--icon-size-sm);
+      block-size: var(--icon-size-sm);
+      fill: currentColor;
+    }
+
+    &:hover {
+      color: var(--color-text-primary);
+      background-color: var(--color-surface-hover);
+    }
+
+    &:focus-visible {
+      outline-width: var(--focus-ring-width);
+      outline-style: solid;
+      outline-color: var(--ids-alert-current-focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  /* Barra de temporización para auto-descarte respetuoso */
+  &__progress {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0;
+    inline-size: 100%;
+    block-size: var(--spacing-xs);
+    background-color: var(--color-surface-muted);
+    border-end-start-radius: var(--ids-alert-radius);
+    border-end-end-radius: var(--ids-alert-radius);
+    overflow: hidden;
+
+    &-bar {
+      inline-size: 100%;
+      block-size: 100%;
+      background-color: var(--ids-alert-current-icon-color);
+      transform-origin: left center;
+    }
+  }
+
+  /* Pausa de la animación de auto-descarte al interactuar (Trauma-Informed) */
+  &:hover &__progress-bar,
+  &:focus-within &__progress-bar {
+    animation-play-state: paused;
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 KEYFRAMES Y ANIMACIONES
+     ------------------------------------------------------------------------ */
+  @keyframes ids-alert-timer {
+    from {
+      inline-size: 100%;
+    }
+    to {
+      inline-size: 0%;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 MOVIMIENTO Y TRANSICIONES SUAVES
+     ------------------------------------------------------------------------ */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, border-color, color, opacity;
+    transition-duration: var(--ids-alert-transition-speed);
+    transition-timing-function: var(--ids-alert-transition-ease);
+
+    &__close {
+      transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                  color var(--transition-speed-fast) var(--transition-ease);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+
+    &__close {
+      transition: none !important;
+    }
+
+    &__progress-bar {
+      animation: none !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ESTADOS SEMÁNTICOS CROMÁTICOS (WCAG AAA & Heurística de Estados)
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Estado Informativo (Info / Aclaración) */
+.ids-alert--info {
+  --ids-alert-current-bg: var(--ids-alert-info-bg);
+  --ids-alert-current-border: var(--ids-alert-info-border);
+  --ids-alert-current-color: var(--ids-alert-info-color);
+  --ids-alert-current-icon-color: var(--ids-alert-info-icon-color);
+}
+
+/* 3.2 Estado de Éxito / Confirmación Segura (Success) */
+.ids-alert--success {
+  --ids-alert-current-bg: var(--ids-alert-success-bg);
+  --ids-alert-current-border: var(--ids-alert-success-border);
+  --ids-alert-current-color: var(--ids-alert-success-color);
+  --ids-alert-current-icon-color: var(--ids-alert-success-icon-color);
+}
+
+/* 3.3 Estado de Advertencia / Prevención (Warning) */
+.ids-alert--warning {
+  --ids-alert-current-bg: var(--ids-alert-warning-bg);
+  --ids-alert-current-border: var(--ids-alert-warning-border);
+  --ids-alert-current-color: var(--ids-alert-warning-color);
+  --ids-alert-current-icon-color: var(--ids-alert-warning-icon-color);
+}
+
+/* 3.4 Estado de Peligro / Error Empático (Danger / Error) */
+.ids-alert--danger,
+.ids-alert--error {
+  --ids-alert-current-bg: var(--ids-alert-danger-bg);
+  --ids-alert-current-border: var(--ids-alert-danger-border);
+  --ids-alert-current-color: var(--ids-alert-danger-color);
+  --ids-alert-current-icon-color: var(--ids-alert-danger-icon-color);
+}
+
+/* 3.5 Estado Neutral / Protocolo Institucional */
+.ids-alert--neutral {
+  --ids-alert-current-bg: var(--ids-alert-neutral-bg);
+  --ids-alert-current-border: var(--ids-alert-neutral-border);
+  --ids-alert-current-color: var(--ids-alert-neutral-color);
+  --ids-alert-current-icon-color: var(--ids-alert-neutral-icon-color);
+}
+
+/* --------------------------------------------------------------------------
+   4. MODIFICADORES ESTRUCTURALES Y FORMATOS
+   -------------------------------------------------------------------------- */
+
+/* 4.1 Variante con Borde Lateral Acentuado (.ids-alert--bordered / .ids-alert--accent) */
+.ids-alert--bordered,
+.ids-alert--accent {
+  border-inline-start-width: var(--ids-alert-accent-border-width);
+  border-inline-start-color: var(--ids-alert-current-icon-color);
+}
+
+/* 4.2 Variante Sólida / Relleno Prominente (.ids-alert--filled) */
+.ids-alert--filled {
+  &.ids-alert--info {
+    --ids-alert-current-bg: var(--status-info);
+    --ids-alert-current-color: var(--status-info-text);
+    --ids-alert-current-icon-color: var(--status-info-text);
+    --ids-alert-current-border: var(--status-info);
+  }
+
+  &.ids-alert--success {
+    --ids-alert-current-bg: var(--status-success);
+    --ids-alert-current-color: var(--status-success-text);
+    --ids-alert-current-icon-color: var(--status-success-text);
+    --ids-alert-current-border: var(--status-success);
+  }
+
+  &.ids-alert--warning {
+    --ids-alert-current-bg: var(--status-warning);
+    --ids-alert-current-color: var(--status-warning-text);
+    --ids-alert-current-icon-color: var(--status-warning-text);
+    --ids-alert-current-border: var(--status-warning);
+  }
+
+  &.ids-alert--danger,
+  &.ids-alert--error {
+    --ids-alert-current-bg: var(--status-danger);
+    --ids-alert-current-color: var(--status-danger-text);
+    --ids-alert-current-icon-color: var(--status-danger-text);
+    --ids-alert-current-border: var(--status-danger);
+  }
+}
+
+/* 4.3 Banner Global o de Encabezado (.ids-alert--banner) */
+.ids-alert--banner {
+  border-radius: var(--ids-alert-radius-banner);
+  border-inline: none;
+  border-block-start: none;
+  margin-block-end: 0;
+
+  .ids-alert__progress {
+    border-radius: 0;
+  }
+}
+
+/* 4.4 Alerta Flotante / Notificación Toast (.ids-alert--toast) */
+.ids-alert--toast {
+  position: fixed;
+  inset-inline-start: var(--spacing-md);
+  inset-inline-end: var(--spacing-md);
+  inset-block-end: var(--spacing-md);
+  max-inline-size: 100%;
+  border-radius: var(--ids-alert-radius-toast);
+  z-index: var(--z-index-toast);
+  margin-block-end: 0;
+
+  @media (min-width: 48rem) {
+    inset-inline-start: auto;
+    inset-inline-end: var(--spacing-lg);
+    inset-block-end: var(--spacing-lg);
+    max-inline-size: 28rem;
+  }
+}
+
+/* 4.5 Modificador Compacto (.ids-alert--compact) */
+.ids-alert--compact {
+  padding-block: var(--ids-alert-padding-compact-y);
+  padding-inline: var(--ids-alert-padding-compact-x);
+  gap: var(--spacing-sm);
+
+  .ids-alert__icon svg,
+  .ids-alert__icon .ids-icon {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+  }
+
+  .ids-alert__title {
+    font-size: var(--font-size-body);
+  }
+
+  .ids-alert__body,
+  .ids-alert__text {
+    font-size: var(--font-size-caption);
+  }
+}
+
+/* 4.6 Protocolo de Salida Rápida (Safety Exit - T4HR) */
+.ids-alert--safety-exit {
+  --ids-alert-current-bg: var(--ids-alert-safety-exit-bg);
+  --ids-alert-current-border: var(--ids-alert-safety-exit-border);
+  --ids-alert-current-color: var(--ids-alert-safety-exit-color);
+  --ids-alert-current-icon-color: var(--color-status-danger);
+
+  border-inline-start-width: var(--ids-alert-accent-border-width);
+  border-inline-start-color: var(--color-status-danger);
+
+  .ids-alert__actions {
+    margin-block-start: var(--spacing-sm);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. DISEÑO RESPONSIVO (Nativo mediante @media queries) - Mobile-First
+   Las alertas definen espaciado compacto y apilamiento vertical por defecto
+   en móviles y se despliegan en modo extendido a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------
+   6. ADAPTACIONES ESPECÍFICAS DE TEMATIZACIÓN (4 Ejes Temáticos de IDS)
+   Consumo estricto de variables declaradas en _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 6.1 Tema de Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-alert {
+    --ids-alert-current-bg: var(--color-surface-card);
+    --ids-alert-current-color: var(--color-text-primary);
+    --ids-alert-current-border: var(--color-border-subtle);
+    --ids-alert-current-focus-ring: var(--focus-ring-color);
+    --ids-alert-info-bg: var(--color-surface-card);
+    --ids-alert-info-border: var(--color-status-info);
+    --ids-alert-info-color: var(--color-text-primary);
+    --ids-alert-info-icon-color: var(--color-status-info);
+    --ids-alert-success-bg: var(--color-surface-card);
+    --ids-alert-success-border: var(--color-status-success);
+    --ids-alert-success-color: var(--color-text-primary);
+    --ids-alert-success-icon-color: var(--color-status-success);
+    --ids-alert-warning-bg: var(--color-surface-card);
+    --ids-alert-warning-border: var(--color-status-warning);
+    --ids-alert-warning-color: var(--color-text-primary);
+    --ids-alert-warning-icon-color: var(--color-status-warning);
+    --ids-alert-danger-bg: var(--color-surface-card);
+    --ids-alert-danger-border: var(--color-status-danger);
+    --ids-alert-danger-color: var(--color-text-primary);
+    --ids-alert-danger-icon-color: var(--color-status-danger);
+
+    border-width: var(--focus-ring-width);
+  }
+
+  .ids-alert--filled {
+    &.ids-alert--info {
+      --ids-alert-current-bg: var(--color-surface-card);
+      --ids-alert-current-color: var(--color-status-info);
+      --ids-alert-current-icon-color: var(--color-status-info);
+      --ids-alert-current-border: var(--color-status-info);
+    }
+
+    &.ids-alert--success {
+      --ids-alert-current-bg: var(--color-surface-card);
+      --ids-alert-current-color: var(--color-status-success);
+      --ids-alert-current-icon-color: var(--color-status-success);
+      --ids-alert-current-border: var(--color-status-success);
+    }
+
+    &.ids-alert--warning {
+      --ids-alert-current-bg: var(--color-surface-card);
+      --ids-alert-current-color: var(--color-status-warning);
+      --ids-alert-current-icon-color: var(--color-status-warning);
+      --ids-alert-current-border: var(--color-status-warning);
+    }
+
+    &.ids-alert--danger,
+    &.ids-alert--error {
+      --ids-alert-current-bg: var(--color-surface-card);
+      --ids-alert-current-color: var(--color-status-danger);
+      --ids-alert-current-icon-color: var(--color-status-danger);
+      --ids-alert-current-border: var(--color-status-danger);
+    }
+  }
+}
+
+/* 6.2 Tema de Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-alert {
+    --ids-alert-current-bg: var(--color-surface-card);
+    --ids-alert-current-color: var(--color-text-primary);
+    --ids-alert-current-border: var(--color-border-subtle);
+    --ids-alert-current-focus-ring: var(--focus-ring-color);
+  }
+}
+
+/* 6.3 Tema Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-alert {
+    --ids-alert-current-bg: var(--color-surface-card);
+    --ids-alert-current-color: var(--color-text-primary);
+    --ids-alert-current-border: var(--color-border-subtle);
+    --ids-alert-current-icon-color: var(--color-text-secondary);
+    --ids-alert-current-focus-ring: var(--focus-ring-color);
+
+    /* En modo stealth las alertas usan estética sobria para no alertar a observadores casuales */
+    --ids-alert-info-icon-color: var(--color-text-secondary);
+    --ids-alert-success-icon-color: var(--color-text-secondary);
+    --ids-alert-warning-icon-color: var(--color-text-secondary);
+    --ids-alert-danger-icon-color: var(--color-text-primary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-alert {
+    border-color: CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    &__icon {
+      color: CanvasText;
+    }
+
+    &__close {
+      border: var(--focus-ring-width) solid transparent;
+
+      &:focus-visible {
+        border-color: Highlight;
+        outline-color: Highlight;
+      }
+    }
+
+    &--bordered,
+    &--accent {
+      border-inline-start-color: Highlight;
+    }
+  }
+
+  .ids-alert--danger,
+  .ids-alert--error {
+    border-color: LinkText;
+  }
+}

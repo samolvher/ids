@@ -1,0 +1,474 @@
+/* ==========================================================================
+   _themes.scss
+   Identity Design System (IDS) - Sobrescritura de Temas (Accesibilidad/Seguridad)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TEMA POR DEFECTO (IDS Base - Genderqueer Palette)
+   Propósito: Identidad "out-of-the-box" para proyectos T4HR sin marca propia.
+   Inspiración: Bandera Genderqueer Pride (Lavanda, Blanco y Verde).
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="default"] { 
+  /* Fondos y Superficies (Franja central blanca de la bandera) */
+  --color-surface-background: #ffffff;
+  --color-surface-card: #f8f9fa;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-hover: #f1f5f9;
+  --color-overlay-sensitive: rgba(0, 0, 0, 0.65);
+  --color-overlay-text: #ffffff;
+  --color-img-thumbnail-bg: #f8f9fa;
+  --color-img-thumbnail-border: #e2e8f0;
+  
+  /* Textos y Legibilidad */
+  --color-text-primary: #0f172a; 
+  --color-text-secondary: #475569;
+  
+  /* Acciones (Franja superior Lavanda como motor principal) */
+  --color-action-primary: #703688; /* Lavanda ajustado para contraste texto blanco */
+  --color-action-hover: #562769;   /* Lavanda profundo para estado hover */
+  --color-action-ghost: transparent;
+  --color-action-primary-text: #ffffff;
+
+  /* Acciones Secundarias */
+  --color-action-secondary-bg: #ffffff;
+  --color-action-secondary-text: #0f172a;
+  --color-action-secondary-border: #e2e8f0;
+  --color-action-secondary-hover-bg: #f1f5f9;
+  --color-action-secondary-hover-text: #7D3C98;
+
+  /* Acciones Peligrosas / Destructivas (Trauma-Informed) */
+  --color-action-danger-bg: #ef4444;
+  --color-action-danger-text: #ffffff;
+  --color-action-danger-hover: #dc2626;
+
+  /* Controles de Consentimiento (Tecnología Consentida) */
+  --color-action-consent-accept-bg: transparent;
+  --color-action-consent-accept-text: #0f172a;
+  --color-action-consent-accept-border: #4A7C29; /* Franja inferior Verde */
+  --color-action-consent-reject-bg: transparent;
+  --color-action-consent-reject-text: #0f172a;
+  --color-action-consent-reject-border: #4A7C29; /* Idéntico peso visual para evitar sesgo */
+
+  /* Acciones Deshabilitadas */
+  --color-action-disabled-bg: #f1f5f9;
+  --color-action-disabled-border: #e2e8f0;
+  --color-action-disabled-text: #94a3b8;
+  
+  /* Bordes y Divisiones */
+  --color-border-subtle: #e2e8f0;
+  --color-border-interactive: #4A7C29; /* Franja inferior Verde para campos activos */
+  
+  /* Estados (Mapeo semántico respetando la heurística visual) */
+  --color-status-success: #4A7C29; /* Verde Genderqueer para éxito y progreso */
+  --color-status-danger: #ef4444;  /* Rojo estándar (Mantenido por heurística universal de error) */
+  --color-status-warning: #eab308; /* Amarillo estándar (Mantenido por precaución) */
+  --color-status-info: #9B59B6;    /* Lavanda Genderqueer para información neutral */
+
+  /* Texto sobre Estados Sólidos */
+  --color-status-success-text: #ffffff;
+  --color-status-danger-text: #ffffff;
+  --color-status-warning-text: #000000;
+  --color-status-info-text: #ffffff;
+
+  /* Accesibilidad (Foco inconfundible para navegación por teclado) */
+  --focus-ring-color: #4A7C29;     /* Verde Genderqueer para el anillo de foco */
+}
+
+/* --------------------------------------------------------------------------
+   2. TEMA DE ALTO CONTRASTE (WCAG AAA)
+   Propósito: Personas con baja visión o uso bajo luz solar extrema.
+   Regla: Contraste agresivo, eliminación de grises tenues, uso de colores puros.
+   -------------------------------------------------------------------------- */
+[data-theme="high-contrast"] {
+  /* Fondos y Superficies */
+  --color-surface-background: #000000;
+  --color-surface-card: #000000;
+  --color-surface-muted: #111111;
+  --color-surface-hover: #222222;
+  --color-overlay-sensitive: #000000;
+  --color-overlay-text: #ffffff;
+  --color-img-thumbnail-bg: #000000;
+  --color-img-thumbnail-border: #ffffff;
+  
+  /* Textos y Legibilidad (Blanco puro sobre negro puro) */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e5e5;
+  
+  /* Acciones (Cyan y Amarillo brillantes para máxima visibilidad) */
+  --color-action-primary: #00ffff; 
+  --color-action-hover: #00b3b3;
+  --color-action-ghost: transparent;
+  --color-action-primary-text: #000000; /* WCAG AAA 16.7:1 sobre Cyan */
+
+  /* Acciones Secundarias */
+  --color-action-secondary-bg: #000000;
+  --color-action-secondary-text: #ffffff;
+  --color-action-secondary-border: #ffffff;
+  --color-action-secondary-hover-bg: #111111;
+  --color-action-secondary-hover-text: #ffff00;
+
+  /* Acciones Peligrosas / Destructivas (Trauma-Informed) */
+  --color-action-danger-bg: #ff0000;
+  --color-action-danger-text: #ffffff;
+  --color-action-danger-hover: #cc0000;
+
+  /* Controles de Consentimiento (Tecnología Consentida) */
+  --color-action-consent-accept-bg: #000000;
+  --color-action-consent-accept-text: #00ffff;
+  --color-action-consent-accept-border: #00ffff;
+  --color-action-consent-reject-bg: #000000;
+  --color-action-consent-reject-text: #00ffff;
+  --color-action-consent-reject-border: #00ffff;
+
+  /* Acciones Deshabilitadas */
+  --color-action-disabled-bg: #333333;
+  --color-action-disabled-border: #666666;
+  --color-action-disabled-text: #999999;
+  
+  /* Bordes y Divisiones (Gruesos y visibles) */
+  --color-border-subtle: #ffffff;
+  --color-border-interactive: #ffff00; 
+  
+  /* Estados (Colores saturados puros) */
+  --color-status-success: #00ff00;
+  --color-status-danger: #ff0000;
+  --color-status-warning: #ffff00;
+  --color-status-info: #00ffff;
+
+  /* Texto sobre Estados Sólidos (WCAG AAA) */
+  --color-status-success-text: #000000;
+  --color-status-danger-text: #ffffff;
+  --color-status-warning-text: #000000;
+  --color-status-info-text: #000000;
+
+  /* Accesibilidad (Foco inconfundible) */
+  --focus-ring-color: #ffff00;
+}
+
+/* --------------------------------------------------------------------------
+   3. TEMA DE BAJA ESTIMULACIÓN (Neurodivergencia / Fatiga Visual)
+   Propósito: Prevenir resplandor (screen glare) y sobrecarga sensorial.
+   Regla: Cero blancos puros, cero negros puros, colores pastel "empolvados".
+   -------------------------------------------------------------------------- */
+[data-theme="low-stimulation"] {
+  /* Fondos y Superficies (Tonos crema cálidos) */
+  --color-surface-background: #f0efea; 
+  --color-surface-card: #e8e7e2;
+  --color-surface-muted: #dfddd6;
+  --color-surface-hover: #dfddd6;
+  --color-overlay-sensitive: rgba(45, 55, 72, 0.7);
+  --color-overlay-text: #ffffff;
+  --color-img-thumbnail-bg: #dfddd6;
+  --color-img-thumbnail-border: #cbd5e0;
+  
+  /* Textos y Legibilidad (Gris pizarra para suavizar el contraste de lectura) */
+  --color-text-primary: #2d3748; 
+  --color-text-secondary: #4a5568;
+  
+  /* Acciones (Tonos fríos y mitigados) */
+  --color-action-primary: #7fa6c2; /* Azul grisáceo mute */
+  --color-action-hover: #5a738e;
+  --color-action-ghost: transparent;
+  --color-action-primary-text: #0f172a;
+
+  /* Acciones Secundarias */
+  --color-action-secondary-bg: #e8e7e2;
+  --color-action-secondary-text: #4a5568;
+  --color-action-secondary-border: #cbd5e0;
+  --color-action-secondary-hover-bg: #e2e8f0;  
+  --color-action-secondary-hover-text: #2d3748;
+
+  /* Acciones Peligrosas / Destructivas (Sobrio, sin pánico visual) */
+  --color-action-danger-bg: #c53030;  /* Rojo óxido/ladrillo */
+  --color-action-danger-text: #ffffff;
+  --color-action-danger-hover: #9b2c2c;
+
+  /* Controles de Consentimiento (Tecnología Consentida: idéntica jerarquía) */
+  --color-action-consent-accept-bg: #e2e8f0;
+  --color-action-consent-accept-text: #2d3748;
+  --color-action-consent-accept-border: #cbd5e0;
+  --color-action-consent-reject-bg: #e2e8f0;
+  --color-action-consent-reject-text: #2d3748;
+  --color-action-consent-reject-border: #cbd5e0;
+
+  /* Acciones Deshabilitadas */
+  --color-action-disabled-bg: #edf2f7;
+  --color-action-disabled-border: #e2e8f0;
+  --color-action-disabled-text: #a0aec0;
+  
+  /* Bordes y Divisiones */
+  --color-border-subtle: #cbd5e0;
+  --color-border-interactive: #8a7b9d; /* Violeta tenue */
+  
+  /* Estados (Avisos amables, nunca alarmantes) */
+  --color-status-success: #6b9e78; /* Verde musgo */
+  --color-status-danger: #c53030;  /* Rojo óxido/ladrillo */
+  --color-status-warning: #c2b263; /* Ocre suave */
+  --color-status-info: #7fa6c2;
+
+  /* Texto sobre Estados Sólidos */
+  --color-status-success-text: #ffffff;
+  --color-status-danger-text: #ffffff;
+  --color-status-warning-text: #2d3748;
+  --color-status-info-text: #ffffff;
+
+  /* Accesibilidad */
+  --focus-ring-color: #4a5568;
+}
+
+/* --------------------------------------------------------------------------
+   5. MODO OSCURO — TEMA POR DEFECTO (Dark Default)
+   Propósito: Variante nocturna de la identidad Genderqueer para entornos
+   con poca luz. Preserva la paleta lavanda–verde sobre fondos profundos.
+   Activación:
+     a) Atributo HTML o JS: data-color-scheme="dark"
+     b) Sistema Operativo en modo oscuro (prefers-color-scheme: dark)
+   -------------------------------------------------------------------------- */
+@mixin ids-tokens-default-dark {
+  /* Fondos y Superficies (Azul pizarra profundo, sin negro puro) */
+  --color-surface-background: #0f1117;
+  --color-surface-card: #1a1d27;
+  --color-surface-muted: #232636;
+  --color-surface-hover: #2a2d40;
+  --color-overlay-sensitive: rgba(0, 0, 0, 0.80);
+  --color-overlay-text: #ffffff;
+  --color-img-thumbnail-bg: #1a1d27;
+  --color-img-thumbnail-border: #2f324a;
+
+  /* Textos y Legibilidad (Alto contraste sobre fondo oscuro) */
+  --color-text-primary: #e8e4f0;
+  --color-text-secondary: #9d97b4;
+
+  /* Acciones (Lavanda luminosa sobre oscuro - contraste WCAG AA+) */
+  --color-action-primary: #9b5fbf;
+  --color-action-hover: #b97dd6;
+  --color-action-ghost: transparent;
+  --color-action-primary-text: #ffffff;
+
+  /* Acciones Secundarias */
+  --color-action-secondary-bg: #232636;
+  --color-action-secondary-text: #e8e4f0;
+  --color-action-secondary-border: #2f324a;
+  --color-action-secondary-hover-bg: #2a2d40;
+  --color-action-secondary-hover-text: #b97dd6;
+
+  /* Acciones Peligrosas / Destructivas (Trauma-Informed) */
+  --color-action-danger-bg: #c0392b;
+  --color-action-danger-text: #ffffff;
+  --color-action-danger-hover: #a93226;
+
+  /* Controles de Consentimiento (Tecnología Consentida) */
+  --color-action-consent-accept-bg: transparent;
+  --color-action-consent-accept-text: #e8e4f0;
+  --color-action-consent-accept-border: #5a9e38;
+  --color-action-consent-reject-bg: transparent;
+  --color-action-consent-reject-text: #e8e4f0;
+  --color-action-consent-reject-border: #5a9e38;
+
+  /* Acciones Deshabilitadas */
+  --color-action-disabled-bg: #1a1d27;
+  --color-action-disabled-border: #2f324a;
+  --color-action-disabled-text: #4a4d63;
+
+  /* Bordes y Divisiones */
+  --color-border-subtle: #2f324a;
+  --color-border-interactive: #5a9e38;
+
+  /* Estados (Semántica Genderqueer sobre oscuro) */
+  --color-status-success: #5a9e38;
+  --color-status-danger: #e05252;
+  --color-status-warning: #d4a017;
+  --color-status-info: #9b5fbf;
+
+  /* Texto sobre Estados Sólidos */
+  --color-status-success-text: #ffffff;
+  --color-status-danger-text: #ffffff;
+  --color-status-warning-text: #000000;
+  --color-status-info-text: #ffffff;
+
+  /* Accesibilidad (Foco visible sobre fondo oscuro - contraste 3:1+) */
+  --focus-ring-color: #5a9e38;
+}
+
+/* Activación por atributo (HTML o JS): data-color-scheme="dark" */
+:root[data-color-scheme="dark"]:not([data-theme="high-contrast"]):not([data-theme="low-stimulation"]):not([data-theme="discrete"]):not([data-theme="stealth"]),
+html[data-color-scheme="dark"]:not([data-theme="high-contrast"]):not([data-theme="low-stimulation"]):not([data-theme="discrete"]):not([data-theme="stealth"]),
+[data-theme="default"][data-color-scheme="dark"],
+[data-color-scheme="dark"] [data-theme="default"] {
+  @include ids-tokens-default-dark;
+}
+
+/* Activación por preferencia del Sistema Operativo */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-scheme="light"]):not([data-theme="high-contrast"]):not([data-theme="low-stimulation"]):not([data-theme="discrete"]):not([data-theme="stealth"]),
+  html:not([data-color-scheme="light"]):not([data-theme="high-contrast"]):not([data-theme="low-stimulation"]):not([data-theme="discrete"]):not([data-theme="stealth"]),
+  [data-theme="default"]:not([data-color-scheme="light"]) {
+    @include ids-tokens-default-dark;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. MODO OSCURO — TEMA DE BAJA ESTIMULACIÓN (Dark Low-Stimulation)
+   Propósito: Entorno nocturno anti-glare para neurodivergencia y fatiga visual.
+   Regla: Cero negros puros, cero blancos puros, tonos carbón cálidos empolvados.
+   Activación:
+     a) Atributo HTML o JS: data-color-scheme="dark" con data-theme="low-stimulation"
+     b) Sistema Operativo en modo oscuro con data-theme="low-stimulation"
+   -------------------------------------------------------------------------- */
+@mixin ids-tokens-low-stimulation-dark {
+  /* Fondos y Superficies (Carbón cálido, nunca negro puro) */
+  --color-surface-background: #1c1a17;
+  --color-surface-card: #242018;
+  --color-surface-muted: #2c2820;
+  --color-surface-hover: #332e25;
+  --color-overlay-sensitive: rgba(20, 18, 15, 0.82);
+  --color-overlay-text: #ddd8cc;
+  --color-img-thumbnail-bg: #2c2820;
+  --color-img-thumbnail-border: #3d3830;
+
+  /* Textos y Legibilidad (Arena cálida suave, sin blanco puro) */
+  --color-text-primary: #d4cfc5;
+  --color-text-secondary: #8c8880;
+
+  /* Acciones (Azul grisáceo suave, sin saturación agresiva) */
+  --color-action-primary: #6a8fa8;
+  --color-action-hover: #87adc4;
+  --color-action-ghost: transparent;
+  --color-action-primary-text: #1c1a17;
+
+  /* Acciones Secundarias */
+  --color-action-secondary-bg: #2c2820;
+  --color-action-secondary-text: #8c8880;
+  --color-action-secondary-border: #3d3830;
+  --color-action-secondary-hover-bg: #332e25;
+  --color-action-secondary-hover-text: #d4cfc5;
+
+  /* Acciones Peligrosas / Destructivas (Sobrio, sin alarmar) */
+  --color-action-danger-bg: #8b2a2a;
+  --color-action-danger-text: #f0ebe2;
+  --color-action-danger-hover: #702222;
+
+  /* Controles de Consentimiento (Tecnología Consentida: idéntica jerarquía) */
+  --color-action-consent-accept-bg: #2c2820;
+  --color-action-consent-accept-text: #d4cfc5;
+  --color-action-consent-accept-border: #3d3830;
+  --color-action-consent-reject-bg: #2c2820;
+  --color-action-consent-reject-text: #d4cfc5;
+  --color-action-consent-reject-border: #3d3830;
+
+  /* Acciones Deshabilitadas */
+  --color-action-disabled-bg: #242018;
+  --color-action-disabled-border: #3d3830;
+  --color-action-disabled-text: #4e4a44;
+
+  /* Bordes y Divisiones */
+  --color-border-subtle: #3d3830;
+  --color-border-interactive: #7a6b8a;
+
+  /* Estados (Avisos apagados, nunca alarmantes) */
+  --color-status-success: #527a5a;
+  --color-status-danger: #8b2a2a;
+  --color-status-warning: #8a7740;
+  --color-status-info: #6a8fa8;
+
+  /* Texto sobre Estados Sólidos */
+  --color-status-success-text: #f0ebe2;
+  --color-status-danger-text: #f0ebe2;
+  --color-status-warning-text: #f0ebe2;
+  --color-status-info-text: #1c1a17;
+
+  /* Accesibilidad (Foco suave, visible sin sobrestimular) */
+  --focus-ring-color: #7a6b8a;
+}
+
+/* Activación por atributo (HTML o JS): data-color-scheme="dark" con low-stimulation */
+:root[data-theme="low-stimulation"][data-color-scheme="dark"],
+html[data-theme="low-stimulation"][data-color-scheme="dark"],
+[data-theme="low-stimulation"][data-color-scheme="dark"],
+[data-color-scheme="dark"] [data-theme="low-stimulation"],
+[data-theme="low-stimulation"] [data-color-scheme="dark"] {
+  @include ids-tokens-low-stimulation-dark;
+}
+
+/* Activación por preferencia del Sistema Operativo para low-stimulation */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="low-stimulation"]:not([data-color-scheme="light"]),
+  html[data-theme="low-stimulation"]:not([data-color-scheme="light"]),
+  [data-theme="low-stimulation"]:not([data-color-scheme="light"]),
+  :root:not([data-color-scheme="light"]) [data-theme="low-stimulation"] {
+    @include ids-tokens-low-stimulation-dark;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. TEMA DISCRETO / STEALTH (Anti-outing / Consentful Tech)
+   Propósito: Camuflaje en entornos hostiles, laborales o públicos.
+   Regla: Imitar software corporativo, hojas de cálculo o paneles aburridos.
+   -------------------------------------------------------------------------- */
+[data-theme="discrete"],
+[data-theme="stealth"] {
+  /* Fondos y Superficies (Grisáceos corporativos) */
+  --color-surface-background: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #e2e8f0;
+  --color-surface-hover: #e2e8f0;
+  --color-overlay-sensitive: rgba(15, 23, 42, 0.7);
+  --color-overlay-text: #ffffff;
+  --color-img-thumbnail-bg: #0f172a;
+  --color-img-thumbnail-border: #334155;
+  
+  /* Textos y Legibilidad */
+  --color-text-primary: #0f172a; 
+  --color-text-secondary: #475569;
+  
+  /* Acciones (Azul marino/carbón genérico para no llamar la atención) */
+  --color-action-primary: #334155; 
+  --color-action-hover: #1e293b;
+  --color-action-ghost: transparent;
+  --color-action-primary-text: #ffffff;
+
+  /* Acciones Secundarias */
+  --color-action-secondary-bg: #ffffff;
+  --color-action-secondary-text: #475569;
+  --color-action-secondary-border: #cbd5e1;
+  --color-action-secondary-hover-bg: #f1f5f9;
+  --color-action-secondary-hover-text: #0f172a;
+
+  /* Acciones Peligrosas / Destructivas (Camuflaje sin alertar mirones) */
+  --color-action-danger-bg: #64748b; 
+  --color-action-danger-text: #ffffff;
+  --color-action-danger-hover: #475569;
+
+  /* Controles de Consentimiento (Tecnología Consentida) */
+  --color-action-consent-accept-bg: #ffffff;
+  --color-action-consent-accept-text: #334155;
+  --color-action-consent-accept-border: #94a3b8;
+  --color-action-consent-reject-bg: #ffffff;
+  --color-action-consent-reject-text: #334155;
+  --color-action-consent-reject-border: #94a3b8;
+
+  /* Acciones Deshabilitadas */
+  --color-action-disabled-bg: #f8fafc;
+  --color-action-disabled-border: #e2e8f0;
+  --color-action-disabled-text: #94a3b8;
+  
+  /* Bordes y Divisiones */
+  --color-border-subtle: #cbd5e1;
+  --color-border-interactive: #64748b;
+  
+  /* Estados (Todos los estados mapeados a grises o azules corporativos) */
+  --color-status-success: #475569; 
+  --color-status-danger: #334155;
+  --color-status-warning: #64748b;
+  --color-status-info: #1e293b;
+
+  /* Texto sobre Estados Sólidos */
+  --color-status-success-text: #ffffff;
+  --color-status-danger-text: #ffffff;
+  --color-status-warning-text: #ffffff;
+  --color-status-info-text: #ffffff;
+
+  /* Accesibilidad */
+  --focus-ring-color: #0f172a;
+}

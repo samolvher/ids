@@ -1,0 +1,941 @@
+/* ==========================================================================
+   03-molecules/_form-group.scss
+   Identity Design System (IDS) - Molécula de Grupo de Formulario (Form Group)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL GRUPO DE FORMULARIO
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones Espaciales (Esqueleto) */
+  --ids-form-group-gap: var(--gap-form-group);
+  --ids-form-group-margin-bottom: var(--spacing-md);
+  --ids-form-group-gap-compact: var(--spacing-xs);
+  --ids-form-group-gap-relaxed: var(--spacing-md);
+  --ids-form-group-gap-emotional: var(--spacing-emotional-break);
+  --ids-form-group-horizontal-label-width: 15rem;
+  --ids-form-group-horizontal-gap: var(--spacing-md);
+
+  /* Arquitectura de Formularios y Secciones */
+  --ids-form-gap: var(--spacing-md);
+  --ids-form-gap-sm: var(--spacing-sm);
+  --ids-form-gap-lg: var(--spacing-lg);
+  --ids-form-section-gap: var(--gap-form-sections);
+
+  /* Estructura de Contenedor Delimitado / Tarjeta */
+  --ids-form-group-radius: var(--radius-card);
+  --ids-form-group-border-width: var(--focus-ring-width);
+  --ids-form-group-padding-card: var(--spacing-md);
+
+  /* Piel y Mapeo Cromático Semántico (Heredados de _themes.scss) */
+  --ids-form-group-border-color: var(--color-border-subtle);
+  --ids-form-group-bg-card: var(--color-surface-card);
+  --ids-form-group-focus-border: var(--color-border-interactive);
+  --ids-form-group-focus-ring: var(--focus-ring-color);
+
+  /* Estados de Validación y Soporte Emocional */
+  --ids-form-group-error-color: var(--color-status-danger);
+  --ids-form-group-success-color: var(--color-status-success);
+  --ids-form-group-warning-color: var(--color-status-warning);
+  --ids-form-group-info-color: var(--color-status-info);
+
+  /* Estados de Interacción */
+  --ids-form-group-disabled-opacity: var(--opacity-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-form-group)
+   Unidad compositiva que ensambla etiqueta, control interactivo y texto de apoyo.
+   -------------------------------------------------------------------------- */
+.ids-form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  inline-size: 100%;
+  box-sizing: border-box;
+  position: relative;
+  gap: var(--ids-form-group-gap);
+  margin-block-end: var(--ids-form-group-margin-bottom);
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 INTEGRACIÓN Y ARMONIZACIÓN CON LOS ÁTOMOS (02-atoms)
+     ------------------------------------------------------------------------ */
+  /* Etiqueta (.ids-label): neutraliza márgenes inferiores duplicados */
+  > .ids-label,
+  > legend.ids-label {
+    margin-block-end: 0;
+    inline-size: 100%;
+  }
+
+  /* Cabecera integrada de grupo (Etiqueta + Badge / Acción / Contador) */
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    inline-size: 100%;
+
+    > .ids-label {
+      inline-size: auto;
+      margin-block-end: 0;
+    }
+  }
+
+  /* Cuerpo o envoltura de control para layouts complejos */
+  &__body,
+  &__control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-form-group-gap);
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  /* Controles de entrada: asegurar escalabilidad fluida y fluidez de caja */
+  > .ids-input,
+  > .ids-textarea,
+  > textarea.ids-input,
+  > .ids-select,
+  > .ids-select-wrapper,
+  > .ids-input-affix-wrapper,
+  > .ids-toggle,
+  > .ids-range,
+  > .ids-range-group,
+  &__control > .ids-input,
+  &__control > .ids-textarea,
+  &__control > textarea.ids-input,
+  &__control > .ids-select,
+  &__control > .ids-select-wrapper,
+  &__control > .ids-input-affix-wrapper,
+  &__control > .ids-toggle,
+  &__control > .ids-range,
+  &__control > .ids-range-group {
+    inline-size: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Soporte estilizado accesible para entradas de archivo nativas */
+  input[type="file"].ids-input {
+    min-block-size: var(--input-min-height);
+    padding-block: calc(var(--spacing-xs) / 2);
+    padding-inline: calc(var(--spacing-xs) / 2);
+    display: flex;
+    align-items: center;
+
+    &::file-selector-button {
+      font-family: inherit;
+      font-size: var(--font-size-caption);
+      font-weight: var(--font-weight-medium);
+      padding-block: var(--spacing-xs);
+      padding-inline: var(--spacing-sm);
+      margin-inline-end: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      border-width: var(--focus-ring-width);
+      border-style: solid;
+      border-color: var(--color-border-subtle);
+      background-color: var(--color-surface-muted);
+      color: var(--color-text-primary);
+      cursor: pointer;
+      min-block-size: calc(var(--target-size-min) - var(--spacing-sm));
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition-property: background-color, border-color, color;
+        transition-duration: var(--transition-speed-fast);
+        transition-timing-function: var(--transition-ease);
+      }
+
+      &:hover {
+        background-color: var(--color-surface-card);
+        border-color: var(--color-border-interactive);
+      }
+    }
+  }
+
+  /* Agrupaciones de opciones de elección múltiple o exclusiva */
+  > .ids-choice-group,
+  &__control > .ids-choice-group {
+    inline-size: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    /* Separación interna frente a texto explicativo previo */
+    margin-block-start: var(--spacing-xs);
+  }
+
+  /* Textos de apoyo, ayuda y error (.ids-help-text, .ids-help-text-group) */
+  > .ids-help-text,
+  > .ids-helper-text,
+  > .ids-input-message,
+  > .ids-help-text-group,
+  &__body > .ids-help-text,
+  &__body > .ids-help-text-group {
+    margin-block-start: 0;
+    inline-size: 100%;
+  }
+
+  /* Separadores internos para secciones lógicas dentro de grupos amplios */
+  > .ids-divider {
+    margin-block: var(--spacing-xs);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 ENFOQUE SINCRONIZADO (:focus-within)
+     Realce sutil de la etiqueta para orientar la atención sin sobrecarga sensorial.
+     ------------------------------------------------------------------------ */
+  &:focus-within {
+    > .ids-label:not(.ids-label--disabled):not([aria-disabled="true"]),
+    .ids-form-group__header > .ids-label:not(.ids-label--disabled):not([aria-disabled="true"]) {
+      color: var(--ids-form-group-focus-border);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 MOVIMIENTO Y TRANSICIONES SUAVES (Diseño Informado en el Trauma)
+     ------------------------------------------------------------------------ */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: border-color, background-color, opacity;
+    transition-duration: var(--transition-speed-fast);
+    transition-timing-function: var(--transition-ease);
+
+    > .ids-label,
+    .ids-form-group__header > .ids-label {
+      transition: color var(--transition-speed-fast) var(--transition-ease);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+
+    > .ids-label,
+    .ids-form-group__header > .ids-label {
+      transition: none !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. MODIFICADORES DE DISPOSICIÓN Y RESPONSIVIDAD (Responsive Design)
+   Adaptación fluida de vertical a horizontal mediante media queries nativas.
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Disposición Horizontal (.ids-form-group--horizontal) */
+.ids-form-group--horizontal {
+  /* En pantallas móviles colapsa verticalmente por defecto */
+  display: flex;
+  flex-direction: column;
+
+  /* En pantallas medianas y grandes adopta disposición en grilla de dos columnas */
+  @media (min-width: 48rem) {
+    display: grid;
+    grid-template-columns: var(--ids-form-group-horizontal-label-width) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--ids-form-group-horizontal-gap);
+
+    > .ids-label,
+    > legend.ids-label,
+    &__header {
+      padding-block-start: calc((var(--input-min-height) - (var(--line-height-base) * var(--font-size-body))) / 2);
+      margin-block-end: 0;
+    }
+
+    > .ids-form-group__body,
+    > .ids-form-group__control {
+      grid-column: 2;
+    }
+
+    > .ids-help-text,
+    > .ids-helper-text,
+    > .ids-input-message,
+    > .ids-help-text-group {
+      grid-column: 2;
+    }
+  }
+}
+
+/* 3.2 Disposición en Línea (.ids-form-group--inline) */
+.ids-form-group--inline {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    align-items: center;
+    inline-size: auto;
+    gap: var(--spacing-sm);
+
+    > .ids-label,
+    > legend.ids-label {
+      inline-size: auto;
+      margin-block-end: 0;
+      white-space: nowrap;
+    }
+
+    > .ids-input,
+    > .ids-select,
+    > .ids-select-wrapper,
+    > .ids-input-affix-wrapper,
+    &__control {
+      inline-size: auto;
+      flex: 1 1 auto;
+    }
+  }
+}
+
+/* 3.3 Modificadores de Densidad y Espaciado Emocional (Trauma-Informed) */
+.ids-form-group--compact {
+  gap: var(--ids-form-group-gap-compact);
+  margin-block-end: var(--spacing-sm);
+}
+
+.ids-form-group--relaxed {
+  gap: var(--ids-form-group-gap-relaxed);
+  margin-block-end: var(--spacing-lg);
+}
+
+.ids-form-group--emotional {
+  gap: var(--ids-form-group-gap);
+  margin-block-end: var(--ids-form-group-gap-emotional);
+}
+
+/* --------------------------------------------------------------------------
+   4. AGRUPACIONES SEMÁNTICAS (Fieldset y Legend para Opciones Múltiples)
+   Reseteo accesible y soporte nativo para tecnologías de asistencia.
+   -------------------------------------------------------------------------- */
+fieldset.ids-form-group,
+.ids-form-group--fieldset {
+  border: none;
+  margin: 0;
+  margin-block-end: var(--ids-form-group-margin-bottom);
+  padding: 0;
+  min-inline-size: 0;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+
+  > legend.ids-label {
+    padding: 0;
+    display: table;
+    float: none;
+    inline-size: 100%;
+    margin-block-end: var(--ids-form-group-gap);
+  }
+}
+
+/* Variante Delimitada / Tarjeta de Agrupación (.ids-form-group--card, .ids-form-group--bordered) */
+.ids-form-group--card,
+.ids-form-group--bordered {
+  border-width: var(--ids-form-group-border-width);
+  border-style: solid;
+  border-color: var(--ids-form-group-border-color);
+  border-radius: var(--ids-form-group-radius);
+  padding: var(--ids-form-group-padding-card);
+  background-color: var(--ids-form-group-bg-card);
+  margin-block-end: var(--ids-form-group-margin-bottom);
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+
+  > legend.ids-label {
+    font-weight: var(--font-weight-bold);
+    padding-inline: var(--spacing-xs);
+    margin-block-end: var(--spacing-sm);
+  }
+
+  > .ids-help-text,
+  > .ids-help-text-group {
+    margin-block-end: var(--spacing-sm);
+  }
+
+  > .ids-choice-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    inline-size: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. FILAS Y GRILLAS DE FORMULARIO (.ids-form-row, .ids-form-grid)
+   Coordinación de múltiples moléculas en estructuras armónicas y adaptables.
+   -------------------------------------------------------------------------- */
+.ids-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  inline-size: 100%;
+  box-sizing: border-box;
+  margin-block-end: var(--ids-form-group-margin-bottom);
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    align-items: flex-start;
+
+    > .ids-form-group {
+      flex: 1 1 0;
+      min-inline-size: 0;
+      margin-block-end: 0;
+    }
+  }
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
+
+.ids-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  inline-size: 100%;
+  box-sizing: border-box;
+  margin-block-end: var(--ids-form-group-margin-bottom);
+
+  @media (min-width: 40rem) {
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  /* Modificadores de columnas fijas para control compositivo estricto */
+  &--2col {
+    @media (min-width: 48rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &--3col {
+    @media (min-width: 48rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (min-width: 64rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  > .ids-form-group {
+    margin-block-end: 0;
+  }
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
+
+/* Modificadores de expansión en grilla para grupos de formulario */
+.ids-form-group--col-span-2 {
+  @media (min-width: 48rem) {
+    grid-column: span 2;
+  }
+}
+
+.ids-form-group--col-span-full {
+  grid-column: 1 / -1;
+}
+
+/* --------------------------------------------------------------------------
+   6. SINCRONIZACIÓN DE ESTADOS Y VALIDACIÓN TRAUMA-INFORMED (WCAG AAA)
+   Soporte de clases explícitas y pseudo-clases modernas (:has, :user-invalid).
+   Feedback empático, orientativo y no punitivo.
+   -------------------------------------------------------------------------- */
+
+/* 6.1 Estado Inválido / Error */
+.ids-form-group--invalid,
+.ids-form-group--error,
+.ids-form-group:has(.ids-input:user-invalid),
+.ids-form-group:has(.ids-input[aria-invalid="true"]),
+.ids-form-group:has(.ids-select:user-invalid),
+.ids-form-group:has(.ids-select[aria-invalid="true"]) {
+  > .ids-label,
+  .ids-form-group__header > .ids-label {
+    color: var(--ids-form-group-error-color);
+  }
+
+  > .ids-help-text--error,
+  > .ids-help-text-group .ids-help-text--error,
+  .ids-form-group__body > .ids-help-text--error,
+  .ids-form-group__body > .ids-help-text-group .ids-help-text--error {
+    color: var(--ids-form-group-error-color);
+  }
+}
+
+/* 6.2 Estado Válido / Confirmación */
+.ids-form-group--valid,
+.ids-form-group--success,
+.ids-form-group:has(.ids-input--valid),
+.ids-form-group:has(.ids-select--valid) {
+  > .ids-label,
+  .ids-form-group__header > .ids-label {
+    color: var(--ids-form-group-success-color);
+  }
+
+  > .ids-help-text--success,
+  > .ids-help-text-group .ids-help-text--success,
+  .ids-form-group__body > .ids-help-text--success,
+  .ids-form-group__body > .ids-help-text-group .ids-help-text--success {
+    color: var(--ids-form-group-success-color);
+  }
+}
+
+/* 6.3 Estado de Advertencia */
+.ids-form-group--warning,
+.ids-form-group:has(.ids-input--warning) {
+  > .ids-label,
+  .ids-form-group__header > .ids-label {
+    color: var(--ids-form-group-warning-color);
+  }
+
+  > .ids-help-text--warning,
+  > .ids-help-text-group .ids-help-text--warning,
+  .ids-form-group__body > .ids-help-text--warning,
+  .ids-form-group__body > .ids-help-text-group .ids-help-text--warning {
+    color: var(--ids-form-group-warning-color);
+  }
+}
+
+/* 6.4 Estado Informativo */
+.ids-form-group--info {
+  > .ids-label,
+  .ids-form-group__header > .ids-label {
+    color: var(--ids-form-group-info-color);
+  }
+
+  > .ids-help-text--info,
+  > .ids-help-text-group .ids-help-text--info,
+  .ids-form-group__body > .ids-help-text--info,
+  .ids-form-group__body > .ids-help-text-group .ids-help-text--info {
+    color: var(--ids-form-group-info-color);
+  }
+}
+
+/* 6.5 Estado Deshabilitado */
+.ids-form-group--disabled,
+.ids-form-group:has(:disabled),
+.ids-form-group:has([aria-disabled="true"]) {
+  opacity: var(--ids-form-group-disabled-opacity);
+  cursor: not-allowed;
+
+  > .ids-label,
+  .ids-form-group__header > .ids-label {
+    cursor: not-allowed;
+    color: var(--color-text-secondary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. COMPONENTES AUXILIARES INTEGRADOS (Trauma-Informed & Consentful Tech)
+   Acciones reversibles, guardado automático no intrusivo e indicadores éticos.
+   -------------------------------------------------------------------------- */
+.ids-form-group {
+  /* Indicador de guardado automático ("Borrador guardado", "Sincronizado") */
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-base);
+    color: var(--color-text-secondary);
+  }
+
+  /* Acción reversible integrada (ej. Deshacer cambio sin alert invasivo) */
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-base);
+
+    button,
+    a {
+      font-size: inherit;
+      line-height: inherit;
+      color: var(--color-action-primary);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+
+      &:hover {
+        color: var(--color-action-hover);
+      }
+
+      &:focus-visible {
+        outline: var(--focus-ring-width) solid var(--focus-ring-color);
+        outline-offset: var(--focus-ring-offset);
+        border-radius: var(--radius-sm);
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ADAPTACIONES ESPECÍFICAS DE TEMATIZACIÓN (4 Ejes Temáticos de IDS)
+   Consumo estricto de variables declaradas en _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 8.1 Tema de Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-form-group {
+    --ids-form-group-border-color: var(--color-border-subtle);
+    --ids-form-group-bg-card: var(--color-surface-card);
+    --ids-form-group-focus-border: var(--color-border-interactive);
+    --ids-form-group-focus-ring: var(--focus-ring-color);
+    --ids-form-group-error-color: var(--color-status-danger);
+    --ids-form-group-success-color: var(--color-status-success);
+    --ids-form-group-warning-color: var(--color-status-warning);
+    --ids-form-group-info-color: var(--color-status-info);
+  }
+
+  .ids-form-group--card,
+  .ids-form-group--bordered {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-card);
+  }
+}
+
+/* 8.2 Tema de Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-form-group {
+    --ids-form-group-border-color: var(--color-border-subtle);
+    --ids-form-group-bg-card: var(--color-surface-card);
+    --ids-form-group-focus-border: var(--color-border-interactive);
+    --ids-form-group-focus-ring: var(--focus-ring-color);
+    --ids-form-group-error-color: var(--color-status-danger);
+    --ids-form-group-success-color: var(--color-status-success);
+    --ids-form-group-warning-color: var(--color-status-warning);
+    --ids-form-group-info-color: var(--color-status-info);
+  }
+
+  .ids-form-group--card,
+  .ids-form-group--bordered {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-card);
+  }
+}
+
+/* 8.3 Tema Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-form-group {
+    --ids-form-group-border-color: var(--color-border-subtle);
+    --ids-form-group-bg-card: var(--color-surface-card);
+    --ids-form-group-focus-border: var(--color-border-interactive);
+    --ids-form-group-focus-ring: var(--focus-ring-color);
+    --ids-form-group-error-color: var(--color-status-danger);
+    --ids-form-group-success-color: var(--color-status-success);
+    --ids-form-group-warning-color: var(--color-status-warning);
+    --ids-form-group-info-color: var(--color-status-info);
+  }
+
+  .ids-form-group--card,
+  .ids-form-group--bordered {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-card);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. ADAPTACIONES PARA ACCESIBILIDAD AVANZADA Y ALTO CONTRASTE DEL SO
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-form-group--card,
+  .ids-form-group--bordered,
+  .ids-form--card {
+    border-color: CanvasText;
+  }
+
+  .ids-form-section + .ids-form-section,
+  .ids-form-actions {
+    border-color: CanvasText;
+  }
+
+  input[type="file"].ids-input::file-selector-button {
+    border-color: ButtonText;
+  }
+
+  .ids-form-group:focus-within > .ids-label,
+  .ids-form-group:focus-within .ids-form-group__header > .ids-label {
+    color: Highlight;
+  }
+
+  .ids-form-group--invalid > .ids-label,
+  .ids-form-group--error > .ids-label {
+    color: LinkText;
+  }
+
+  .ids-form-group--disabled,
+  .ids-form-group:has(:disabled) {
+    opacity: 1;
+    color: GrayText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ARQUITECTURA INTEGRAL DE FORMULARIOS (.ids-form)
+   Tipos de formulario, disposiciones estructurales, secciones y barra de acciones.
+   Sector: Tech For Human Rights (T4HR) - Trauma-Informed Design & WCAG AAA.
+   -------------------------------------------------------------------------- */
+
+/* 10.1 Contenedor Base de Formulario (.ids-form) */
+.ids-form {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+  position: relative;
+  gap: var(--ids-form-gap);
+
+  /* Los grupos hijos dentro de .ids-form coordinan su espaciado mediante gap */
+  > .ids-form-group,
+  > .ids-form-row,
+  > .ids-form-grid {
+    margin-block-end: 0;
+  }
+}
+
+/* 10.2 Tipos de Formulario (Form Layout Types) */
+
+/* A) Formulario Estándar / Vertical Apilado (.ids-form--stacked) */
+.ids-form--stacked {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-form-gap);
+}
+
+/* B) Formulario en Grilla Multicolumna (.ids-form--grid) */
+.ids-form--grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ids-form-gap);
+  inline-size: 100%;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  > .ids-form-group {
+    margin-block-end: 0;
+  }
+
+  > .ids-form-actions,
+  > .ids-form-section {
+    grid-column: 1 / -1;
+  }
+}
+
+.ids-form--grid-3col {
+  @media (min-width: 64rem) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* C) Formulario Horizontal (.ids-form--horizontal) */
+.ids-form--horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-form-gap);
+
+  @media (min-width: 48rem) {
+    > .ids-form-group:not(.ids-form-group--vertical) {
+      display: grid;
+      grid-template-columns: var(--ids-form-group-horizontal-label-width) minmax(0, 1fr);
+      align-items: start;
+      gap: var(--ids-form-group-horizontal-gap);
+
+      > .ids-label,
+      > legend.ids-label,
+      .ids-form-group__header {
+        padding-block-start: calc((var(--input-min-height) - (var(--line-height-base) * var(--font-size-body))) / 2);
+        margin-block-end: 0;
+      }
+
+      > .ids-form-group__body,
+      > .ids-form-group__control,
+      > .ids-input,
+      > .ids-textarea,
+      > textarea.ids-input,
+      > .ids-select,
+      > .ids-select-wrapper,
+      > .ids-input-affix-wrapper,
+      > .ids-toggle,
+      > .ids-range,
+      > .ids-range-group,
+      > .ids-choice-group,
+      > .ids-help-text,
+      > .ids-helper-text,
+      > .ids-input-message,
+      > .ids-help-text-group {
+        grid-column: 2;
+      }
+    }
+
+    > .ids-form-actions {
+      display: grid;
+      grid-template-columns: var(--ids-form-group-horizontal-label-width) minmax(0, 1fr);
+      gap: var(--ids-form-group-horizontal-gap);
+
+      &::before {
+        content: "";
+      }
+
+      > .ids-button,
+      > .ids-button-group {
+        grid-column: 2;
+      }
+    }
+  }
+}
+
+/* D) Formulario en Línea / Compacto (.ids-form--inline) */
+.ids-form--inline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+
+    > .ids-form-group {
+      flex: 1 1 auto;
+      min-inline-size: 12rem;
+      margin-block-end: 0;
+
+      > .ids-label {
+        white-space: nowrap;
+      }
+    }
+
+    > .ids-form-actions {
+      flex: 0 0 auto;
+      margin-block-start: 0;
+      padding-block-start: 0;
+      border-block-start: none;
+      align-self: flex-end;
+      padding-block-end: calc((var(--input-min-height) - var(--button-min-height)) / 2);
+    }
+  }
+}
+
+/* E) Formulario en Tarjeta Delimitada (.ids-form--card) */
+.ids-form--card {
+  background-color: var(--color-surface-card);
+  border: var(--focus-ring-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  padding: var(--padding-card);
+}
+
+/* 10.3 Secciones de Formulario (Trauma-Informed Pacing) */
+.ids-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  inline-size: 100%;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-block-end: var(--spacing-xs);
+  }
+
+  &__title {
+    font-size: var(--font-size-h4);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__desc {
+    font-size: var(--font-size-body);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-base);
+    margin: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-form-gap);
+    inline-size: 100%;
+  }
+
+  & + & {
+    margin-block-start: var(--ids-form-section-gap);
+    padding-block-start: var(--ids-form-section-gap);
+    border-block-start: var(--focus-ring-width) solid var(--color-border-subtle);
+  }
+}
+
+/* 10.4 Barra de Acciones de Formulario (.ids-form-actions) - Mobile-First */
+.ids-form-actions {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+  margin-block-start: var(--spacing-lg);
+  padding-block-start: var(--spacing-md);
+  border-block-start: var(--focus-ring-width) solid var(--color-border-subtle);
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  > .ids-button,
+  > .ids-button-group {
+    inline-size: 100%;
+    justify-content: center;
+  }
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+
+    > .ids-button,
+    > .ids-button-group {
+      inline-size: auto;
+    }
+  }
+
+  /* Modificadores de Alineación */
+  &--end {
+    @media (min-width: 48rem) {
+      justify-content: flex-end;
+    }
+  }
+
+  &--between {
+    @media (min-width: 48rem) {
+      justify-content: space-between;
+    }
+  }
+
+  &--center {
+    justify-content: center;
+  }
+
+  /* Barra de Acciones Fija / Adherente (.ids-form-actions--sticky) */
+  &--sticky {
+    position: sticky;
+    inset-block-end: 0;
+    background-color: var(--color-surface-background);
+    padding-block: var(--spacing-md);
+    z-index: var(--z-index-sticky);
+    box-shadow: var(--shadow-elevation-subtle);
+  }
+}
+

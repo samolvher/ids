@@ -1,0 +1,892 @@
+/* ==========================================================================
+   03-molecules/_fab.scss
+   Identity Design System (IDS) - Molécula de Botones de Acción Flotante (FAB)
+   Acciones primarias, de resguardo y emergencia en interfaz fija o contextual,
+   con soporte de los 4 estados de color, variantes extendidas y menú speed-dial.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL FAB
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Escala de Tamaños Simétricos (WCAG AAA Touch Target: mínimo 2.75rem) */
+  --ids-fab-size-sm: var(--target-size-min); /* 2.75rem - Touch Target Mínimo Estricto */
+  --ids-fab-size: 3.5rem;                    /* 3.5rem - Dimensión estándar ergonómica */
+  --ids-fab-size-lg: 4.25rem;                /* 4.25rem - Alta visibilidad / Terminales táctiles */
+
+  /* Curvaturas y Geometría */
+  --ids-fab-radius: var(--radius-full);
+  --ids-fab-border-width: var(--focus-ring-width);
+  --ids-fab-border-style: solid;
+  --ids-fab-z-index: 950;                    /* Posición flotante sobre el contenido base */
+
+  /* Proporciones de FAB Extendido (.ids-fab--extended) */
+  --ids-fab-extended-padding-y: var(--spacing-sm);
+  --ids-fab-extended-padding-x: var(--spacing-lg);
+  --ids-fab-gap: var(--spacing-sm);
+
+  /* Márgenes y Coordenadas de Posicionamiento Fijo */
+  --ids-fab-offset-x: var(--spacing-xl);
+  --ids-fab-offset-y: var(--spacing-xl);
+  --ids-fab-offset-mobile: var(--spacing-md);
+
+  /* Tipografía Semántica */
+  --ids-fab-font-family: var(--font-family-base);
+  --ids-fab-font-size: var(--font-size-body);
+  --ids-fab-font-weight: var(--font-weight-semibold);
+  --ids-fab-line-height: var(--line-height-tight);
+
+  /* Piel y Mapeo Cromático Base (Primario) */
+  --ids-fab-bg: var(--color-action-primary);
+  --ids-fab-color: var(--color-action-primary-text);
+  --ids-fab-border: var(--color-action-primary);
+  --ids-fab-hover-bg: var(--color-action-hover);
+  --ids-fab-hover-color: var(--color-action-primary-text);
+  --ids-fab-hover-border: var(--color-border-interactive);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-fab-current-bg: var(--ids-fab-bg);
+  --ids-fab-current-color: var(--ids-fab-color);
+  --ids-fab-current-border: var(--ids-fab-border);
+  --ids-fab-current-hover-bg: var(--ids-fab-hover-bg);
+  --ids-fab-current-hover-color: var(--ids-fab-hover-color);
+  --ids-fab-current-hover-border: var(--ids-fab-hover-border);
+
+  /* Menú de Acciones Secundarias / Speed Dial (.ids-fab-group) */
+  --ids-fab-group-gap: var(--spacing-sm);
+  --ids-fab-action-label-bg: var(--color-surface-card);
+  --ids-fab-action-label-color: var(--color-text-primary);
+  --ids-fab-action-label-border: var(--color-border-subtle);
+  --ids-fab-action-label-font-size: var(--font-size-caption);
+
+  /* Menú Flotante Contextual / FAB Menu (.ids-fab-menu / .fab-menu) */
+  --ids-fab-menu-bg: var(--color-surface-card);
+  --ids-fab-menu-border: var(--color-border-subtle);
+  --ids-fab-menu-min-width: 15rem;
+  --ids-fab-menu-max-width: 22rem;
+  --ids-fab-menu-radius: var(--radius-card);
+  --ids-fab-menu-padding: var(--spacing-xs);
+  --ids-fab-menu-gap: calc(var(--spacing-xs) / 2);
+  --ids-fab-menu-offset: var(--spacing-sm);
+  --ids-fab-menu-z-index: calc(var(--ids-fab-z-index) + 1);
+
+  /* Movimiento y Transiciones */
+  --ids-fab-transition-speed: var(--transition-speed-fast);
+  --ids-fab-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-fab)
+   Control flotante atómico de alta prominencia con heurística WCAG AAA.
+   -------------------------------------------------------------------------- */
+.ids-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ids-fab-gap);
+
+  /* Geometría Simétrica (Círculo Perfecto por Defecto) */
+  inline-size: var(--ids-fab-size);
+  block-size: var(--ids-fab-size);
+  min-inline-size: var(--ids-fab-size-sm);
+  min-block-size: var(--ids-fab-size-sm);
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+  /* Superficie Plana / Limpia (Clean & Flat, sin sombras complejas) */
+  border-radius: var(--ids-fab-radius);
+  border-width: var(--ids-fab-border-width);
+  border-style: var(--ids-fab-border-style);
+  border-color: var(--ids-fab-current-border);
+  background-color: var(--ids-fab-current-bg);
+  color: var(--ids-fab-current-color);
+
+  /* Tipografía y Legibilidad */
+  font-family: var(--ids-fab-font-family);
+  font-size: var(--ids-fab-font-size);
+  font-weight: var(--ids-fab-font-weight);
+  line-height: var(--ids-fab-line-height);
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+
+  /* Controles Ergonómicos */
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  position: relative;
+
+  /* Transición fluida */
+  transition: background-color var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+              border-color var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+              color var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+              transform var(--ids-fab-transition-speed) var(--ids-fab-transition-ease);
+
+  /* Icono Central */
+  .ids-icon {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    fill: currentColor;
+    flex-shrink: 0;
+    transition: transform var(--ids-fab-transition-speed) var(--ids-fab-transition-ease);
+  }
+
+  /* Estado Hover */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: var(--ids-fab-current-hover-bg);
+    border-color: var(--ids-fab-current-hover-border);
+    color: var(--ids-fab-current-hover-color);
+  }
+
+  /* Estado Activo / Clic */
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: scale(0.96);
+  }
+
+  /* Estado Foco Visible (WCAG AAA - Sin recorte, anillo de foco visible) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    z-index: 4;
+  }
+
+  /* Estado Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"],
+  &--disabled {
+    background-color: var(--color-action-disabled-bg);
+    border-color: var(--color-action-disabled-border);
+    color: var(--color-action-disabled-text);
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. VARIANTE EXTENDIDA (.ids-fab--extended)
+   Presentación con icono atómico y etiqueta de texto legible.
+   -------------------------------------------------------------------------- */
+.ids-fab--extended {
+  inline-size: auto;
+  min-inline-size: var(--ids-fab-size);
+  padding-block: var(--ids-fab-extended-padding-y);
+  padding-inline: var(--ids-fab-extended-padding-x);
+  border-radius: var(--ids-fab-radius);
+
+  .ids-fab__label {
+    display: inline-block;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ESCALA DE TAMAÑOS (.ids-fab--sm y .ids-fab--lg)
+   -------------------------------------------------------------------------- */
+/* Tamaño Pequeño (Touch Target mínimo 2.75rem) */
+.ids-fab--sm {
+  inline-size: var(--ids-fab-size-sm);
+  block-size: var(--ids-fab-size-sm);
+  font-size: var(--font-size-caption);
+
+  .ids-icon {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  &.ids-fab--extended {
+    inline-size: auto;
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-md);
+  }
+}
+
+/* Tamaño Grande (Alta Visibilidad - 4.25rem) */
+.ids-fab--lg {
+  inline-size: var(--ids-fab-size-lg);
+  block-size: var(--ids-fab-size-lg);
+  font-size: var(--font-size-body-large);
+
+  .ids-icon {
+    inline-size: 1.875rem;
+    block-size: 1.875rem;
+  }
+
+  &.ids-fab--extended {
+    inline-size: auto;
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-xl);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. POSICIONAMIENTO FLOTANTE FIJO (Floating Viewport Anchors)
+   -------------------------------------------------------------------------- */
+.ids-fab--fixed,
+.ids-fab-group--fixed {
+  position: fixed;
+  z-index: var(--ids-fab-z-index);
+}
+
+/* Inferior Derecha (Bottom-End / Bottom-Right) - Predeterminado */
+.ids-fab--bottom-end,
+.ids-fab--bottom-right,
+.ids-fab-group--bottom-end,
+.ids-fab-group--bottom-right {
+  inset-block-end: var(--ids-fab-offset-y);
+  inset-inline-end: var(--ids-fab-offset-x);
+}
+
+/* Inferior Izquierda (Bottom-Start / Bottom-Left) */
+.ids-fab--bottom-start,
+.ids-fab--bottom-left,
+.ids-fab-group--bottom-start,
+.ids-fab-group--bottom-left {
+  inset-block-end: var(--ids-fab-offset-y);
+  inset-inline-start: var(--ids-fab-offset-x);
+}
+
+/* Superior Derecha (Top-End / Top-Right) */
+.ids-fab--top-end,
+.ids-fab--top-right,
+.ids-fab-group--top-end,
+.ids-fab-group--top-right {
+  inset-block-start: var(--ids-fab-offset-y);
+  inset-inline-end: var(--ids-fab-offset-x);
+}
+
+/* Superior Izquierda (Top-Start / Top-Left) */
+.ids-fab--top-start,
+.ids-fab--top-left,
+.ids-fab-group--top-start,
+.ids-fab-group--top-left {
+  inset-block-start: var(--ids-fab-offset-y);
+  inset-inline-start: var(--ids-fab-offset-x);
+}
+
+/* --------------------------------------------------------------------------
+   6. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA)
+   Acentos visuales para acciones de emergencia, confirmaciones y advertencias.
+   -------------------------------------------------------------------------- */
+/* 6.1 ESTADO ÉXITO (Success / Confirmación Inmediata) */
+.ids-fab--success {
+  --ids-fab-current-bg: var(--color-status-success);
+  --ids-fab-current-color: var(--color-status-success-text);
+  --ids-fab-current-border: var(--color-status-success);
+  --ids-fab-current-hover-bg: var(--color-status-success);
+  --ids-fab-current-hover-color: var(--color-status-success-text);
+  --ids-fab-current-hover-border: var(--color-border-interactive);
+}
+
+/* 6.2 ESTADO PELIGRO (Danger / Trauma-Informed - Botón de Pánico o Borrado Rápido) */
+.ids-fab--danger {
+  --ids-fab-current-bg: var(--color-status-danger);
+  --ids-fab-current-color: var(--color-status-danger-text);
+  --ids-fab-current-border: var(--color-status-danger);
+  --ids-fab-current-hover-bg: var(--color-status-danger);
+  --ids-fab-current-hover-color: var(--color-status-danger-text);
+  --ids-fab-current-hover-border: var(--color-border-interactive);
+}
+
+/* 6.3 ESTADO ADVERTENCIA (Warning / Precaución) */
+.ids-fab--warning {
+  --ids-fab-current-bg: var(--color-status-warning);
+  --ids-fab-current-color: var(--color-status-warning-text);
+  --ids-fab-current-border: var(--color-status-warning);
+  --ids-fab-current-hover-bg: var(--color-status-warning);
+  --ids-fab-current-hover-color: var(--color-status-warning-text);
+  --ids-fab-current-hover-border: var(--color-border-interactive);
+}
+
+/* 6.4 ESTADO INFORMACIÓN (Info / Guía Rápida) */
+.ids-fab--info {
+  --ids-fab-current-bg: var(--color-status-info);
+  --ids-fab-current-color: var(--color-status-info-text);
+  --ids-fab-current-border: var(--color-status-info);
+  --ids-fab-current-hover-bg: var(--color-status-info);
+  --ids-fab-current-hover-color: var(--color-status-info-text);
+  --ids-fab-current-hover-border: var(--color-border-interactive);
+}
+
+/* 6.5 VARIANTE DE SUPERFICIE / NEUTRAL (.ids-fab--surface) */
+.ids-fab--surface {
+  --ids-fab-current-bg: var(--color-surface-card);
+  --ids-fab-current-color: var(--color-text-primary);
+  --ids-fab-current-border: var(--color-border-subtle);
+  --ids-fab-current-hover-bg: var(--color-surface-hover);
+  --ids-fab-current-hover-color: var(--color-action-hover);
+  --ids-fab-current-hover-border: var(--color-border-interactive);
+}
+
+/* --------------------------------------------------------------------------
+   7. MENÚ DE ACCIONES SECUNDARIAS / SPEED DIAL (.ids-fab-group)
+   Pila interactiva de botones de acción secundarios.
+   -------------------------------------------------------------------------- */
+.ids-fab-group {
+  display: inline-flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: var(--ids-fab-group-gap);
+  box-sizing: border-box;
+
+  /* Contenedor de las acciones secundarias apiladas */
+  .ids-fab-group__actions {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--ids-fab-group-gap);
+    align-items: flex-end;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    /* Oculto por defecto */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(var(--spacing-sm));
+    transition: opacity var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+                transform var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+                visibility var(--ids-fab-transition-speed) var(--ids-fab-transition-ease);
+  }
+
+  /* Fila de acción secundaria con etiqueta (Label + Secondary FAB) */
+  .ids-fab-group__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+  }
+
+  /* Etiqueta accesible de la acción secundaria */
+  .ids-fab__action-label {
+    display: inline-block;
+    padding-block: calc(var(--spacing-xs) / 2);
+    padding-inline: var(--spacing-sm);
+    background-color: var(--ids-fab-action-label-bg);
+    color: var(--ids-fab-action-label-color);
+    border: var(--focus-ring-width) solid var(--ids-fab-action-label-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--ids-fab-font-family);
+    font-size: var(--ids-fab-action-label-font-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-tight);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  /* Estado Abierto del Speed Dial */
+  &.is-open,
+  &--open,
+  &[aria-expanded="true"] {
+    .ids-fab-group__actions {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    /* Rotar icono de disparador (ej. '+' a 'x') si aplica */
+    .ids-fab__icon--rotate {
+      transform: rotate(45deg);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. MENÚ FLOTANTE CONTEXTUAL / FAB MENU (.ids-fab-menu / .fab-menu)
+   Botón de Acción Flotante que despliega un panel / tarjeta de menú contextual
+   con acciones enriquecidas, descripciones y atajos de teclado.
+   -------------------------------------------------------------------------- */
+.ids-fab-menu,
+.fab-menu {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  box-sizing: border-box;
+
+  /* Contenedor Flotante Fijo */
+  &--fixed {
+    position: fixed;
+    z-index: var(--ids-fab-z-index);
+  }
+
+  /* Disparador FAB del Menú */
+  .ids-fab-menu__trigger,
+  .fab-menu__trigger {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Panel Flotante del Menú (Tarjeta de Menú) */
+  .ids-fab-menu__panel,
+  .fab-menu__panel,
+  .ids-fab-menu__menu,
+  .fab-menu__menu {
+    position: absolute;
+    inset-block-end: calc(100% + var(--ids-fab-menu-offset));
+    inset-inline-end: 0;
+    z-index: var(--ids-fab-menu-z-index);
+    min-inline-size: var(--ids-fab-menu-min-width);
+    max-inline-size: var(--ids-fab-menu-max-width);
+    inline-size: max-content;
+    box-sizing: border-box;
+    padding: var(--ids-fab-menu-padding);
+    background-color: var(--ids-fab-menu-bg);
+    border: var(--ids-fab-border-width) var(--ids-fab-border-style) var(--ids-fab-menu-border);
+    border-radius: var(--ids-fab-menu-radius);
+
+    /* Oculto por defecto con cinemática suave */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(var(--spacing-sm)) scale(0.95);
+    transform-origin: bottom right;
+    transition: opacity var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+                transform var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+                visibility var(--ids-fab-transition-speed) var(--ids-fab-transition-ease);
+  }
+
+  /* Encabezado / Título del Menú */
+  .ids-fab-menu__header,
+  .fab-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+    font-family: var(--ids-fab-font-family);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    border-block-end: var(--divider-thickness) solid var(--color-border-subtle);
+    margin-block-end: var(--spacing-xs);
+  }
+
+  /* Lista de Opciones del Menú */
+  .ids-fab-menu__list,
+  .fab-menu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-fab-menu-gap);
+    box-sizing: border-box;
+  }
+
+  .ids-fab-menu__item,
+  .fab-menu__item {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Elementos de Acción / Enlaces del Menú */
+  .ids-fab-menu__link,
+  .fab-menu__link,
+  .ids-fab-menu__action,
+  .fab-menu__action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    inline-size: 100%;
+    min-block-size: calc(var(--target-size-min) * 0.85); /* Touch target accesible WCAG AAA */
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+    box-sizing: border-box;
+    background: transparent;
+    border: var(--focus-ring-width) solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-family: var(--ids-fab-font-family);
+    font-size: var(--ids-fab-font-size);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-tight);
+    text-decoration: none;
+    text-align: start;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition: background-color var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+                color var(--ids-fab-transition-speed) var(--ids-fab-transition-ease),
+                border-color var(--ids-fab-transition-speed) var(--ids-fab-transition-ease);
+
+    .ids-icon {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .ids-fab-menu__text,
+    .fab-menu__text {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-inline-size: 0;
+    }
+
+    .ids-fab-menu__item-title,
+    .fab-menu__item-title {
+      font-weight: var(--font-weight-medium);
+      color: inherit;
+    }
+
+    .ids-fab-menu__item-desc,
+    .fab-menu__item-desc {
+      font-size: calc(var(--font-size-caption) * 0.9);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-base);
+    }
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      outline-offset: calc(var(--focus-ring-offset) * -1);
+      z-index: 1;
+    }
+
+    &:active:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--color-surface-muted);
+    }
+
+    &:disabled,
+    &[aria-disabled="true"] {
+      opacity: var(--opacity-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+      color: var(--color-text-secondary);
+    }
+
+    /* Variantes Semánticas de Ítems */
+    &--danger {
+      color: var(--color-status-danger);
+
+      .ids-fab-menu__item-desc,
+      .fab-menu__item-desc {
+        color: var(--color-status-danger);
+        opacity: 0.85;
+      }
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+        color: var(--color-status-danger);
+      }
+    }
+
+    &--success {
+      color: var(--color-status-success);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+        color: var(--color-status-success);
+      }
+    }
+
+    &--warning {
+      color: var(--color-status-warning);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+        color: var(--color-status-warning);
+      }
+    }
+
+    &--info {
+      color: var(--color-status-info);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+        color: var(--color-status-info);
+      }
+    }
+  }
+
+  /* Divisor Separador en el Menú */
+  .ids-fab-menu__divider,
+  .fab-menu__divider {
+    inline-size: 100%;
+    block-size: var(--divider-thickness);
+    background-color: var(--color-border-subtle);
+    margin-block: var(--spacing-xs);
+    border: none;
+    padding: 0;
+  }
+
+  /* Modificadores de Alineación y Anclaje */
+  &--top-end,
+  &--top-right {
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      inset-block-start: calc(100% + var(--ids-fab-menu-offset));
+      inset-block-end: auto;
+      inset-inline-end: 0;
+      transform-origin: top right;
+    }
+  }
+
+  &--top-start,
+  &--top-left {
+    align-items: flex-start;
+
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      inset-block-start: calc(100% + var(--ids-fab-menu-offset));
+      inset-block-end: auto;
+      inset-inline-start: 0;
+      inset-inline-end: auto;
+      transform-origin: top left;
+    }
+  }
+
+  &--bottom-start,
+  &--bottom-left {
+    align-items: flex-start;
+
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      inset-block-end: calc(100% + var(--ids-fab-menu-offset));
+      inset-inline-start: 0;
+      inset-inline-end: auto;
+      transform-origin: bottom left;
+    }
+  }
+
+  /* Estado Abierto del Menú */
+  &.is-open,
+  &--open,
+  &[aria-expanded="true"] {
+    .ids-fab-menu__panel,
+    .fab-menu__panel,
+    .ids-fab-menu__menu,
+    .fab-menu__menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .ids-fab__icon--rotate {
+      transform: rotate(45deg);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. ADAPTABILIDAD A LOS 4 EJES TEMÁTICOS DEL IDS
+   -------------------------------------------------------------------------- */
+/* Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-fab {
+    border-width: var(--focus-ring-width);
+    border-color: var(--color-border-subtle);
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-border-interactive);
+      outline: var(--focus-ring-width) solid var(--color-border-interactive);
+    }
+  }
+
+  .ids-fab--success {
+    --ids-fab-current-border: var(--color-border-interactive);
+  }
+
+  .ids-fab--danger {
+    --ids-fab-current-border: var(--color-action-danger-bg);
+  }
+
+  .ids-fab-group .ids-fab__action-label {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-fab-menu,
+  .fab-menu {
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      border-color: var(--color-border-interactive);
+      background-color: var(--color-surface-card);
+    }
+
+    .ids-fab-menu__link,
+    .fab-menu__link,
+    .ids-fab-menu__action,
+    .fab-menu__action {
+      &:hover:not(:disabled),
+      &:focus-visible {
+        outline: var(--focus-ring-width) solid var(--color-border-interactive);
+      }
+    }
+  }
+}
+
+/* Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-fab {
+    border: 0.125rem solid ButtonText;
+    background-color: ButtonFace;
+    color: ButtonText;
+
+    &:hover:not(:disabled) {
+      border-color: Highlight;
+      color: Highlight;
+    }
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+
+    &:disabled,
+    &[aria-disabled="true"] {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+
+  .ids-fab-group .ids-fab__action-label {
+    border: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-fab-menu,
+  .fab-menu {
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      border: 0.125rem solid CanvasText;
+      background-color: Canvas;
+      color: CanvasText;
+    }
+
+    .ids-fab-menu__link:hover,
+    .fab-menu__link:hover,
+    .ids-fab-menu__action:hover,
+    .fab-menu__action:hover {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+}
+
+/* Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-fab {
+    transition: none;
+
+    &:active {
+      transform: none;
+    }
+  }
+
+  .ids-fab-group .ids-fab-group__actions {
+    transition: none;
+    transform: none;
+  }
+
+  .ids-fab-menu,
+  .fab-menu {
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      transition: none;
+      transform: none;
+    }
+  }
+}
+
+/* Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-fab {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-hover);
+      border-color: var(--color-border-interactive);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .ids-fab-menu,
+  .fab-menu {
+    .ids-fab-menu__panel,
+    .fab-menu__panel {
+      background-color: var(--color-surface-card);
+      border-color: var(--color-border-subtle);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+/* Movimiento Reducido (Accesibilidad Vestibular) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-fab,
+  .ids-fab .ids-icon,
+  .ids-fab-group .ids-fab-group__actions,
+  .ids-fab-menu .ids-fab-menu__panel,
+  .fab-menu .fab-menu__panel {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .ids-fab:active {
+    transform: none !important;
+  }
+
+  .ids-fab-group.is-open .ids-fab__icon--rotate,
+  .ids-fab-menu.is-open .ids-fab__icon--rotate,
+  .fab-menu.is-open .ids-fab__icon--rotate {
+    transform: none !important;
+  }
+}
+
+/* Diseño Responsivo - Mobile-First */
+.ids-fab--fixed,
+.ids-fab-group--fixed,
+.ids-fab-menu--fixed,
+.fab-menu--fixed {
+  --ids-fab-offset-x: var(--ids-fab-offset-mobile);
+  --ids-fab-offset-y: var(--ids-fab-offset-mobile);
+
+  @media (min-width: 48rem) {
+    --ids-fab-offset-x: var(--spacing-xl);
+    --ids-fab-offset-y: var(--spacing-xl);
+  }
+}
+
+.ids-fab--extended {
+  padding-inline: var(--spacing-md);
+
+  @media (min-width: 48rem) {
+    padding-inline: var(--ids-fab-extended-padding-x);
+  }
+}
+
+.ids-fab-menu,
+.fab-menu {
+  --ids-fab-menu-min-width: 13rem;
+
+  @media (min-width: 48rem) {
+    --ids-fab-menu-min-width: 15rem;
+  }
+}
+

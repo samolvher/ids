@@ -1,0 +1,809 @@
+/* ==========================================================================
+   05-templates/_wizards.scss
+   Identity Design System (IDS) - Plantilla de Asistente Multi-Paso (Wizards)
+   Flujos secuenciales y no lineales informados por el trauma:
+     - 1. Contrato de Tokens y Variables del Wizard (:root)
+     - 2. Estructura y Esqueleto Base (.ids-wizard)
+     - 3. Cabecera, Metadatos y Salvaguarda (.ids-wizard__header & __meta)
+     - 4. Variaciones del Stepper / Indicador de Progreso (Horizontal, Vertical, Dots, Compact)
+     - 5. Cuerpo y Paneles de Paso (.ids-wizard__body & __step)
+     - 6. Barra de Acciones y Navegación (.ids-wizard__footer & __actions)
+     - 7. Variaciones de Layout del Wizard (Horizontal, Split/Sidebar, Card, Fullscreen, Compact)
+     - 8. Mecanismos Trauma-Informed (Autoguardado, Deshacer, Salida Rápida, Pausa Emocional)
+     - 9. Soporte de Temas del Sistema y Alto Contraste (High Contrast, Low Stim, Discrete)
+     - 10. Movimiento Reducido y Accesibilidad Universal (WCAG AAA Reflow & Keyboard Flow)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES Y CONTRATO DE TOKENS DEL WIZARD (:root)
+   Estricta prohibición de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría y espaciado proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Anchos de Flujo */
+  --ids-wizard-max-width: 56rem;                     /* 896px - Ancho ergonómico */
+  --ids-wizard-compact-max-width: 40rem;             /* 640px - Formatos reducidos */
+  --ids-wizard-sidebar-width: 18.5rem;               /* 296px - Panel lateral de pasos */
+
+  /* Espaciado Interno y Ritmo de Secciones */
+  --ids-wizard-padding-x: var(--spacing-xl);
+  --ids-wizard-padding-y: var(--spacing-xl);
+  --ids-wizard-padding-sm-x: var(--spacing-md);
+  --ids-wizard-padding-sm-y: var(--spacing-md);
+  --ids-wizard-gap: var(--spacing-xl);
+  --ids-wizard-step-gap: var(--spacing-lg);
+
+  /* Superficies y Bordes Base */
+  --ids-wizard-bg: var(--color-surface-background);
+  --ids-wizard-card-bg: var(--color-surface-card);
+  --ids-wizard-border: var(--color-border-subtle);
+  --ids-wizard-border-width: var(--focus-ring-width);
+  --ids-wizard-radius: var(--radius-card);
+
+  /* Conectores y Pistas de Paso */
+  --ids-wizard-stepper-bg: var(--color-surface-muted);
+  --ids-wizard-connector-thickness: var(--focus-ring-width);
+  --ids-wizard-connector-color: var(--color-border-subtle);
+  --ids-wizard-connector-active-color: var(--color-action-primary);
+  --ids-wizard-connector-completed-color: var(--color-status-success);
+
+  /* Indicadores de Paso (Formas Círculo / Cuadrado) */
+  --ids-wizard-indicator-size: var(--target-size-min); /* 44px WCAG AAA Target */
+  --ids-wizard-indicator-size-sm: var(--spacing-xl);   /* 2rem */
+  --ids-wizard-indicator-size-lg: calc(var(--target-size-min) + var(--spacing-sm));
+
+  /* Notificaciones y Resguardos Trauma-Informed */
+  --ids-wizard-autosave-color: var(--color-status-success);
+  --ids-wizard-autosave-bg: var(--color-surface-muted);
+  --ids-wizard-pause-color: var(--color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESTRUCTURA Y ESQUELETO BASE (.ids-wizard)
+   Contenedor principal con centrado y contención de flujo.
+   -------------------------------------------------------------------------- */
+.ids-wizard {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  max-inline-size: var(--ids-wizard-max-width);
+  margin-inline: auto;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   3. CABECERA, METADATOS Y SALVAGUARDA (.ids-wizard__header & __meta)
+   Contexto claro de orientación cognitiva y botones de salida de emergencia.
+   -------------------------------------------------------------------------- */
+.ids-wizard__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-block-end: var(--spacing-lg);
+  border-block-end: var(--ids-wizard-border-width) solid var(--ids-wizard-border);
+  box-sizing: border-box;
+  inline-size: 100%;
+}
+
+.ids-wizard__top-bar {
+  display: flex;
+  align-items: safe center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  inline-size: 100%;
+}
+
+.ids-wizard__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-inline-size: 0;
+}
+
+.ids-wizard__title {
+  margin: 0;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.ids-wizard__description {
+  margin: 0;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+  max-inline-size: 65ch; /* Confort de lectura */
+}
+
+/* Fila de Metadatos y Autoguardado Tranquilizador */
+.ids-wizard__meta {
+  display: flex;
+  align-items: safe center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  padding-block-start: var(--spacing-xs);
+}
+
+.ids-wizard__progress-text {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.ids-wizard__autosave {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--ids-wizard-autosave-color);
+  font-size: var(--font-size-caption);
+
+  &__icon {
+    inline-size: 1rem;
+    block-size: 1rem;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+/* Botón de Salida Rápida (Seguridad Inmediata Anti-Mirones) */
+.ids-wizard__quick-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-primary);
+  border: var(--focus-ring-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-speed-fast) var(--transition-ease);
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-border-interactive);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. VARIACIONES DEL STEPPER / INDICADOR DE PROGRESO
+   Visualización secuencial con soporte accesible de estados y conectores.
+   -------------------------------------------------------------------------- */
+
+.ids-wizard__stepper {
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding-block: var(--spacing-lg);
+}
+
+/* 4.1 Stepper Horizontal Clásico */
+.ids-wizard__stepper--horizontal {
+  .ids-wizard__steps {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--spacing-sm);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    inline-size: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow-x: auto;
+    padding-block-end: var(--spacing-xs);
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+
+    @media (min-width: 48rem) {
+      justify-content: space-between;
+      overflow-x: visible;
+      padding-block-end: 0;
+    }
+  }
+
+  .ids-wizard__step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1 1 0;
+    min-inline-size: 6rem;
+    position: relative;
+    box-sizing: border-box;
+
+    /* Conector Lineal entre pasos */
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: calc(var(--ids-wizard-indicator-size) * 0.5);
+      inset-inline-start: calc(50% + var(--ids-wizard-indicator-size) * 0.5);
+      inline-size: calc(100% - var(--ids-wizard-indicator-size));
+      block-size: var(--ids-wizard-connector-thickness);
+      background-color: var(--ids-wizard-connector-color);
+      z-index: var(--z-index-base);
+    }
+
+    &.is-completed:not(:last-child)::after {
+      background-color: var(--ids-wizard-connector-completed-color);
+    }
+  }
+}
+
+/* 4.2 Stepper Vertical (Ideal para Split / Sidebar) */
+.ids-wizard__stepper--vertical {
+  .ids-wizard__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    inline-size: 100%;
+    box-sizing: border-box;
+  }
+
+  .ids-wizard__step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    position: relative;
+    box-sizing: border-box;
+    min-block-size: var(--target-size-min);
+
+    /* Conector Lineal Vertical hacia el siguiente paso */
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: var(--ids-wizard-indicator-size);
+      inset-inline-start: calc(var(--ids-wizard-indicator-size) * 0.5 - var(--ids-wizard-connector-thickness) * 0.5);
+      inline-size: var(--ids-wizard-connector-thickness);
+      block-size: calc(100% - var(--ids-wizard-indicator-size) + var(--spacing-md));
+      background-color: var(--ids-wizard-connector-color);
+      z-index: var(--z-index-base);
+    }
+
+    &.is-completed:not(:last-child)::after {
+      background-color: var(--ids-wizard-connector-completed-color);
+    }
+  }
+}
+
+/* 4.3 Elemento de Paso Individual (.ids-wizard__step-item) */
+.ids-wizard__step-item {
+  /* Indicador Numérico / Icono */
+  .ids-wizard__step-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--ids-wizard-indicator-size);
+    block-size: var(--ids-wizard-indicator-size);
+    min-inline-size: var(--ids-wizard-indicator-size);
+    min-block-size: var(--ids-wizard-indicator-size);
+    border-radius: var(--radius-full);
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    box-sizing: border-box;
+    position: relative;
+    z-index: calc(var(--z-index-base) + 1);
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                border-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  .ids-wizard__step-label {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--spacing-xs);
+    gap: calc(var(--spacing-xs) * 0.5);
+  }
+
+  .ids-wizard__step-title {
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-base);
+  }
+
+  .ids-wizard__step-desc {
+    font-size: calc(var(--font-size-caption) * 0.875);
+    color: var(--color-text-secondary);
+    opacity: 0.85;
+  }
+
+  /* Estado: Activo / En Progreso (aria-current="step") */
+  &.is-active,
+  &[aria-current="step"] {
+    .ids-wizard__step-indicator {
+      background-color: var(--color-action-primary);
+      color: var(--color-action-primary-text);
+      border-color: var(--color-action-primary);
+    }
+
+    .ids-wizard__step-title {
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+    }
+  }
+
+  /* Estado: Completado */
+  &.is-completed {
+    .ids-wizard__step-indicator {
+      background-color: var(--color-status-success);
+      color: var(--color-status-success-text);
+      border-color: var(--color-status-success);
+    }
+
+    .ids-wizard__step-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  /* Estado: Advertencia / Atención No Destructiva */
+  &.is-warning {
+    .ids-wizard__step-indicator {
+      background-color: var(--color-status-warning);
+      color: var(--color-status-warning-text);
+      border-color: var(--color-status-warning);
+    }
+  }
+}
+
+/* 4.4 Stepper de Puntos / Balas Minimalista (.ids-wizard__stepper--dots) */
+.ids-wizard__stepper--dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding-block: var(--spacing-md);
+
+  .ids-wizard__dot {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-subtle);
+    transition: inline-size var(--transition-speed-fast) var(--transition-ease),
+                background-color var(--transition-speed-fast) var(--transition-ease);
+
+    &.is-active {
+      inline-size: 2rem;
+      background-color: var(--color-action-primary);
+    }
+
+    &.is-completed {
+      background-color: var(--color-status-success);
+    }
+  }
+}
+
+/* 4.5 Stepper con Barra de Progreso Continua (.ids-wizard__stepper--progress) */
+.ids-wizard__stepper--progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-block: var(--spacing-md);
+
+  .ids-wizard__progress-track {
+    inline-size: 100%;
+    block-size: 0.5rem;
+    background-color: var(--color-surface-muted);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .ids-wizard__progress-fill {
+    block-size: 100%;
+    background-color: var(--color-action-primary);
+    border-radius: var(--radius-full);
+    transition: inline-size var(--transition-speed-base) var(--transition-ease);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. CUERPO Y PANELES DE PASO (.ids-wizard__body & __step)
+   Área de interacción con foco accesible, reflow garantizado y ritmo ergonómico.
+   -------------------------------------------------------------------------- */
+.ids-wizard__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-wizard-step-gap);
+  padding-block: var(--ids-wizard-body-padding-y);
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0; /* Previene desbordamiento en flexbox */
+}
+
+/* Panel de Paso Individual */
+.ids-wizard__step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  /* Pasos inactivos se ocultan de la vista y del árbol de accesibilidad */
+  &[hidden],
+  &[aria-hidden="true"]:not(.is-visible) {
+    display: none !important;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. BARRA DE ACCIONES Y NAVEGACIÓN (.ids-wizard__footer & __actions)
+   Navegación simétrica consentida con botones de avance, retroceso y pausa.
+   -------------------------------------------------------------------------- */
+.ids-wizard__footer {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  padding-block-start: var(--spacing-xl);
+  border-block-start: var(--ids-wizard-border-width) solid var(--ids-wizard-border);
+  box-sizing: border-box;
+  inline-size: 100%;
+
+  & > * {
+    inline-size: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    align-items: safe center;
+    justify-content: space-between;
+
+    & > * {
+      inline-size: auto;
+    }
+  }
+}
+
+.ids-wizard__actions {
+  display: flex;
+  align-items: safe center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  inline-size: 100%;
+
+  & > * {
+    flex: 1 1 0;
+  }
+
+  @media (min-width: 48rem) {
+    inline-size: auto;
+
+    & > * {
+      flex: 0 1 auto;
+    }
+  }
+}
+
+/* Botón de Pausa Emocional / Resguardo de Borrador */
+.ids-wizard__btn-pause {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--ids-wizard-pause-color);
+  font-size: var(--font-size-caption);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* Pie Adhesivo Fijo en Móvil / Formularios Extensos */
+.ids-wizard__footer--sticky {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--ids-wizard-bg);
+  z-index: var(--z-index-sticky);
+  box-shadow: var(--shadow-elevation-sticky);
+}
+
+/* --------------------------------------------------------------------------
+   7. VARIACIONES DE LAYOUT DEL WIZARD (Variations)
+   Arquetipos modulares según el grado de densidad y contexto del flujo.
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Wizard Horizontal Estándar (.ids-wizard--horizontal)
+   Flujo clásico con stepper en la cabecera y cuerpo centrado. */
+.ids-wizard--horizontal {
+  max-inline-size: var(--ids-wizard-max-width);
+}
+
+/* 7.2 Wizard Dividido con Panel Lateral (.ids-wizard--split / .ids-wizard--sidebar)
+   Distribución de 2 columnas: panel izquierdo con stepper vertical y notas;
+   panel derecho con el formulario del paso activo. */
+.ids-wizard--split,
+.ids-wizard--sidebar {
+  max-inline-size: 72rem;
+
+  .ids-wizard__aside {
+    padding-block-end: var(--spacing-lg);
+    border-block-end: var(--ids-wizard-border-width) solid var(--ids-wizard-border);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  @media (min-width: 48rem) {
+    display: grid;
+    grid-template-columns: var(--ids-wizard-sidebar-width) minmax(0, 1fr);
+    gap: var(--spacing-xxl);
+    align-items: flex-start;
+
+    .ids-wizard__aside {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+      position: sticky;
+      top: var(--spacing-xl);
+      padding-block-end: 0;
+      padding-inline-end: var(--spacing-lg);
+      border-block-end: none;
+      border-inline-end: var(--ids-wizard-border-width) solid var(--ids-wizard-border);
+      margin-bottom: 0;
+      box-sizing: border-box;
+    }
+
+    .ids-wizard__main {
+      display: flex;
+      flex-direction: column;
+      min-inline-size: 0;
+      box-sizing: border-box;
+    }
+  }
+}
+
+/* 7.3 Wizard en Tarjeta Contenida (.ids-wizard--card)
+   Encapsulado para modales, paneles o dashboards. */
+.ids-wizard--card {
+  background-color: var(--ids-wizard-card-bg);
+  border: var(--ids-wizard-border-width) solid var(--ids-wizard-border);
+  border-radius: var(--ids-wizard-radius);
+  padding: var(--ids-wizard-padding-sm-x);
+  box-shadow: none; /* Flat / Clean */
+
+  @media (min-width: 48rem) {
+    padding: var(--ids-wizard-padding-x);
+  }
+}
+
+/* 7.4 Wizard Inmersivo en Pantalla Completa (.ids-wizard--fullscreen)
+   Entorno sin distracciones para flujos de alta concentración o testimonios críticos. */
+.ids-wizard--fullscreen {
+  max-inline-size: 100%;
+  min-block-size: 100dvh;
+  padding: var(--spacing-xl);
+  box-sizing: border-box;
+  background-color: var(--ids-wizard-bg);
+
+  .ids-wizard__body {
+    max-inline-size: var(--ids-wizard-max-width);
+    margin-inline: auto;
+    flex: 1 1 auto;
+  }
+
+  .ids-wizard__footer {
+    max-inline-size: var(--ids-wizard-max-width);
+    margin-inline: auto;
+  }
+}
+
+/* 7.5 Wizard Compacto / Modal (.ids-wizard--compact)
+   Formato estrecho para sub-procesos o verificaciones en diálogo. */
+.ids-wizard--compact {
+  max-inline-size: var(--ids-wizard-compact-max-width);
+
+  .ids-wizard__header {
+    padding-block-end: var(--spacing-sm);
+  }
+
+  .ids-wizard__body {
+    padding-block: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .ids-wizard__footer {
+    padding-block-start: var(--spacing-md);
+  }
+}
+
+/* 7.6 Wizard No Lineal / Flexible (.ids-wizard--flexible)
+   Permite saltos conscientes a pasos ya completados u opcionales. */
+.ids-wizard--flexible {
+  .ids-wizard__step-item.is-completed,
+  .ids-wizard__step-item.is-clickable {
+    cursor: pointer;
+
+    &:hover .ids-wizard__step-indicator {
+      border-color: var(--color-border-interactive);
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. MECANISMOS TRAUMA-INFORMED Y TECNOLOGÍA CONSENTIDA
+   Diseño de confort cognitivo, prevención de pérdidas y salidas seguras.
+   -------------------------------------------------------------------------- */
+
+/* Alerta de Deshacer No Bloqueante (.ids-wizard__undo)
+   Reemplaza modales bloqueantes de confirmación por opciones amables de deshacer */
+.ids-wizard__undo {
+  display: flex;
+  align-items: safe center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  background-color: var(--color-surface-muted);
+  border: var(--ids-wizard-border-width) solid var(--color-border-interactive);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-block-start: var(--spacing-md);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+
+  &__btn {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-action-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--color-action-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      border-radius: var(--radius-sm);
+    }
+  }
+}
+
+/* Acompañamiento Empático / Caja de Seguridad Cognitiva */
+.ids-wizard__safety-box {
+  background-color: var(--color-surface-muted);
+  border-inline-start: var(--spacing-xs) solid var(--color-action-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+/* --------------------------------------------------------------------------
+   9. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens cromáticos inyectados por _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-wizard--card {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-wizard__header,
+  .ids-wizard__footer,
+  .ids-wizard--split .ids-wizard__aside {
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-wizard__step-item:not(:last-child)::after {
+    background-color: var(--color-border-subtle);
+  }
+
+  .ids-wizard__step-item.is-completed:not(:last-child)::after {
+    background-color: var(--color-status-success);
+  }
+
+  .ids-wizard__quick-exit {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+    color: var(--color-text-primary);
+  }
+
+  .ids-wizard__safety-box {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+    border-inline-start-color: var(--color-action-primary);
+  }
+}
+
+/* 9.2 Tema Baja Estimulación (Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-wizard--card {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-wizard__step-item.is-clickable:hover .ids-wizard__step-indicator {
+    transform: none; /* Cero escalado físico */
+  }
+}
+
+/* 9.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-wizard--card {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-wizard__quick-exit {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 9.4 Modo Forzado de Colores del Sistema (Windows High Contrast) */
+@media (forced-colors: active) {
+  .ids-wizard--card,
+  .ids-wizard__header,
+  .ids-wizard__footer,
+  .ids-wizard--split .ids-wizard__aside,
+  .ids-wizard__step-indicator,
+  .ids-wizard__safety-box {
+    border-color: CanvasText;
+  }
+
+  .ids-wizard__step-item:not(:last-child)::after {
+    background-color: CanvasText;
+  }
+
+  .ids-wizard__step-item.is-active .ids-wizard__step-indicator {
+    border-color: Highlight;
+    outline: 0.125rem solid Highlight;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MOVIMIENTO REDUCIDO Y ACCESIBILIDAD UNIVERSAL (WCAG AAA)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-wizard,
+  .ids-wizard__step-indicator,
+  .ids-wizard__progress-fill,
+  .ids-wizard__quick-exit,
+  .ids-wizard__dot {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}

@@ -1,0 +1,684 @@
+/* ==========================================================================
+   03-molecules/_paso.scss
+   Identity Design System (IDS) - Molécula de Paso de Proceso (Process Step)
+   Combinación: Círculo/Cuadrado (Forma) + Título + Descripción
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE LA MOLÉCULA PASO
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Espaciado y Ritmo Estructural (Esqueleto) */
+  --ids-paso-gap: var(--spacing-md);
+  --ids-paso-gap-sm: var(--spacing-sm);
+  --ids-paso-margin-bottom: var(--spacing-lg);
+  --ids-paso-padding-card: var(--spacing-md);
+
+  /* Conector entre Pasos Secuenciales */
+  --ids-paso-connector-thickness: var(--focus-ring-width);
+  --ids-paso-connector-color: var(--color-border-subtle);
+  --ids-paso-connector-active-color: var(--color-action-primary);
+  --ids-paso-connector-completed-color: var(--color-status-success);
+
+  /* Geometría del Indicador de Forma (Círculo / Cuadrado) */
+  --ids-paso-indicator-size: var(--target-size-min); /* 44px WCAG AAA Target */
+  --ids-paso-indicator-size-sm: var(--spacing-xl); /* 2rem */
+  --ids-paso-indicator-size-lg: calc(var(--target-size-min) + var(--spacing-sm)); /* 3.25rem */
+  --ids-paso-indicator-border-width: var(--focus-ring-width);
+
+  --ids-paso-radius-circle: var(--radius-full);
+  --ids-paso-radius-square: 0;
+  --ids-paso-radius-rounded: var(--radius-sm);
+  --ids-paso-radius-card: var(--radius-card);
+
+  /* Piel y Mapeo Cromático - Estado Pendiente / Inactivo */
+  --ids-paso-pending-bg: var(--color-surface-muted);
+  --ids-paso-pending-color: var(--color-text-secondary);
+  --ids-paso-pending-border: var(--color-border-subtle);
+
+  /* Piel y Mapeo Cromático - Estado Activo / En Progreso (aria-current="step") */
+  --ids-paso-active-bg: var(--color-surface-background);
+  --ids-paso-active-color: var(--color-action-primary);
+  --ids-paso-active-border: var(--color-border-interactive);
+  --ids-paso-active-fill-bg: var(--color-action-primary);
+  --ids-paso-active-fill-color: var(--color-action-primary-text);
+
+  /* Piel y Mapeo Cromático - Estado Completado */
+  --ids-paso-completed-bg: var(--color-status-success);
+  --ids-paso-completed-color: var(--color-status-success-text);
+  --ids-paso-completed-border: var(--color-status-success);
+
+  /* Piel y Mapeo Cromático - Estado de Error / Atención Reversible */
+  --ids-paso-error-bg: var(--color-status-danger);
+  --ids-paso-error-color: var(--color-status-danger-text);
+  --ids-paso-error-border: var(--color-status-danger);
+
+  /* Superficie y Tarjeta */
+  --ids-paso-card-bg: var(--color-surface-card);
+  --ids-paso-card-border: var(--color-border-subtle);
+
+  /* Movimiento */
+  --ids-paso-transition-speed: var(--transition-speed-fast);
+  --ids-paso-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE DE LA MOLÉCULA (.ids-paso)
+   Unidad compositiva que ensambla el indicador de forma con el título y la descripción.
+   -------------------------------------------------------------------------- */
+.ids-paso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ids-paso-gap);
+  position: relative;
+  box-sizing: border-box;
+  inline-size: 100%;
+  list-style: none;
+
+  /* ------------------------------------------------------------------------
+     2.1 INDICADOR DE FORMA (Círculo o Cuadrado)
+     Consume directamente los tokens de 02-atoms/_formas.scss o su propia clase.
+     ------------------------------------------------------------------------ */
+  &__forma,
+  &__indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--ids-paso-indicator-size);
+    block-size: var(--ids-paso-indicator-size);
+    min-inline-size: var(--ids-paso-indicator-size);
+    min-block-size: var(--ids-paso-indicator-size);
+    box-sizing: border-box;
+    position: relative;
+    z-index: var(--z-index-base);
+
+    /* Geometría por defecto: Círculo suavizado */
+    border-radius: var(--ids-paso-radius-circle);
+    border-width: var(--ids-paso-indicator-border-width);
+    border-style: solid;
+    border-color: var(--ids-paso-pending-border);
+    background-color: var(--ids-paso-pending-bg);
+    color: var(--ids-paso-pending-color);
+
+    /* Tipografía interna del número o sigla del paso */
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    text-align: center;
+    user-select: none;
+
+    /* Soporte de íconos dentro del indicador */
+    .ids-icon,
+    svg {
+      inline-size: calc(var(--ids-paso-indicator-size) * 0.45);
+      block-size: calc(var(--ids-paso-indicator-size) * 0.45);
+      fill: currentColor;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background-color var(--ids-paso-transition-speed) var(--ids-paso-transition-ease),
+        border-color var(--ids-paso-transition-speed) var(--ids-paso-transition-ease),
+        color var(--ids-paso-transition-speed) var(--ids-paso-transition-ease);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 CONTENIDO TEXTUAL (Título + Descripción)
+     Consume tipografía semántica y etiquetas de 02-atoms/_labels.scss.
+     ------------------------------------------------------------------------ */
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    padding-block-start: calc((var(--ids-paso-indicator-size) - (var(--line-height-tight) * var(--font-size-body-large))) / 2);
+  }
+
+  /* Cabecera del paso (Título + Badge / Estado opcional) */
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    inline-size: 100%;
+  }
+
+  /* Título del paso */
+  &__title,
+  &__heading {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-body-large);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    margin: 0;
+  }
+
+  /* Subtítulo o indicador de etapa (ej. "Paso 1 de 4") */
+  &__eyebrow {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-tight);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+
+  /* Descripción del paso */
+  &__desc,
+  &__description {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-base);
+    margin: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. VARIACIONES GEOMÉTRICAS DEL INDICADOR (Círculo vs Cuadrado)
+   Requerimiento explícito: combinación de círculo o cuadrado con título y descripción.
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Geometría Circular (.ids-paso--circulo, .ids-paso--circle) */
+.ids-paso--circulo,
+.ids-paso--circle {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    border-radius: var(--ids-paso-radius-circle);
+  }
+}
+
+/* 3.2 Geometría Cuadrada (.ids-paso--cuadrado, .ids-paso--square) */
+.ids-paso--cuadrado,
+.ids-paso--square {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    border-radius: var(--ids-paso-radius-square);
+  }
+}
+
+/* 3.3 Geometría Cuadrada con Esquinas Suavizadas (.ids-paso--rounded) */
+.ids-paso--rounded {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    border-radius: var(--ids-paso-radius-rounded);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ESTADOS DEL CICLO DE VIDA DEL PASO (Workflow & Trauma-Informed)
+   Feedback visual claro, semántico y accesible sin sobrecarga punitiva.
+   -------------------------------------------------------------------------- */
+
+/* 4.1 Estado Pendiente / Inactivo (.ids-paso--pending, .ids-paso--upcoming) */
+.ids-paso--pending,
+.ids-paso--upcoming {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    background-color: var(--ids-paso-pending-bg);
+    color: var(--ids-paso-pending-color);
+    border-color: var(--ids-paso-pending-border);
+  }
+
+  .ids-paso__title {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* 4.2 Estado Activo / En Curso (.ids-paso--active, [aria-current="step"], .is-active) */
+.ids-paso--active,
+.ids-paso--current,
+.ids-paso[aria-current="step"],
+.ids-paso.is-active {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    background-color: var(--ids-paso-active-fill-bg);
+    color: var(--ids-paso-active-fill-color);
+    border-color: var(--ids-paso-active-fill-bg);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--color-surface-background),
+                0 0 0 calc(var(--focus-ring-width) * 2) var(--ids-paso-active-border);
+  }
+
+  .ids-paso__title {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Variante activa con anillo sutil (Outline) */
+  &.ids-paso--outline {
+    .ids-paso__forma,
+    .ids-paso__indicator {
+      background-color: var(--ids-paso-active-bg);
+      color: var(--ids-paso-active-color);
+      border-color: var(--ids-paso-active-border);
+      border-width: calc(var(--ids-paso-indicator-border-width) * 1.5);
+      box-shadow: none;
+    }
+  }
+}
+
+/* 4.3 Estado Completado (.ids-paso--completed, .ids-paso--success) */
+.ids-paso--completed,
+.ids-paso--success {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    background-color: var(--ids-paso-completed-bg);
+    color: var(--ids-paso-completed-color);
+    border-color: var(--ids-paso-completed-border);
+  }
+
+  .ids-paso__title {
+    color: var(--color-text-primary);
+  }
+}
+
+/* 4.4 Estado de Alerta / Atención Reversible (.ids-paso--error, .ids-paso--danger) */
+.ids-paso--error,
+.ids-paso--danger {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    background-color: var(--ids-paso-error-bg);
+    color: var(--ids-paso-error-color);
+    border-color: var(--ids-paso-error-border);
+  }
+
+  .ids-paso__title {
+    color: var(--color-status-danger);
+  }
+
+  .ids-paso__desc {
+    color: var(--color-text-primary);
+  }
+}
+
+/* 4.5 Estado Deshabilitado (.ids-paso--disabled, [aria-disabled="true"]) */
+.ids-paso--disabled,
+.ids-paso[aria-disabled="true"] {
+  opacity: var(--opacity-disabled);
+  pointer-events: none;
+  cursor: not-allowed;
+
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    cursor: not-allowed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. ESCALAS DE TAMAÑO (.ids-paso--sm, .ids-paso--lg)
+   -------------------------------------------------------------------------- */
+
+/* 5.1 Compacto / Pequeño (.ids-paso--sm) */
+.ids-paso--sm {
+  gap: var(--ids-paso-gap-sm);
+
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    inline-size: var(--ids-paso-indicator-size-sm);
+    block-size: var(--ids-paso-indicator-size-sm);
+    min-inline-size: var(--ids-paso-indicator-size-sm);
+    min-block-size: var(--ids-paso-indicator-size-sm);
+    font-size: var(--font-size-caption);
+  }
+
+  .ids-paso__content {
+    padding-block-start: calc((var(--ids-paso-indicator-size-sm) - (var(--line-height-tight) * var(--font-size-body))) / 2);
+  }
+
+  .ids-paso__title {
+    font-size: var(--font-size-body);
+  }
+
+  .ids-paso__desc {
+    font-size: var(--font-size-caption);
+  }
+}
+
+/* 5.2 Amplio / Grande (.ids-paso--lg) */
+.ids-paso--lg {
+  gap: var(--spacing-lg);
+
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    inline-size: var(--ids-paso-indicator-size-lg);
+    block-size: var(--ids-paso-indicator-size-lg);
+    min-inline-size: var(--ids-paso-indicator-size-lg);
+    min-block-size: var(--ids-paso-indicator-size-lg);
+    font-size: var(--font-size-h5);
+  }
+
+  .ids-paso__content {
+    padding-block-start: calc((var(--ids-paso-indicator-size-lg) - (var(--line-height-tight) * var(--font-size-h4))) / 2);
+  }
+
+  .ids-paso__title {
+    font-size: var(--font-size-h4);
+  }
+
+  .ids-paso__desc {
+    font-size: var(--font-size-body-large);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. MODIFICADOR EN TARJETA (.ids-paso--card)
+   Envuelve el paso en una superficie delimitada con protección visual.
+   -------------------------------------------------------------------------- */
+.ids-paso--card {
+  padding: var(--ids-paso-padding-card);
+  background-color: var(--ids-paso-card-bg);
+  border: var(--focus-ring-width) solid var(--ids-paso-card-border);
+  border-radius: var(--ids-paso-radius-card);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color var(--ids-paso-transition-speed) var(--ids-paso-transition-ease),
+      background-color var(--ids-paso-transition-speed) var(--ids-paso-transition-ease);
+  }
+
+  &:hover {
+    border-color: var(--color-border-interactive);
+  }
+
+  &.ids-paso--active,
+  &[aria-current="step"] {
+    border-color: var(--ids-paso-active-border);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. INTERACCIÓN Y FOCO ACCESIBLE WCAG AAA (Pasos Clicables / Enlaces)
+   -------------------------------------------------------------------------- */
+a.ids-paso,
+button.ids-paso,
+.ids-paso--interactive {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+  text-align: start;
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-sm);
+  }
+
+  &:hover:not(.ids-paso--disabled):not([aria-disabled="true"]) {
+    .ids-paso__title {
+      color: var(--color-action-primary);
+    }
+
+    .ids-paso__forma,
+    .ids-paso__indicator {
+      border-color: var(--color-action-primary);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. CONTENEDOR SECUENCIAL DE PASOS (.ids-pasos / Stepper List)
+   Coordina secuencias de pasos conectadas mediante líneas de trazabilidad.
+   -------------------------------------------------------------------------- */
+.ids-pasos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-paso-margin-bottom);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  /* ------------------------------------------------------------------------
+     8.1 SECUENCIA VERTICAL CON LÍNEA CONECTORA (Por Defecto)
+     ------------------------------------------------------------------------ */
+  &--vertical,
+  &:not(&--horizontal) {
+    .ids-paso {
+      /* Línea conectora entre el paso actual y el siguiente */
+      &::after {
+        content: "";
+        position: absolute;
+        inset-inline-start: calc(var(--ids-paso-indicator-size) / 2 - var(--ids-paso-connector-thickness) / 2);
+        inset-block-start: calc(var(--ids-paso-indicator-size) + var(--spacing-xs));
+        block-size: calc(100% - var(--ids-paso-indicator-size) + var(--ids-paso-margin-bottom) - (var(--spacing-xs) * 2));
+        inline-size: var(--ids-paso-connector-thickness);
+        background-color: var(--ids-paso-connector-color);
+        z-index: calc(var(--z-index-base) - 1);
+      }
+
+      &:last-child::after {
+        display: none;
+      }
+
+      /* Conector completado cuando el paso actual está completado */
+      &.ids-paso--completed::after {
+        background-color: var(--ids-paso-connector-completed-color);
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     8.2 SECUENCIA HORIZONTAL (.ids-pasos--horizontal)
+     Disposición horizontal en pantallas medianas y grandes;
+     colapso vertical accesible y fluido en pantallas estrechas.
+     ------------------------------------------------------------------------ */
+  &--horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-paso-margin-bottom);
+
+    @media (min-width: 48rem) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+
+      .ids-paso {
+        flex: 1 1 0;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--spacing-sm);
+
+        .ids-paso__content {
+          padding-block-start: 0;
+          align-items: center;
+        }
+
+        .ids-paso__header {
+          justify-content: center;
+        }
+
+        /* Línea conectora horizontal entre pasos */
+        &::after {
+          content: "";
+          position: absolute;
+          inset-inline-start: calc(50% + var(--ids-paso-indicator-size) / 2 + var(--spacing-xs));
+          inset-block-start: calc(var(--ids-paso-indicator-size) / 2 - var(--ids-paso-connector-thickness) / 2);
+          inline-size: calc(100% - var(--ids-paso-indicator-size) + var(--spacing-md) - (var(--spacing-xs) * 2));
+          block-size: var(--ids-paso-connector-thickness);
+          background-color: var(--ids-paso-connector-color);
+          z-index: calc(var(--z-index-base) - 1);
+        }
+
+        &:last-child::after {
+          display: none;
+        }
+
+        &.ids-paso--completed::after {
+          background-color: var(--ids-paso-connector-completed-color);
+        }
+      }
+    }
+  }
+
+  /* Variante compacta */
+  &--compact {
+    gap: var(--spacing-sm);
+
+    .ids-paso {
+      margin-block-end: 0;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. ADAPTACIÓN ESPECÍFICA A LOS 4 EJES TEMÁTICOS DE IDS
+   Consumo estricto de variables declaradas en _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Tema de Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-paso {
+    --ids-paso-pending-bg: var(--color-surface-background);
+    --ids-paso-pending-color: var(--color-text-primary);
+    --ids-paso-pending-border: var(--color-border-subtle);
+
+    --ids-paso-active-bg: var(--color-surface-background);
+    --ids-paso-active-color: var(--color-action-primary);
+    --ids-paso-active-border: var(--color-border-interactive);
+    --ids-paso-active-fill-bg: var(--color-action-primary);
+    --ids-paso-active-fill-color: var(--color-action-primary-text);
+
+    --ids-paso-completed-bg: var(--color-action-primary);
+    --ids-paso-completed-color: var(--color-action-primary-text);
+    --ids-paso-completed-border: var(--color-action-primary);
+
+    --ids-paso-connector-color: var(--color-border-subtle);
+    --ids-paso-connector-active-color: var(--color-action-primary);
+    --ids-paso-connector-completed-color: var(--color-action-primary);
+
+    --ids-paso-card-bg: var(--color-surface-background);
+    --ids-paso-card-border: var(--color-border-subtle);
+  }
+
+  .ids-paso--active {
+    .ids-paso__forma,
+    .ids-paso__indicator {
+      box-shadow: 0 0 0 var(--focus-ring-width) var(--color-surface-background),
+                  0 0 0 calc(var(--focus-ring-width) * 2) var(--color-border-interactive);
+    }
+  }
+}
+
+/* 9.2 Tema de Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-paso {
+    --ids-paso-pending-bg: var(--color-surface-muted);
+    --ids-paso-pending-color: var(--color-text-secondary);
+    --ids-paso-pending-border: var(--color-border-subtle);
+
+    --ids-paso-active-bg: var(--color-surface-card);
+    --ids-paso-active-color: var(--color-action-primary);
+    --ids-paso-active-border: var(--color-border-interactive);
+    --ids-paso-active-fill-bg: var(--color-action-primary);
+    --ids-paso-active-fill-color: var(--color-action-primary-text);
+
+    --ids-paso-completed-bg: var(--color-status-success);
+    --ids-paso-completed-color: var(--color-status-success-text);
+    --ids-paso-completed-border: var(--color-status-success);
+
+    --ids-paso-connector-color: var(--color-border-subtle);
+    --ids-paso-connector-active-color: var(--color-border-interactive);
+    --ids-paso-connector-completed-color: var(--color-status-success);
+
+    --ids-paso-card-bg: var(--color-surface-card);
+    --ids-paso-card-border: var(--color-border-subtle);
+  }
+}
+
+/* 9.3 Tema Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-paso {
+    --ids-paso-pending-bg: var(--color-surface-muted);
+    --ids-paso-pending-color: var(--color-text-secondary);
+    --ids-paso-pending-border: var(--color-border-subtle);
+
+    --ids-paso-active-bg: var(--color-surface-card);
+    --ids-paso-active-color: var(--color-action-primary);
+    --ids-paso-active-border: var(--color-border-interactive);
+    --ids-paso-active-fill-bg: var(--color-action-primary);
+    --ids-paso-active-fill-color: var(--color-action-primary-text);
+
+    --ids-paso-completed-bg: var(--color-status-success);
+    --ids-paso-completed-color: var(--color-status-success-text);
+    --ids-paso-completed-border: var(--color-status-success);
+
+    --ids-paso-connector-color: var(--color-border-subtle);
+    --ids-paso-connector-active-color: var(--color-border-interactive);
+    --ids-paso-connector-completed-color: var(--color-status-success);
+
+    --ids-paso-card-bg: var(--color-surface-card);
+    --ids-paso-card-border: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTACIONES PARA ACCESIBILIDAD AVANZADA Y ALTO CONTRASTE DEL SO
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-paso__forma,
+  .ids-paso__indicator {
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+
+  .ids-paso--active {
+    .ids-paso__forma,
+    .ids-paso__indicator {
+      border-color: Highlight;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+
+    .ids-paso__title {
+      color: Highlight;
+    }
+  }
+
+  .ids-paso--completed {
+    .ids-paso__forma,
+    .ids-paso__indicator {
+      border-color: LinkText;
+      color: LinkText;
+    }
+  }
+
+  .ids-paso--error {
+    .ids-paso__forma,
+    .ids-paso__indicator {
+      border-color: LinkText;
+    }
+
+    .ids-paso__title {
+      color: LinkText;
+    }
+  }
+
+  .ids-paso::after {
+    background-color: CanvasText;
+  }
+
+  .ids-paso--card {
+    border-color: CanvasText;
+  }
+}

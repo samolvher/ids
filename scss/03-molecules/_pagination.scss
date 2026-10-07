@@ -1,0 +1,773 @@
+/* ==========================================================================
+   03-molecules/_pagination.scss
+   Identity Design System (IDS) - Molécula de Grupos de Enlaces de Paginación (Pagination)
+   Navegación secuencial, agrupada, segmentada y accesible para colecciones de datos.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE PAGINACIÓN
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Estructura Base */
+  --ids-pagination-gap: var(--spacing-xs);
+  --ids-pagination-radius: var(--radius-sm);
+  --ids-pagination-border-width: var(--focus-ring-width);
+  --ids-pagination-border-style: solid;
+  --ids-pagination-min-size: var(--target-size-min); /* 2.75rem WCAG AAA Touch Target */
+  --ids-pagination-padding-y: var(--spacing-xs);
+  --ids-pagination-padding-x: var(--spacing-sm);
+
+  /* Escala de Tamaños */
+  --ids-pagination-min-size-sm: 2rem;
+  --ids-pagination-padding-y-sm: 0.125rem;
+  --ids-pagination-padding-x-sm: var(--spacing-xs);
+  --ids-pagination-font-size-sm: var(--font-size-caption);
+
+  --ids-pagination-min-size-lg: 3.25rem;
+  --ids-pagination-padding-y-lg: var(--spacing-sm);
+  --ids-pagination-padding-x-lg: var(--spacing-md);
+  --ids-pagination-font-size-lg: var(--font-size-body-large);
+
+  /* Tipografía y Legibilidad */
+  --ids-pagination-font-family: var(--font-family-base);
+  --ids-pagination-font-size: var(--font-size-body);
+  --ids-pagination-font-weight: var(--font-weight-medium);
+  --ids-pagination-line-height: var(--line-height-tight);
+
+  /* Piel y Superficies (Estado Normal / Reposo) */
+  --ids-pagination-bg: var(--color-surface-card);
+  --ids-pagination-color: var(--color-text-primary);
+  --ids-pagination-border-color: var(--color-border-subtle);
+
+  /* Estado Hover e Interacción */
+  --ids-pagination-hover-bg: var(--color-surface-hover);
+  --ids-pagination-hover-color: var(--color-action-hover);
+  --ids-pagination-hover-border: var(--color-border-interactive);
+
+  /* Estado Activo / Página Seleccionada (aria-current="page") */
+  --ids-pagination-active-bg: var(--color-action-primary);
+  --ids-pagination-active-color: var(--color-action-primary-text);
+  --ids-pagination-active-border: var(--color-action-primary);
+  --ids-pagination-active-font-weight: var(--font-weight-bold);
+
+  /* Estado Deshabilitado */
+  --ids-pagination-disabled-bg: var(--color-action-disabled-bg);
+  --ids-pagination-disabled-color: var(--color-action-disabled-text);
+  --ids-pagination-disabled-border: var(--color-action-disabled-border);
+  --ids-pagination-disabled-opacity: var(--opacity-disabled);
+
+  /* Separador Elipsis (...) */
+  --ids-pagination-ellipsis-color: var(--color-text-secondary);
+  --ids-pagination-ellipsis-bg: transparent;
+
+  /* Resumen y Metadatos de Navegación */
+  --ids-pagination-info-color: var(--color-text-secondary);
+  --ids-pagination-info-font-size: var(--font-size-caption);
+
+  /* Movimiento */
+  --ids-pagination-transition-speed: var(--transition-speed-fast);
+  --ids-pagination-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR DE NAVEGACIÓN Y RESUMEN (.ids-pagination-nav)
+   Envoltura semántica <nav> para la barra y metadatos accesibles.
+   -------------------------------------------------------------------------- */
+.ids-pagination-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+  box-sizing: border-box;
+
+  /* Modificadores de Alineación Horizontal */
+  &--start {
+    align-items: flex-start;
+
+    .ids-pagination {
+      justify-content: flex-start;
+    }
+  }
+
+  &--center {
+    align-items: center;
+
+    .ids-pagination {
+      justify-content: center;
+    }
+  }
+
+  &--end {
+    align-items: flex-end;
+
+    .ids-pagination {
+      justify-content: flex-end;
+    }
+  }
+
+  &--between {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    .ids-pagination-nav__info {
+      text-align: center;
+    }
+
+    @media (min-width: 48rem) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+
+      .ids-pagination-nav__info {
+        text-align: start;
+      }
+    }
+  }
+}
+
+/* Metadatos y Resumen Accesible (Trauma-Informed: claridad cognitiva) */
+.ids-pagination-nav__info,
+.ids-pagination__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-family: var(--ids-pagination-font-family);
+  font-size: var(--ids-pagination-info-font-size);
+  color: var(--ids-pagination-info-color);
+  line-height: var(--line-height-base);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. ESQUELETO Y ESTRUCTURA DE LA LISTA (.ids-pagination)
+   Lista ordenada o no ordenada de enlaces accesibles.
+   -------------------------------------------------------------------------- */
+.ids-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ids-pagination-gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  /* En pantallas móviles angostas, colapsar números secundarios */
+  .ids-pagination__item--collapse-mobile {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    justify-content: flex-start;
+
+    .ids-pagination__item--collapse-mobile {
+      display: inline-flex;
+    }
+  }
+
+  /* Modificadores de Alineación Directa */
+  &--start {
+    justify-content: flex-start;
+  }
+
+  &--center {
+    justify-content: center;
+  }
+
+  &--end {
+    justify-content: flex-end;
+  }
+}
+
+/* Elemento contenedor de cada enlace / botón (<li>) */
+.ids-pagination__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   4. ENLACES Y BOTONES DE PÁGINA (.ids-pagination__link)
+   Control interactivo que consume el contrato de botones atómicos.
+   -------------------------------------------------------------------------- */
+.ids-pagination__link {
+  /* Variables locales de color con herencia dinámica */
+  --link-current-bg: var(--ids-pagination-bg);
+  --link-current-color: var(--ids-pagination-color);
+  --link-current-border: var(--ids-pagination-border-color);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  box-sizing: border-box;
+
+  /* Área táctil mínima accesible WCAG AAA (Mínimo 2.75rem) */
+  min-inline-size: var(--ids-pagination-min-size);
+  min-block-size: var(--ids-pagination-min-size);
+  padding-block: var(--ids-pagination-padding-y);
+  padding-inline: var(--ids-pagination-padding-x);
+
+  /* Geometría Plana y Limpia */
+  border-radius: var(--ids-pagination-radius);
+  border-width: var(--ids-pagination-border-width);
+  border-style: var(--ids-pagination-border-style);
+  border-color: var(--link-current-border);
+  background-color: var(--link-current-bg);
+  color: var(--link-current-color);
+
+  /* Tipografía y Legibilidad */
+  font-family: var(--ids-pagination-font-family);
+  font-size: var(--ids-pagination-font-size);
+  font-weight: var(--ids-pagination-font-weight);
+  line-height: var(--ids-pagination-line-height);
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+
+  /* Transición fluida */
+  transition: background-color var(--ids-pagination-transition-speed) var(--ids-pagination-transition-ease),
+              border-color var(--ids-pagination-transition-speed) var(--ids-pagination-transition-ease),
+              color var(--ids-pagination-transition-speed) var(--ids-pagination-transition-ease);
+
+  /* Iconos dentro de enlaces */
+  .ids-icon {
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Estado Hover */
+  &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+    background-color: var(--ids-pagination-hover-bg);
+    border-color: var(--ids-pagination-hover-border);
+    color: var(--ids-pagination-hover-color);
+  }
+
+  /* Estado Foco Visible (WCAG AAA - Sin recorte) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    z-index: 3;
+    position: relative;
+  }
+
+  /* Estado Activo / Página Actual */
+  &[aria-current="page"],
+  &[aria-selected="true"],
+  &--active {
+    background-color: var(--ids-pagination-active-bg);
+    border-color: var(--ids-pagination-active-border);
+    color: var(--ids-pagination-active-color);
+    font-weight: var(--ids-pagination-active-font-weight);
+    cursor: default;
+    z-index: 2;
+    position: relative;
+
+    &:hover {
+      background-color: var(--ids-pagination-active-bg);
+      border-color: var(--ids-pagination-active-border);
+      color: var(--ids-pagination-active-color);
+    }
+  }
+
+  /* Estado Deshabilitado */
+  &[aria-disabled="true"],
+  &:disabled,
+  &--disabled {
+    background-color: var(--ids-pagination-disabled-bg);
+    border-color: var(--ids-pagination-disabled-border);
+    color: var(--ids-pagination-disabled-color);
+    opacity: var(--ids-pagination-disabled-opacity);
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+  }
+}
+
+/* Soporte de modificador a nivel de ítem (<li>) */
+.ids-pagination__item--active > .ids-pagination__link {
+  background-color: var(--ids-pagination-active-bg);
+  border-color: var(--ids-pagination-active-border);
+  color: var(--ids-pagination-active-color);
+  font-weight: var(--ids-pagination-active-font-weight);
+  cursor: default;
+  z-index: 2;
+  position: relative;
+}
+
+.ids-pagination__item--disabled > .ids-pagination__link {
+  background-color: var(--ids-pagination-disabled-bg);
+  border-color: var(--ids-pagination-disabled-border);
+  color: var(--ids-pagination-disabled-color);
+  opacity: var(--ids-pagination-disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. SEPARADOR ELIPSIS / PÁGINAS TRUNCADAS (.ids-pagination__ellipsis)
+   Indicador no interactivo de omisión secuencial (ej. ...).
+   -------------------------------------------------------------------------- */
+.ids-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-inline-size: var(--ids-pagination-min-size);
+  min-block-size: var(--ids-pagination-min-size);
+  padding-block: var(--ids-pagination-padding-y);
+  padding-inline: var(--ids-pagination-padding-x);
+  color: var(--ids-pagination-ellipsis-color);
+  background-color: var(--ids-pagination-ellipsis-bg);
+  font-family: var(--ids-pagination-font-family);
+  font-size: var(--ids-pagination-font-size);
+  line-height: var(--ids-pagination-line-height);
+  user-select: none;
+  cursor: default;
+}
+
+.ids-pagination__item--ellipsis {
+  cursor: default;
+}
+
+/* --------------------------------------------------------------------------
+   6. CONTROLES DIRECCIONALES (Prev / Next / First / Last)
+   Configuración específica para botones de extremos y navegación.
+   -------------------------------------------------------------------------- */
+.ids-pagination__link--prev,
+.ids-pagination__link--next,
+.ids-pagination__link--first,
+.ids-pagination__link--last {
+  padding-inline: var(--spacing-md);
+  font-weight: var(--font-weight-medium);
+
+  /* Modo solo icono: mantiene proporción simétrica */
+  &.ids-pagination__link--icon-only {
+    padding-inline: var(--ids-pagination-padding-x);
+    min-inline-size: var(--ids-pagination-min-size);
+  }
+}
+
+.ids-pagination__label {
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   7. VARIANTE AGRUPADA / SEGMENTADA (.ids-pagination--joined)
+   Enlaces unidos sin separación con bordes compartidos.
+   -------------------------------------------------------------------------- */
+.ids-pagination--joined,
+.ids-pagination--group {
+  gap: 0;
+
+  .ids-pagination__item {
+    &:not(:first-child) .ids-pagination__link,
+    &:not(:first-child) .ids-pagination__ellipsis {
+      margin-inline-start: calc(var(--ids-pagination-border-width) * -1);
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+
+    &:not(:last-child) .ids-pagination__link,
+    &:not(:last-child) .ids-pagination__ellipsis {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+  }
+
+  /* Elevar elemento interactuado para que su borde se muestre completo */
+  .ids-pagination__link:hover {
+    z-index: 1;
+    position: relative;
+  }
+
+  .ids-pagination__link:focus-visible {
+    z-index: 3;
+    position: relative;
+  }
+
+  .ids-pagination__link[aria-current="page"],
+  .ids-pagination__link--active {
+    z-index: 2;
+    position: relative;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. VARIANTES DE GEOMETRÍA (Pills / Circular / Rounded)
+   -------------------------------------------------------------------------- */
+.ids-pagination--pills,
+.ids-pagination--rounded {
+  --ids-pagination-radius: var(--radius-full);
+
+  .ids-pagination__link {
+    border-radius: var(--radius-full);
+  }
+
+  /* Si está agrupado, solo las esquinas exteriores son píldora */
+  &.ids-pagination--joined,
+  &.ids-pagination--group {
+    .ids-pagination__item:first-child .ids-pagination__link {
+      border-start-start-radius: var(--radius-full);
+      border-end-start-radius: var(--radius-full);
+    }
+
+    .ids-pagination__item:last-child .ids-pagination__link {
+      border-start-end-radius: var(--radius-full);
+      border-end-end-radius: var(--radius-full);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. VARIANTES DE ESTILO (Ghost / Subtle / Flat)
+   -------------------------------------------------------------------------- */
+/* Variante Fantasma (Sin bordes en reposo) */
+.ids-pagination--ghost,
+.ids-pagination--subtle {
+  .ids-pagination__link {
+    background-color: transparent;
+    border-color: transparent;
+
+    &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+      background-color: var(--ids-pagination-hover-bg);
+      border-color: transparent;
+    }
+
+    &[aria-current="page"],
+    &--active {
+      background-color: var(--ids-pagination-active-bg);
+      border-color: var(--ids-pagination-active-border);
+      color: var(--ids-pagination-active-color);
+    }
+  }
+}
+
+/* Variante Plano (Flat / Card Background) */
+.ids-pagination--flat {
+  .ids-pagination__link {
+    background-color: var(--color-surface-background);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ESCALAS DE TAMAÑO (.ids-pagination--sm y .ids-pagination--lg)
+   -------------------------------------------------------------------------- */
+/* Escala Compacta */
+.ids-pagination--sm {
+  --ids-pagination-min-size: var(--ids-pagination-min-size-sm);
+  --ids-pagination-padding-y: var(--ids-pagination-padding-y-sm);
+  --ids-pagination-padding-x: var(--ids-pagination-padding-x-sm);
+  --ids-pagination-font-size: var(--ids-pagination-font-size-sm);
+
+  .ids-pagination__link {
+    min-inline-size: var(--ids-pagination-min-size-sm);
+    min-block-size: var(--ids-pagination-min-size-sm);
+    padding-block: var(--ids-pagination-padding-y-sm);
+    padding-inline: var(--ids-pagination-padding-x-sm);
+    font-size: var(--ids-pagination-font-size-sm);
+
+    .ids-icon {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+    }
+  }
+
+  .ids-pagination__ellipsis {
+    min-inline-size: var(--ids-pagination-min-size-sm);
+    min-block-size: var(--ids-pagination-min-size-sm);
+    font-size: var(--ids-pagination-font-size-sm);
+  }
+}
+
+/* Escala Generosa / Grande */
+.ids-pagination--lg {
+  --ids-pagination-min-size: var(--ids-pagination-min-size-lg);
+  --ids-pagination-padding-y: var(--ids-pagination-padding-y-lg);
+  --ids-pagination-padding-x: var(--ids-pagination-padding-x-lg);
+  --ids-pagination-font-size: var(--ids-pagination-font-size-lg);
+
+  .ids-pagination__link {
+    min-inline-size: var(--ids-pagination-min-size-lg);
+    min-block-size: var(--ids-pagination-min-size-lg);
+    padding-block: var(--ids-pagination-padding-y-lg);
+    padding-inline: var(--ids-pagination-padding-x-lg);
+    font-size: var(--ids-pagination-font-size-lg);
+
+    .ids-icon {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+    }
+  }
+
+  .ids-pagination__ellipsis {
+    min-inline-size: var(--ids-pagination-min-size-lg);
+    min-block-size: var(--ids-pagination-min-size-lg);
+    font-size: var(--ids-pagination-font-size-lg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. PAGINADOR SIMPLE / PAGER (.ids-pagination--simple / --pager)
+   Disposición simplificada de anterior/siguiente para flujos y asistentes.
+   -------------------------------------------------------------------------- */
+.ids-pagination--simple,
+.ids-pagination--pager {
+  width: 100%;
+  justify-content: space-between;
+
+  .ids-pagination__item--prev {
+    margin-inline-end: auto;
+  }
+
+  .ids-pagination__item--next {
+    margin-inline-start: auto;
+  }
+
+  .ids-pagination__link {
+    min-inline-size: auto;
+    padding-inline: var(--spacing-md);
+
+    @media (min-width: 48rem) {
+      padding-inline: var(--spacing-lg);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA)
+   Acentos temáticos para estados específicos del proceso.
+   -------------------------------------------------------------------------- */
+/* 1. Éxito / Progreso Confirmado (Success) */
+.ids-pagination--success,
+.ids-pagination__item--success .ids-pagination__link {
+  &[aria-current="page"],
+  &.ids-pagination__link--active {
+    background-color: var(--color-status-success);
+    border-color: var(--color-status-success);
+    color: var(--color-status-success-text);
+
+    &:hover {
+      background-color: var(--color-status-success);
+      border-color: var(--color-status-success);
+      color: var(--color-status-success-text);
+    }
+  }
+
+  &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+    border-color: var(--color-status-success);
+    color: var(--color-status-success);
+  }
+}
+
+/* 2. Peligro / Atención Crítica (Danger - Trauma-Informed) */
+.ids-pagination--danger,
+.ids-pagination__item--danger .ids-pagination__link {
+  &[aria-current="page"],
+  &.ids-pagination__link--active {
+    background-color: var(--color-status-danger);
+    border-color: var(--color-status-danger);
+    color: var(--color-status-danger-text);
+
+    &:hover {
+      background-color: var(--color-status-danger);
+      border-color: var(--color-status-danger);
+      color: var(--color-status-danger-text);
+    }
+  }
+
+  &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+    border-color: var(--color-status-danger);
+    color: var(--color-status-danger);
+  }
+}
+
+/* 3. Advertencia / Precaución (Warning) */
+.ids-pagination--warning,
+.ids-pagination__item--warning .ids-pagination__link {
+  &[aria-current="page"],
+  &.ids-pagination__link--active {
+    background-color: var(--color-status-warning);
+    border-color: var(--color-status-warning);
+    color: var(--color-status-warning-text);
+
+    &:hover {
+      background-color: var(--color-status-warning);
+      border-color: var(--color-status-warning);
+      color: var(--color-status-warning-text);
+    }
+  }
+
+  &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+    border-color: var(--color-status-warning);
+    color: var(--color-status-warning);
+  }
+}
+
+/* 4. Información / Neutral (Info) */
+.ids-pagination--info,
+.ids-pagination__item--info .ids-pagination__link {
+  &[aria-current="page"],
+  &.ids-pagination__link--active {
+    background-color: var(--color-status-info);
+    border-color: var(--color-status-info);
+    color: var(--color-status-info-text);
+
+    &:hover {
+      background-color: var(--color-status-info);
+      border-color: var(--color-status-info);
+      color: var(--color-status-info-text);
+    }
+  }
+
+  &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+    border-color: var(--color-status-info);
+    color: var(--color-status-info);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. ADAPTABILIDAD A LOS 4 EJES TEMÁTICOS DEL IDS
+   -------------------------------------------------------------------------- */
+/* Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-pagination__link {
+    border-width: var(--focus-ring-width);
+    border-color: var(--color-border-subtle);
+
+    &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+      border-color: var(--color-border-interactive);
+      color: var(--color-border-interactive);
+      background-color: var(--color-surface-hover);
+    }
+
+    &[aria-current="page"],
+    &--active {
+      background-color: var(--color-action-primary);
+      border-color: var(--color-border-subtle);
+      color: var(--color-action-primary-text);
+      outline: var(--focus-ring-width) solid var(--color-border-subtle);
+    }
+
+    &[aria-disabled="true"],
+    &:disabled,
+    &--disabled {
+      border-color: var(--color-action-disabled-border);
+      color: var(--color-action-disabled-text);
+      background-color: var(--color-action-disabled-bg);
+      opacity: 1;
+    }
+  }
+
+  .ids-pagination__ellipsis {
+    color: var(--color-text-primary);
+  }
+}
+
+/* Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-pagination__link {
+    border: 0.125rem solid ButtonText;
+
+    &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+      border-color: Highlight;
+      color: Highlight;
+    }
+
+    &[aria-current="page"],
+    &--active {
+      background-color: Highlight;
+      color: HighlightText;
+      border-color: Highlight;
+      forced-color-adjust: none;
+    }
+
+    &[aria-disabled="true"],
+    &:disabled,
+    &--disabled {
+      border-color: GrayText;
+      color: GrayText;
+    }
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+  }
+
+  .ids-pagination__ellipsis {
+    color: CanvasText;
+  }
+}
+
+/* Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-pagination__link {
+    transition: none;
+    box-shadow: none;
+
+    &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+      background-color: var(--color-surface-muted);
+      border-color: var(--color-border-subtle);
+      color: var(--color-text-primary);
+    }
+
+    &[aria-current="page"],
+    &--active {
+      background-color: var(--color-action-primary);
+      border-color: var(--color-action-primary);
+      color: var(--color-action-primary-text);
+    }
+  }
+}
+
+/* Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-pagination__link {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    &:hover:not([aria-current="page"]):not([aria-selected="true"]):not([aria-disabled="true"]):not(:disabled) {
+      background-color: var(--color-surface-hover);
+      border-color: var(--color-border-interactive);
+      color: var(--color-text-primary);
+    }
+
+    &[aria-current="page"],
+    &--active {
+      background-color: var(--color-action-primary);
+      border-color: var(--color-action-primary);
+      color: var(--color-action-primary-text);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   14. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+/* Movimiento Reducido (Accesibilidad Vestibular) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-pagination__link {
+    transition: none !important;
+  }
+}
+
+/* Diseño Responsivo - Mobile-First
+   La navegación, alineación de elementos y padding de enlaces se definen en escala
+   compacta para móvil por defecto y se despliegan a partir de @media (min-width: 48rem). */
+

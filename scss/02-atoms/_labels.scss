@@ -1,0 +1,650 @@
+/* ==========================================================================
+   02-atoms/_labels.scss
+   Identity Design System (IDS) - Átomos de Etiquetas (Labels) y Textos de Ayuda (Helper Texts)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE ETIQUETAS Y TEXTOS DE APOYO
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, tipografía o geometría se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* ------------------------------------------------------------------------
+     1.1 ETIQUETAS DE CAMPO (Labels)
+     ------------------------------------------------------------------------ */
+  --ids-label-font-family: var(--font-family-base);
+  --ids-label-font-size: var(--label-font-size, var(--font-size-body));
+  --ids-label-font-size-sm: var(--label-font-size-sm, var(--font-size-caption));
+  --ids-label-font-size-lg: var(--label-font-size-lg, var(--font-size-body-large));
+  --ids-label-font-weight: var(--label-font-weight, var(--font-weight-medium));
+  --ids-label-font-weight-bold: var(--label-font-weight-bold, var(--font-weight-bold));
+  --ids-label-line-height: var(--label-line-height, var(--line-height-base));
+  --ids-label-color: var(--color-text-primary);
+  --ids-label-color-secondary: var(--color-text-secondary);
+  --ids-label-color-disabled: var(--color-text-secondary);
+  --ids-label-margin-bottom: var(--label-margin-bottom, var(--spacing-xs));
+  --ids-label-gap: var(--label-gap, var(--spacing-xs));
+
+  /* Indicadores de Requerido y Opcional (Trauma-Informed) */
+  --ids-label-required-color: var(--color-status-danger);
+  --ids-label-optional-color: var(--color-text-secondary);
+  --ids-label-optional-font-size: var(--font-size-caption);
+
+  /* Placas / Badges de Metadatos de Campo (ej. "Sensible", "Confidencial") */
+  --ids-label-badge-bg: var(--color-surface-muted);
+  --ids-label-badge-border: var(--color-border-subtle);
+  --ids-label-badge-color: var(--color-text-secondary);
+  --ids-label-badge-radius: var(--badge-radius, var(--radius-sm));
+  --ids-label-badge-radius-pill: var(--badge-radius-pill, var(--radius-full));
+  --ids-label-badge-padding-y: var(--badge-padding-y, 0.125rem);
+  --ids-label-badge-padding-x: var(--badge-padding-x, var(--spacing-xs));
+  --ids-label-badge-font-size: var(--badge-font-size, 0.75rem);
+
+  /* Escala de Tamaños de Badges / Placas (Trauma-Informed & WCAG AAA) */
+  --ids-label-badge-font-size-xs: var(--badge-font-size-xs, 0.625rem);
+  --ids-label-badge-padding-y-xs: var(--badge-padding-y-xs, 0.0625rem);
+  --ids-label-badge-padding-x-xs: var(--badge-padding-x-xs, calc(var(--spacing-xs) / 2));
+
+  --ids-label-badge-font-size-sm: var(--badge-font-size-sm, 0.6875rem);
+  --ids-label-badge-padding-y-sm: var(--badge-padding-y-sm, 0.0625rem);
+  --ids-label-badge-padding-x-sm: var(--badge-padding-x-sm, calc(var(--spacing-xs) * 0.75));
+
+  --ids-label-badge-font-size-lg: var(--badge-font-size-lg, var(--font-size-caption));
+  --ids-label-badge-padding-y-lg: var(--badge-padding-y-lg, 0.25rem);
+  --ids-label-badge-padding-x-lg: var(--badge-padding-x-lg, var(--spacing-sm));
+
+  /* Los 4 Estados Semánticos (Success, Danger, Warning, Info) - Dependientes de tokens globales */
+  --ids-label-badge-success-color: var(--status-success, var(--color-status-success));
+  --ids-label-badge-success-border: var(--status-success-border, var(--color-status-success));
+  --ids-label-badge-success-bg: var(--status-success-bg, var(--color-surface-muted));
+
+  --ids-label-badge-danger-color: var(--status-danger, var(--color-status-danger));
+  --ids-label-badge-danger-border: var(--status-danger-border, var(--color-status-danger));
+  --ids-label-badge-danger-bg: var(--status-danger-bg, var(--color-surface-muted));
+
+  --ids-label-badge-warning-color: var(--status-warning, var(--color-status-warning));
+  --ids-label-badge-warning-border: var(--status-warning-border, var(--color-status-warning));
+  --ids-label-badge-warning-bg: var(--status-warning-bg, var(--color-surface-muted));
+
+  --ids-label-badge-info-color: var(--status-info, var(--color-status-info));
+  --ids-label-badge-info-border: var(--status-info-border, var(--color-status-info));
+  --ids-label-badge-info-bg: var(--status-info-bg, var(--color-surface-muted));
+
+  /* ------------------------------------------------------------------------
+     1.2 TEXTOS DE AYUDA Y DESCRIPCIÓN (Helper Texts)
+     ------------------------------------------------------------------------ */
+  --ids-help-text-font-family: var(--font-family-base);
+  --ids-help-text-font-size: var(--help-text-font-size, var(--font-size-caption));
+  --ids-help-text-font-weight: var(--font-weight-regular);
+  --ids-help-text-line-height: var(--help-text-line-height, var(--line-height-base));
+  --ids-help-text-color: var(--color-text-secondary);
+  --ids-help-text-margin-top: var(--help-text-margin-top, var(--spacing-xs));
+  --ids-help-text-gap: var(--help-text-gap, var(--spacing-xs));
+  --ids-help-text-icon-size: var(--help-text-icon-size, var(--spacing-md));
+  --ids-help-text-max-width: var(--help-text-max-width, 65ch); /* WCAG AAA: prevención de fatiga cognitiva */
+
+  /* Estados de Validación y Feedback Emocional (Trauma-Informed) */
+  --ids-help-text-error-color: var(--color-status-danger);
+  --ids-help-text-success-color: var(--color-status-success);
+  --ids-help-text-warning-color: var(--color-status-warning);
+  --ids-help-text-info-color: var(--color-status-info);
+
+  /* Contador de Caracteres */
+  --ids-counter-font-size: var(--counter-font-size, var(--font-size-caption));
+  --ids-counter-color: var(--color-text-secondary);
+  --ids-counter-warning-color: var(--color-status-warning);
+  --ids-counter-error-color: var(--color-status-danger);
+}
+
+/* --------------------------------------------------------------------------
+   2. ETIQUETA PRINCIPAL (.ids-label)
+   Lógica semántica, proporción y heurística WCAG AAA.
+   Soporta elementos <label>, <legend> o contenedores con rol de encabezado.
+   -------------------------------------------------------------------------- */
+.ids-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ids-label-gap);
+  inline-size: 100%;
+  font-family: var(--ids-label-font-family);
+  font-size: var(--ids-label-font-size);
+  font-weight: var(--ids-label-font-weight);
+  line-height: var(--ids-label-line-height);
+  color: var(--ids-label-color);
+  margin-block-end: var(--ids-label-margin-bottom);
+  cursor: pointer;
+  user-select: none;
+
+  /* Respeto de movimiento en transiciones de color de estado */
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 ELEMENTOS INTERNOS DE LA ETIQUETA
+     ------------------------------------------------------------------------ */
+  /* Texto puro del título */
+  &__text {
+    display: inline;
+  }
+
+  /* Indicador de campo obligatorio (asterisco visual accesible) */
+  &__required {
+    color: var(--ids-label-required-color);
+    font-weight: var(--font-weight-bold);
+    margin-inline-start: var(--spacing-xs);
+    user-select: none;
+  }
+
+  /* Indicador de campo opcional (Enfoque Trauma-Informed: reduce estrés cognitivo) */
+  &__optional {
+    color: var(--ids-label-optional-color);
+    font-size: var(--ids-label-optional-font-size);
+    font-weight: var(--font-weight-regular);
+    margin-inline-start: var(--spacing-xs);
+  }
+
+  /* Subtexto explicativo integrado directamente bajo la etiqueta */
+  &__description,
+  &__subtext {
+    display: block;
+    inline-size: 100%;
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-base);
+    color: var(--ids-label-color-secondary);
+    margin-block-start: calc(var(--spacing-xs) / 2);
+  }
+
+  /* Placas o Badges contextuales cuando residen dentro de una etiqueta */
+  .ids-badge,
+  &__badge,
+  &__tag {
+    margin-inline-start: var(--spacing-xs);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 MODIFICADORES DE TAMAÑO Y DISPOSICIÓN
+     ------------------------------------------------------------------------ */
+  /* Tamaño Pequeño (--sm) */
+  &--sm {
+    font-size: var(--ids-label-font-size-sm);
+  }
+
+  /* Tamaño Grande (--lg) */
+  &--lg {
+    font-size: var(--ids-label-font-size-lg);
+  }
+
+  /* Disposición en línea (para controles como Checkbox o Radio) */
+  &--inline {
+    display: inline-flex;
+    align-items: center;
+    inline-size: auto;
+    margin-block-end: 0;
+  }
+
+  /* Disposición justificada (etiqueta a la izquierda, enlace de ayuda a la derecha) */
+  &--between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(var(--ids-label-gap) / 2);
+
+    @media (min-width: 48rem) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ids-label-gap);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 ESTADOS DE INTERACCIÓN Y ACCESIBILIDAD
+     ------------------------------------------------------------------------ */
+  /* Estado Deshabilitado */
+  &--disabled,
+  &[aria-disabled="true"] {
+    color: var(--ids-label-color-disabled);
+    cursor: not-allowed;
+    opacity: var(--opacity-disabled);
+  }
+
+  /* Estado Inválido / Error */
+  &--invalid,
+  &--error {
+    color: var(--ids-help-text-error-color);
+  }
+}
+
+/* Soporte para elemento semántico <legend> en fieldsets */
+legend.ids-label {
+  cursor: default;
+  display: table;
+  max-inline-size: 100%;
+  margin-block-end: var(--ids-label-margin-bottom);
+}
+
+/* --------------------------------------------------------------------------
+   3. PLACAS Y BADGES (.ids-badge, .ids-label__badge, .ids-label__tag)
+   Átomo indivisible de metadatos, privacidad y estado (T4HR).
+   Soporta uso autónomo (.ids-badge) o como elemento de etiqueta (.ids-label__badge).
+   -------------------------------------------------------------------------- */
+.ids-badge,
+.ids-label__badge,
+.ids-label__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing-xs) / 2);
+  padding-block: var(--ids-label-badge-padding-y);
+  padding-inline: var(--ids-label-badge-padding-x);
+  font-family: var(--ids-label-font-family);
+  font-size: var(--ids-label-badge-font-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  border-radius: var(--ids-label-badge-radius);
+  background-color: var(--ids-label-badge-bg);
+  border: var(--focus-ring-width) solid var(--ids-label-badge-border);
+  color: var(--ids-label-badge-color);
+  vertical-align: middle;
+  white-space: nowrap;
+  user-select: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color var(--transition-speed-fast) var(--transition-ease),
+                background-color var(--transition-speed-fast) var(--transition-ease),
+                border-color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  /* Iconos integrados en el badge */
+  svg {
+    inline-size: 0.75em;
+    block-size: 0.75em;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Punto indicador accesible de estado */
+  &__dot {
+    display: inline-block;
+    inline-size: 0.375em;
+    block-size: 0.375em;
+    border-radius: var(--radius-full);
+    background-color: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* --------------------------------------------------------------------
+     Escala de Tamaños (--xs, --sm, base, --lg)
+     -------------------------------------------------------------------- */
+  &--xs {
+    padding-block: var(--ids-label-badge-padding-y-xs);
+    padding-inline: var(--ids-label-badge-padding-x-xs);
+    font-size: var(--ids-label-badge-font-size-xs);
+  }
+
+  &--sm {
+    padding-block: var(--ids-label-badge-padding-y-sm);
+    padding-inline: var(--ids-label-badge-padding-x-sm);
+    font-size: var(--ids-label-badge-font-size-sm);
+  }
+
+  &--lg {
+    padding-block: var(--ids-label-badge-padding-y-lg);
+    padding-inline: var(--ids-label-badge-padding-x-lg);
+    font-size: var(--ids-label-badge-font-size-lg);
+  }
+
+  /* Modificador de forma Píldora */
+  &--pill,
+  &--rounded {
+    border-radius: var(--ids-label-badge-radius-pill);
+  }
+
+  /* --------------------------------------------------------------------
+     Los 4 Estados Semánticos (WCAG AAA)
+     -------------------------------------------------------------------- */
+  /* 1. Éxito / Confirmación Segura / Cifrado E2E */
+  &--success,
+  &--encrypted,
+  &--secure {
+    background-color: var(--ids-label-badge-success-bg);
+    border-color: var(--ids-label-badge-success-border);
+    color: var(--ids-label-badge-success-color);
+  }
+
+  /* 2. Peligro / Error Crítico / Alerta Inminente */
+  &--danger,
+  &--error,
+  &--critical {
+    background-color: var(--ids-label-badge-danger-bg);
+    border-color: var(--ids-label-badge-danger-border);
+    color: var(--ids-label-badge-danger-color);
+  }
+
+  /* 3. Advertencia / Precaución / Dato Sensible */
+  &--warning,
+  &--sensitive {
+    background-color: var(--ids-label-badge-warning-bg);
+    border-color: var(--ids-label-badge-warning-border);
+    color: var(--ids-label-badge-warning-color);
+  }
+
+  /* 4. Informativo / Neutral / Contexto */
+  &--info,
+  &--neutral {
+    background-color: var(--ids-label-badge-info-bg);
+    border-color: var(--ids-label-badge-info-border);
+    color: var(--ids-label-badge-info-color);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   3. TEXTO DE AYUDA Y DESCRIPCIÓN ACCESIBLE (.ids-help-text / .ids-helper-text)
+   Diseñado para vincularse mediante aria-describedby y aria-errormessage.
+   Mantiene soporte dual de nombres de clase para compatibilidad total.
+   -------------------------------------------------------------------------- */
+.ids-help-text,
+.ids-helper-text,
+.ids-input-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ids-help-text-gap);
+  font-family: var(--ids-help-text-font-family);
+  font-size: var(--ids-help-text-font-size);
+  font-weight: var(--ids-help-text-font-weight);
+  line-height: var(--ids-help-text-line-height);
+  color: var(--ids-help-text-color);
+  margin-block-start: var(--ids-help-text-margin-top);
+  max-inline-size: var(--ids-help-text-max-width);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  /* ------------------------------------------------------------------------
+     3.1 ELEMENTOS INTERNOS DEL TEXTO DE AYUDA
+     ------------------------------------------------------------------------ */
+  /* Icono contextual de ayuda o estado */
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--ids-help-text-icon-size);
+    block-size: var(--ids-help-text-icon-size);
+    margin-block-start: 0.125rem;
+    line-height: var(--line-height-tight);
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+      fill: currentColor;
+    }
+  }
+
+  /* Cuerpo textual */
+  &__content,
+  &__text {
+    flex: 1 1 auto;
+  }
+
+  /* ------------------------------------------------------------------------
+     3.2 VARIANTES DE ESTADO SEMÁNTICAS (Trauma-Informed)
+     Orientación calmada, clara y no punitiva.
+     ------------------------------------------------------------------------ */
+  /* Estado de Error / Corrección Instructiva */
+  &--error,
+  &--invalid {
+    color: var(--ids-help-text-error-color);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Estado de Éxito / Confirmación Segura */
+  &--success,
+  &--valid {
+    color: var(--ids-help-text-success-color);
+  }
+
+  /* Estado de Advertencia / Aviso Preventivo */
+  &--warning {
+    color: var(--ids-help-text-warning-color);
+  }
+
+  /* Estado Informativo Neutral */
+  &--info {
+    color: var(--ids-help-text-info-color);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. FILA COMPUESTA DE AYUDA Y CONTADOR DE CARACTERES
+   Alinea el texto de ayuda a la izquierda y el contador numérico a la derecha.
+   -------------------------------------------------------------------------- */
+.ids-help-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--spacing-xs) / 2);
+  inline-size: 100%;
+  margin-block-start: var(--ids-help-text-margin-top);
+
+  /* El texto de ayuda contenido en el grupo no requiere margen superior redundante */
+  .ids-help-text,
+  .ids-helper-text,
+  .ids-input-message {
+    margin-block-start: 0;
+    flex: 1 1 auto;
+  }
+
+  .ids-counter,
+  .ids-help-text__counter {
+    margin-block-start: 0;
+    margin-inline-start: 0;
+    align-self: flex-end;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+
+    .ids-counter,
+    .ids-help-text__counter {
+      align-self: auto;
+    }
+  }
+}
+
+/* Contador de caracteres (Accesible con números tabulares para evitar temblores al escribir) */
+.ids-counter,
+.ids-help-text__counter {
+  font-family: var(--ids-help-text-font-family);
+  font-size: var(--ids-counter-font-size);
+  line-height: var(--ids-help-text-line-height);
+  color: var(--ids-counter-color);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  /* Alerta cuando se aproxima al límite permitido */
+  &--warning {
+    color: var(--ids-counter-warning-color);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Límite alcanzado o excedido */
+  &--error,
+  &--limit {
+    color: var(--ids-counter-error-color);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 5.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-label,
+  .ids-badge {
+    --ids-label-color: var(--color-text-primary);
+    --ids-label-color-secondary: var(--color-text-secondary);
+    --ids-label-required-color: var(--color-status-danger);
+    --ids-label-optional-color: var(--color-text-secondary);
+    --ids-label-badge-bg: var(--color-surface-background);
+    --ids-label-badge-border: var(--color-border-subtle);
+    --ids-label-badge-color: var(--color-text-primary);
+  }
+
+  .ids-help-text,
+  .ids-helper-text,
+  .ids-input-message {
+    --ids-help-text-color: var(--color-text-secondary);
+    --ids-help-text-error-color: var(--color-status-danger);
+    --ids-help-text-success-color: var(--color-status-success);
+    --ids-help-text-warning-color: var(--color-status-warning);
+    --ids-help-text-info-color: var(--color-status-info);
+  }
+
+  .ids-counter,
+  .ids-help-text__counter {
+    --ids-counter-color: var(--color-text-primary);
+    --ids-counter-warning-color: var(--color-status-warning);
+    --ids-counter-error-color: var(--color-status-danger);
+  }
+}
+
+/* 5.2 Baja Estimulación (Neurodivergencia y Prevención de Sobrecarga) */
+[data-theme="low-stimulation"] {
+  .ids-label,
+  .ids-badge {
+    --ids-label-color: var(--color-text-primary);
+    --ids-label-color-secondary: var(--color-text-secondary);
+    --ids-label-required-color: var(--color-status-danger);
+    --ids-label-optional-color: var(--color-text-secondary);
+    --ids-label-badge-bg: var(--color-surface-muted);
+    --ids-label-badge-border: var(--color-border-subtle);
+    --ids-label-badge-color: var(--color-text-secondary);
+  }
+
+  .ids-help-text,
+  .ids-helper-text,
+  .ids-input-message {
+    --ids-help-text-color: var(--color-text-secondary);
+    --ids-help-text-error-color: var(--color-status-danger);
+    --ids-help-text-success-color: var(--color-status-success);
+    --ids-help-text-warning-color: var(--color-status-warning);
+    --ids-help-text-info-color: var(--color-status-info);
+  }
+
+  .ids-counter,
+  .ids-help-text__counter {
+    --ids-counter-color: var(--color-text-secondary);
+    --ids-counter-warning-color: var(--color-status-warning);
+    --ids-counter-error-color: var(--color-status-danger);
+  }
+}
+
+/* 5.3 Modo Discreto / Stealth (Anti-Outing / Consentful Tech) */
+[data-theme="discrete"] {
+  .ids-label,
+  .ids-badge {
+    --ids-label-color: var(--color-text-primary);
+    --ids-label-color-secondary: var(--color-text-secondary);
+    --ids-label-required-color: var(--color-status-danger);
+    --ids-label-optional-color: var(--color-text-secondary);
+    --ids-label-badge-bg: var(--color-surface-muted);
+    --ids-label-badge-border: var(--color-border-subtle);
+    --ids-label-badge-color: var(--color-text-secondary);
+  }
+
+  .ids-help-text,
+  .ids-helper-text,
+  .ids-input-message {
+    --ids-help-text-color: var(--color-text-secondary);
+    --ids-help-text-error-color: var(--color-status-danger);
+    --ids-help-text-success-color: var(--color-status-success);
+    --ids-help-text-warning-color: var(--color-status-warning);
+    --ids-help-text-info-color: var(--color-status-info);
+  }
+
+  .ids-counter,
+  .ids-help-text__counter {
+    --ids-counter-color: var(--color-text-secondary);
+    --ids-counter-warning-color: var(--color-status-warning);
+    --ids-counter-error-color: var(--color-status-danger);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. ADAPTACIÓN PARA ACCESIBILIDAD DEL SISTEMA OPERATIVO
+   Modo de Contraste Forzado de Windows (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-label {
+    color: CanvasText;
+
+    &__required {
+      color: Highlight;
+    }
+
+    &__optional {
+      color: CanvasText;
+    }
+  }
+
+  .ids-badge,
+  .ids-label__badge,
+  .ids-label__tag {
+    border: var(--focus-ring-width) solid CanvasText;
+    color: CanvasText;
+
+    &--success,
+    &--encrypted,
+    &--secure,
+    &--danger,
+    &--error,
+    &--critical,
+    &--warning,
+    &--sensitive,
+    &--info,
+    &--neutral {
+      border-color: CanvasText;
+      color: CanvasText;
+    }
+  }
+
+  .ids-help-text,
+  .ids-helper-text,
+  .ids-input-message {
+    color: CanvasText;
+
+    &--error {
+      color: LinkText;
+    }
+  }
+
+  .ids-counter,
+  .ids-help-text__counter {
+    color: CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ADAPTACIONES RESPONSIVAS NATIVAS (@media) - Mobile-First
+   La disposición justificada y los grupos de ayuda se definen en formato vertical
+   compacto por defecto para móvil y se despliegan horizontalmente a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+

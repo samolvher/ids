@@ -1,0 +1,14 @@
+### Documentacion ###
+site/
+css/
+*.html
+
+### Agentes ###
+*.md
+scratch/
+.agents/
+.gemini/
+
+### Auditorias ###
+audit/
+

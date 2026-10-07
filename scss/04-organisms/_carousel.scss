@@ -1,0 +1,902 @@
+/* ==========================================================================
+   04-organisms/_carousel.scss
+   Identity Design System (IDS) - Organismo de Carrusel / Deslizador (Carousel)
+   Soporte multivariable:
+     - Con y sin texto + botón/enlace (Overlay scrim de alto contraste o bloque apilado).
+     - Con y sin rotación automática (Autoplay con botón de pausa obligatorio WCAG AAA y temporizador visual).
+     - Con y sin controles de diapositivas (Flechas de navegación, puntos/indicadores, contador accesible).
+     - Variantes de vista (1, 2, 3 diapositivas simultáneas) y soporte para CSS Scroll Snap nativo.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO CAROUSEL (Contrato de Tokens)
+   Estricta prohibición de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color o espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones Base (Flat / Clean, sin sombras complejas) */
+  --ids-carousel-radius: var(--radius-card);
+  --ids-carousel-border-width: var(--focus-ring-width);
+  --ids-carousel-border-style: solid;
+  --ids-carousel-border-color: var(--color-border-subtle);
+  --ids-carousel-min-height: 18rem;
+  --ids-carousel-aspect-ratio: 16 / 9;
+  --ids-carousel-gap: var(--spacing-md);
+
+  /* Piel y Superficies Base (Reposo) */
+  --ids-carousel-bg: var(--color-surface-card);
+  --ids-carousel-color: var(--color-text-primary);
+
+  /* Controles de Navegación (Flechas Prev / Next) */
+  --ids-carousel-control-size: var(--target-size-min); /* 44px WCAG AAA Touch Target */
+  --ids-carousel-control-bg: var(--color-surface-card);
+  --ids-carousel-control-color: var(--color-text-primary);
+  --ids-carousel-control-border: var(--color-border-subtle);
+  --ids-carousel-control-hover-bg: var(--color-surface-hover);
+  --ids-carousel-control-hover-color: var(--color-text-primary);
+  --ids-carousel-control-offset: var(--spacing-md);
+  --ids-carousel-control-radius: var(--radius-sm);
+
+  /* Indicadores / Paginación (Dots & Pills) */
+  --ids-carousel-indicator-width: 0.75rem;
+  --ids-carousel-indicator-height: 0.75rem;
+  --ids-carousel-indicator-pill-width: 2rem;
+  --ids-carousel-indicator-radius: var(--radius-full);
+  --ids-carousel-indicator-bg: var(--color-border-subtle);
+  --ids-carousel-indicator-hover-bg: var(--color-border-interactive);
+  --ids-carousel-indicator-active-bg: var(--color-action-primary);
+  --ids-carousel-indicator-gap: var(--spacing-sm);
+  --ids-carousel-indicator-offset: var(--spacing-md);
+
+  /* Leyenda y Textos (Captions) */
+  --ids-carousel-caption-padding-y: var(--spacing-lg);
+  --ids-carousel-caption-padding-x: var(--spacing-xl);
+  --ids-carousel-caption-bg: var(--color-surface-card);
+  --ids-carousel-caption-color: var(--color-text-primary);
+  --ids-carousel-caption-overlay-bg: var(--color-overlay-sensitive);
+  --ids-carousel-caption-overlay-color: var(--color-overlay-text);
+  --ids-carousel-caption-gap: var(--spacing-sm);
+
+  /* Tipografía Semántica */
+  --ids-carousel-font-family: var(--font-family-base);
+  --ids-carousel-title-font-size: var(--font-size-h3);
+  --ids-carousel-title-font-weight: var(--font-weight-semibold);
+  --ids-carousel-title-line-height: var(--line-height-tight);
+  --ids-carousel-desc-font-size: var(--font-size-body);
+  --ids-carousel-desc-line-height: var(--line-height-base); /* Mínimo 1.5 WCAG AAA */
+
+  /* Temporizador de Slide Automático (Autoplay Progress) */
+  --ids-carousel-timer-height: var(--ids-progress-height-xs, 0.25rem);
+  --ids-carousel-timer-bg: var(--color-surface-muted);
+  --ids-carousel-timer-fill-bg: var(--color-action-primary);
+  --ids-carousel-autoplay-duration: 6s;
+
+  /* Cinemática y Transiciones */
+  --ids-carousel-transition-speed: var(--transition-speed-slow, 350ms);
+  --ids-carousel-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR PRINCIPAL (.ids-carousel)
+   Estructura accesible con rol WAI-ARIA region/carousel.
+   -------------------------------------------------------------------------- */
+.ids-carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+  background-color: var(--ids-carousel-bg);
+  color: var(--ids-carousel-color);
+  font-family: var(--ids-carousel-font-family);
+  border: var(--ids-carousel-border-width) var(--ids-carousel-border-style) var(--ids-carousel-border-color);
+  border-radius: var(--ids-carousel-radius);
+  /* overflow lo maneja __viewport; quitarlo aquí permite que los controles
+     posicionados absolutamente no se recorten */
+  overflow: visible;
+
+  /* Geometría Plana (Clean / Flat, sin sombras complejas) */
+  box-shadow: none;
+
+  /* Visibilidad de Foco Accesible (:focus-within) */
+  &:focus-within {
+    border-color: var(--color-border-interactive);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. PISTA Y DIAPOSITIVAS (.ids-carousel__track / .ids-carousel__slide)
+   Soporte nativo para CSS Scroll Snap (Fluido, táctil y accesible).
+   -------------------------------------------------------------------------- */
+.ids-carousel__track {
+  display: flex;
+  /* La anchura total es N × 100% del viewport; el recorte lo hace __viewport */
+  inline-size: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Sin overflow propio: los slides desbordan visualmente y el viewport los recorta */
+  overflow: visible;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--ids-carousel-transition-speed) var(--ids-carousel-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+}
+
+.ids-carousel__slide {
+  position: relative;
+  flex: 0 0 100%;
+  inline-size: 100%;
+  min-inline-size: 100%;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--ids-carousel-bg);
+
+  /* Enfoque accesible individual */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. MEDIOS E IMÁGENES (.ids-carousel__media)
+   Integración estricta con el átomo de imagen fluida.
+   -------------------------------------------------------------------------- */
+.ids-carousel__media {
+  position: relative;
+  inline-size: 100%;
+  aspect-ratio: var(--ids-carousel-aspect-ratio);
+  min-block-size: var(--ids-carousel-min-height);
+  background-color: var(--color-surface-muted);
+  overflow: hidden;
+
+  img,
+  video {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. CON Y SIN TEXTO + BOTÓN / ENLACE (Captions & Actions)
+   -------------------------------------------------------------------------- */
+
+/* 5.1 Con Texto + Botón en Modo Superposición (.ids-carousel__caption--overlay)
+   Capa de contraste que garantiza legibilidad de texto sobre cualquier imagen. */
+.ids-carousel__caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-carousel-caption-gap);
+  box-sizing: border-box;
+  padding-block: var(--ids-carousel-caption-padding-y);
+  padding-inline: var(--ids-carousel-caption-padding-x);
+  background-color: var(--ids-carousel-caption-bg);
+  color: var(--ids-carousel-caption-color);
+  word-wrap: break-word;
+
+  /* Variante Superpuesta sobre el medio (Overlay Scrim) */
+  &--overlay {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: var(--ids-carousel-caption-overlay-bg);
+    color: var(--ids-carousel-caption-overlay-color);
+
+    .ids-carousel__title,
+    .ids-carousel__description {
+      color: var(--ids-carousel-caption-overlay-color);
+    }
+  }
+
+  /* Variante Apilada debajo del medio (Stacked / Regular Flow) */
+  &--stacked {
+    position: relative;
+    border-block-start: var(--divider-thickness) solid var(--color-border-subtle);
+  }
+}
+
+.ids-carousel__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--ids-carousel-title-font-size);
+  font-weight: var(--ids-carousel-title-font-weight);
+  line-height: var(--ids-carousel-title-line-height);
+  color: inherit;
+  word-wrap: break-word;
+}
+
+.ids-carousel__description {
+  margin: 0;
+  font-size: var(--ids-carousel-desc-font-size);
+  line-height: var(--ids-carousel-desc-line-height);
+  color: var(--color-text-secondary);
+}
+
+.ids-carousel__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-block-start: var(--spacing-xs);
+
+  .ids-button {
+    margin: 0;
+  }
+}
+
+/* Alineaciones de Leyenda */
+.ids-carousel__caption--center {
+  align-items: center;
+  text-align: center;
+
+  .ids-carousel__actions {
+    justify-content: center;
+  }
+}
+
+.ids-carousel__caption--end {
+  align-items: flex-end;
+  text-align: end;
+
+  .ids-carousel__actions {
+    justify-content: flex-end;
+  }
+}
+
+/* 5.2 Sin Texto + Botón / Solo Medios (.ids-carousel--media-only) */
+.ids-carousel--media-only {
+  .ids-carousel__caption {
+    display: none;
+  }
+
+  .ids-carousel__media {
+    border-radius: inherit;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. CON Y SIN CONTROLES DE SLIDES (Controls, Arrows & Indicators)
+   -------------------------------------------------------------------------- */
+
+/* 6.1 Flechas de Navegación Anterior / Siguiente */
+.ids-carousel__controls {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--ids-carousel-control-offset);
+  pointer-events: none; /* Permite interacción con la diapositiva en el centro */
+}
+
+.ids-carousel__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--ids-carousel-control-size);
+  min-block-size: var(--ids-carousel-control-size);
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: var(--ids-carousel-control-radius);
+  border: var(--ids-carousel-border-width) solid var(--ids-carousel-control-border);
+  background-color: var(--ids-carousel-control-bg);
+  color: var(--ids-carousel-control-color);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  pointer-events: auto;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease),
+                border-color var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-carousel-control-hover-bg);
+    color: var(--ids-carousel-control-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Icono SVG dentro de la flecha */
+  svg,
+  .ids-icon {
+    inline-size: var(--ids-icon-size, 1.25rem);
+    block-size: var(--ids-icon-size, 1.25rem);
+    width: var(--ids-icon-size, 1.25rem);
+    height: var(--ids-icon-size, 1.25rem);
+    max-inline-size: var(--ids-icon-size, 1.25rem);
+    max-block-size: var(--ids-icon-size, 1.25rem);
+    max-width: var(--ids-icon-size, 1.25rem);
+    max-height: var(--ids-icon-size, 1.25rem);
+    fill: currentColor;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+/* 6.2 Indicadores de Posición / Paginación (.ids-carousel__indicators) */
+.ids-carousel__indicators {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--ids-carousel-indicator-offset);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ids-carousel-indicator-gap);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  pointer-events: auto;
+}
+
+.ids-carousel__indicator {
+  display: inline-block;
+  inline-size: var(--ids-carousel-indicator-width);
+  block-size: var(--ids-carousel-indicator-height);
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--ids-carousel-indicator-radius);
+  background-color: var(--ids-carousel-indicator-bg);
+  cursor: pointer;
+  touch-action: manipulation;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                inline-size var(--transition-speed-fast) var(--transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-carousel-indicator-hover-bg);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Estado Activo / Seleccionado */
+  &.is-active,
+  &[aria-selected="true"] {
+    background-color: var(--ids-carousel-indicator-active-bg);
+  }
+}
+
+/* Variante de Indicadores en Pastilla (Pills) */
+.ids-carousel__indicators--pills {
+  .ids-carousel__indicator.is-active,
+  .ids-carousel__indicator[aria-selected="true"] {
+    inline-size: var(--ids-carousel-indicator-pill-width);
+  }
+}
+
+/* 6.3 Contador Accesible (.ids-carousel__counter) */
+.ids-carousel__counter {
+  position: absolute;
+  inset-inline-end: var(--spacing-md);
+  bottom: var(--spacing-md);
+  z-index: 3;
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-sm);
+  background-color: var(--color-overlay-sensitive);
+  color: var(--color-overlay-text);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-sm);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* 6.4 Sin Controles de Slides (.ids-carousel--no-controls / --no-arrows / --no-indicators) */
+.ids-carousel--no-controls {
+  .ids-carousel__controls,
+  .ids-carousel__indicators,
+  .ids-carousel__counter {
+    display: none !important;
+  }
+}
+
+.ids-carousel--no-arrows {
+  .ids-carousel__controls {
+    display: none !important;
+  }
+}
+
+.ids-carousel--no-indicators {
+  .ids-carousel__indicators {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. CON Y SIN SLIDE AUTOMÁTICO (Autoplay & WCAG Pause Control)
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Botón de Reproducción / Pausa Accesible (.ids-carousel__playback-btn)
+   Innegociable según WCAG AAA 2.2.2 (Pause, Stop, Hide). */
+.ids-carousel__playback-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--ids-carousel-control-size);
+  min-block-size: var(--ids-carousel-control-size);
+  padding: 0;
+  margin: 0;
+  border-radius: var(--ids-carousel-control-radius);
+  border: var(--ids-carousel-border-width) solid var(--ids-carousel-control-border);
+  background-color: var(--ids-carousel-control-bg);
+  color: var(--ids-carousel-control-color);
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+
+  &:hover {
+    background-color: var(--ids-carousel-control-hover-bg);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  svg,
+  .ids-icon {
+    inline-size: var(--ids-icon-size, 1.25rem);
+    block-size: var(--ids-icon-size, 1.25rem);
+    width: var(--ids-icon-size, 1.25rem);
+    height: var(--ids-icon-size, 1.25rem);
+    max-inline-size: var(--ids-icon-size, 1.25rem);
+    max-block-size: var(--ids-icon-size, 1.25rem);
+    max-width: var(--ids-icon-size, 1.25rem);
+    max-height: var(--ids-icon-size, 1.25rem);
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+/* 7.2 Barra de Temporizador Visual (.ids-carousel__timer) */
+.ids-carousel__timer {
+  inline-size: 100%;
+  block-size: var(--ids-carousel-timer-height);
+  background-color: var(--ids-carousel-timer-bg);
+  overflow: hidden;
+}
+
+.ids-carousel__timer-bar {
+  inline-size: 100%;
+  block-size: 100%;
+  background-color: var(--ids-carousel-timer-fill-bg);
+  transform-origin: left center;
+  transform: scaleX(0);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ids-carousel-progress var(--ids-carousel-autoplay-duration) linear infinite;
+  }
+}
+
+/* Detener progreso visual en hover, focus o estado pausado */
+.ids-carousel--autoplay {
+  &:hover .ids-carousel__timer-bar,
+  &:focus-within .ids-carousel__timer-bar,
+  &.is-paused .ids-carousel__timer-bar {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes ids-carousel-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* 7.3 Modo Manual / Sin Autoplay (.ids-carousel--manual) */
+.ids-carousel--manual {
+  .ids-carousel__timer,
+  .ids-carousel__playback-btn {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. VARIANTES DE VISUALIZACIÓN MÚLTIPLE (Per-View Columns)
+   -------------------------------------------------------------------------- */
+.ids-carousel--per-view-2 {
+  .ids-carousel__slide {
+    flex: 0 0 100%;
+    inline-size: 100%;
+    min-inline-size: 100%;
+
+    @media (min-width: 48rem) {
+      flex: 0 0 50%;
+      inline-size: 50%;
+      min-inline-size: 50%;
+    }
+  }
+}
+
+.ids-carousel--per-view-3 {
+  .ids-carousel__slide {
+    flex: 0 0 100%;
+    inline-size: 100%;
+    min-inline-size: 100%;
+
+    @media (min-width: 48rem) {
+      flex: 0 0 50%;
+      inline-size: 50%;
+      min-inline-size: 50%;
+    }
+
+    @media (min-width: 64rem) {
+      flex: 0 0 33.3333%;
+      inline-size: 33.3333%;
+      min-inline-size: 33.3333%;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens de _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-carousel {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-carousel__control,
+  .ids-carousel__playback-btn {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-border-interactive);
+      border-color: var(--color-border-interactive);
+    }
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+  }
+
+  .ids-carousel__indicator {
+    background-color: var(--color-border-subtle);
+
+    &.is-active,
+    &[aria-selected="true"] {
+      background-color: var(--color-border-interactive);
+      outline: var(--focus-ring-width) solid var(--color-surface-background);
+    }
+  }
+
+  .ids-carousel__caption--overlay {
+    background-color: var(--color-overlay-sensitive);
+    color: var(--color-overlay-text);
+    border-block-start: var(--focus-ring-width) solid var(--color-border-subtle);
+  }
+}
+
+/* 9.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-carousel,
+  .ids-carousel__control,
+  .ids-carousel__indicator {
+    transition: none;
+    box-shadow: none;
+  }
+}
+
+/* 9.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-carousel {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-carousel__control,
+  .ids-carousel__playback-btn {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 9.4 Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-carousel {
+    border: var(--focus-ring-width) solid CanvasText;
+  }
+
+  .ids-carousel__control,
+  .ids-carousel__playback-btn {
+    border: var(--focus-ring-width) solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid Highlight;
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  .ids-carousel__indicator {
+    border: var(--divider-thickness) solid CanvasText;
+    background-color: Canvas;
+
+    &.is-active,
+    &[aria-selected="true"] {
+      background-color: Highlight;
+    }
+  }
+
+  .ids-carousel__caption--overlay {
+    background-color: Canvas;
+    color: CanvasText;
+    border-block-start: var(--divider-thickness) solid CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ELEMENTOS ESTRUCTURALES COMPLEMENTARIOS
+   Estilos para __viewport, __header, __title-group, __progress y captions.
+   -------------------------------------------------------------------------- */
+
+/* Viewport: contenedor de recorte para el transform del track */
+.ids-carousel__viewport {
+  position: relative;
+  inline-size: 100%;
+  /* overflow:hidden es el recorte que permite que translateX muestre un slide a la vez */
+  overflow: hidden;
+  /* Evitar que el recorte corte el focus-ring de los controles flotantes */
+  isolation: isolate;
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* Cabecera del carrusel (título + contador + pausa) */
+.ids-carousel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding-block: var(--spacing-sm);
+  padding-inline: var(--spacing-md);
+  background-color: var(--ids-carousel-bg);
+  border-block-end: var(--ids-carousel-border-width) var(--ids-carousel-border-style) var(--ids-carousel-border-color);
+}
+
+/* Grupo de título + badge dentro del header */
+.ids-carousel__title-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+/* Barra de progreso del autoplay */
+.ids-carousel__progress {
+  inline-size: 100%;
+  block-size: var(--ids-carousel-timer-height);
+  background-color: var(--ids-carousel-timer-bg);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ids-carousel__progress-bar {
+  inline-size: 0%;
+  block-size: 100%;
+  background-color: var(--ids-carousel-timer-fill-bg);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+}
+
+/* Caption: título, texto y acciones dentro de la diapositiva */
+.ids-carousel__caption-title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--ids-carousel-title-font-size);
+  font-weight: var(--ids-carousel-title-font-weight);
+  line-height: var(--ids-carousel-title-line-height);
+  color: inherit;
+  word-wrap: break-word;
+}
+
+.ids-carousel__caption-text {
+  margin: 0;
+  font-size: var(--ids-carousel-desc-font-size);
+  line-height: var(--ids-carousel-desc-line-height);
+  color: var(--color-text-secondary);
+  word-wrap: break-word;
+}
+
+.ids-carousel__caption-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-block-start: var(--spacing-xs);
+}
+
+/* Imagen del carrusel (fluida y recortada) */
+.ids-carousel__img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* --------------------------------------------------------------------------
+   11. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* Movimiento Reducido (Accesibilidad Vestibular Universal) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-carousel__track {
+    scroll-behavior: auto !important;
+  }
+
+  .ids-carousel__timer-bar,
+  .ids-carousel__progress-bar {
+    animation: none !important;
+    display: none !important;
+  }
+
+  .ids-carousel__control,
+  .ids-carousel__indicator,
+  .ids-carousel__playback-btn {
+    transition: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTABILIDAD RESPONSIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+
+/* Estilos compactos móviles por defecto */
+.ids-carousel__header {
+  gap: var(--spacing-xs);
+  padding-inline: var(--spacing-sm);
+}
+
+.ids-carousel__caption {
+  padding-block: var(--spacing-sm);
+  padding-inline: var(--spacing-sm);
+}
+
+.ids-carousel__title,
+.ids-carousel__caption-title {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.ids-carousel__caption-text {
+  font-size: var(--font-size-caption);
+}
+
+.ids-carousel__controls {
+  padding-inline: var(--spacing-xs);
+}
+
+.ids-carousel__control {
+  min-inline-size: calc(var(--ids-carousel-control-size) * 0.85);
+  min-block-size: calc(var(--ids-carousel-control-size) * 0.85);
+}
+
+.ids-carousel__counter {
+  position: static;
+  font-size: var(--font-size-caption);
+}
+
+.ids-carousel__media {
+  aspect-ratio: 1 / 1;
+  min-block-size: 10rem;
+}
+
+/* Despliegue en pantallas medianas / tablets */
+@media (min-width: 48rem) {
+  .ids-carousel__header {
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+  }
+
+  .ids-carousel__caption {
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+  }
+
+  .ids-carousel__title,
+  .ids-carousel__caption-title {
+    font-size: var(--font-size-h4);
+    font-weight: var(--ids-carousel-caption-title-font-weight);
+  }
+
+  .ids-carousel__caption-text {
+    font-size: var(--ids-carousel-caption-text-font-size, var(--font-size-body));
+  }
+
+  .ids-carousel__controls {
+    padding-inline: var(--ids-carousel-control-offset);
+  }
+
+  .ids-carousel__control {
+    min-inline-size: var(--ids-carousel-control-size);
+    min-block-size: var(--ids-carousel-control-size);
+  }
+
+  .ids-carousel__counter {
+    position: absolute;
+  }
+
+  .ids-carousel__media {
+    aspect-ratio: 4 / 3;
+    min-block-size: 12rem;
+  }
+}
+
+/* Despliegue en pantallas de escritorio / amplias */
+@media (min-width: 64rem) {
+  .ids-carousel__caption {
+    padding-block: var(--ids-carousel-caption-padding-y);
+    padding-inline: var(--ids-carousel-caption-padding-x);
+  }
+
+  .ids-carousel__title,
+  .ids-carousel__caption-title {
+    font-size: var(--ids-carousel-title-font-size);
+  }
+
+  .ids-carousel__media {
+    aspect-ratio: var(--ids-carousel-aspect-ratio);
+    min-block-size: var(--ids-carousel-min-height);
+  }
+}
+
+

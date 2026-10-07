@@ -1,0 +1,447 @@
+/* ==========================================================================
+   02-atoms/_text-area.scss
+   Identity Design System (IDS) - Átomo de Área de Texto (Textarea)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ÁREA DE TEXTO (TEXTAREA)
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones (Esqueleto) */
+  --ids-textarea-radius: var(--textarea-radius);
+  --ids-textarea-border-width: var(--textarea-border-width);
+  --ids-textarea-border-style: solid;
+  --ids-textarea-min-height: var(--textarea-min-height);
+  --ids-textarea-min-height-sm: var(--textarea-min-height-sm);
+  --ids-textarea-min-height-lg: var(--textarea-min-height-lg);
+  --ids-textarea-max-height: var(--textarea-max-height);
+
+  /* Espaciado Interno (Padding) */
+  --ids-textarea-padding-y: var(--textarea-padding-y);
+  --ids-textarea-padding-x: var(--textarea-padding-x);
+  --ids-textarea-padding-y-sm: var(--textarea-padding-y-sm);
+  --ids-textarea-padding-x-sm: var(--textarea-padding-x-sm);
+  --ids-textarea-padding-y-lg: var(--textarea-padding-y-lg);
+  --ids-textarea-padding-x-lg: var(--textarea-padding-x-lg);
+
+  /* Tipografía Semántica (Mínimo line-height 1.5 WCAG AAA) */
+  --ids-textarea-font-family: var(--font-family-base);
+  --ids-textarea-font-size: var(--textarea-font-size);
+  --ids-textarea-font-size-sm: var(--textarea-font-size-sm);
+  --ids-textarea-font-size-lg: var(--textarea-font-size-lg);
+  --ids-textarea-font-weight: var(--textarea-font-weight);
+  --ids-textarea-line-height: var(--textarea-line-height);
+
+  /* Movimiento y Transiciones */
+  --ids-textarea-transition-speed: var(--transition-speed-fast);
+  --ids-textarea-transition-ease: var(--transition-ease);
+
+  /* Piel y Mapeo Cromático - Estado Normal y Hover */
+  --ids-textarea-bg: var(--color-surface-background);
+  --ids-textarea-color: var(--color-text-primary);
+  --ids-textarea-placeholder-color: var(--color-text-secondary);
+  --ids-textarea-border-color: var(--color-border-subtle);
+  --ids-textarea-hover-border: var(--color-border-interactive);
+  --ids-textarea-hover-bg: var(--color-surface-background);
+
+  /* Foco Accesible WCAG AAA (Mínimo 2px, contraste 3:1) */
+  --ids-textarea-focus-border: var(--color-border-interactive);
+  --ids-textarea-focus-ring-color: var(--focus-ring-color);
+  --ids-textarea-focus-ring-width: var(--focus-ring-width);
+  --ids-textarea-focus-ring-offset: var(--focus-ring-offset);
+
+  /* Estados de Validación Trauma-Informed */
+  --ids-textarea-invalid-border: var(--color-status-danger);
+  --ids-textarea-invalid-focus-ring: var(--color-status-danger);
+  --ids-textarea-valid-border: var(--color-status-success);
+  --ids-textarea-valid-focus-ring: var(--color-status-success);
+  --ids-textarea-warning-border: var(--color-status-warning);
+  --ids-textarea-warning-focus-ring: var(--color-status-warning);
+  --ids-textarea-info-border: var(--color-status-info);
+  --ids-textarea-info-focus-ring: var(--color-status-info);
+
+  /* Estado Deshabilitado / Solo Lectura */
+  --ids-textarea-disabled-bg: var(--color-surface-muted);
+  --ids-textarea-disabled-color: var(--color-text-secondary);
+  --ids-textarea-disabled-border: var(--color-border-subtle);
+  --ids-textarea-disabled-opacity: var(--opacity-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-textarea, textarea.ids-textarea)
+   Diseño centrado en redacción serena, proporcionalidad y accesibilidad motriz.
+   -------------------------------------------------------------------------- */
+.ids-textarea,
+textarea.ids-input {
+  /* Reseteo y modelo de caja */
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  display: block;
+  inline-size: 100%;
+  width: 100%;
+  min-block-size: var(--ids-textarea-min-height);
+
+  /* Espaciado interno: compacto en móvil, generoso a partir de 48rem */
+  padding-block: var(--ids-textarea-padding-y-sm);
+  padding-inline: var(--ids-textarea-padding-x-sm);
+
+  @media (min-width: 48rem) {
+    padding-block: var(--ids-textarea-padding-y);
+    padding-inline: var(--ids-textarea-padding-x);
+  }
+
+  /* Geometría plana y bordes */
+  border-radius: var(--ids-textarea-radius);
+  border-width: var(--ids-textarea-border-width);
+  border-style: var(--ids-textarea-border-style);
+  border-color: var(--ids-textarea-border-color);
+  background-color: var(--ids-textarea-bg);
+
+  /* Tipografía y legibilidad (WCAG AAA) */
+  font-family: var(--ids-textarea-font-family);
+  font-size: var(--ids-textarea-font-size);
+  font-weight: var(--ids-textarea-font-weight);
+  line-height: var(--ids-textarea-line-height);
+  color: var(--ids-textarea-color);
+  text-align: start;
+
+  /* Redimensionamiento vertical seguro predeterminado */
+  resize: vertical;
+
+  /* Transición sutil */
+  transition:
+    border-color var(--ids-textarea-transition-speed) var(--ids-textarea-transition-ease),
+    background-color var(--ids-textarea-transition-speed) var(--ids-textarea-transition-ease);
+
+  /* Barra de desplazamiento integrada con el átomo _scrollbar.scss */
+  scrollbar-width: thin;
+  scrollbar-color: var(--ids-scrollbar-thumb-bg, var(--color-border-subtle)) var(--ids-scrollbar-track-bg, transparent);
+
+  &::-webkit-scrollbar {
+    inline-size: var(--ids-scrollbar-size-sm-vertical, 0.25rem);
+    width: var(--ids-scrollbar-size-sm-vertical, 0.25rem);
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ids-scrollbar-thumb-bg, var(--color-border-subtle));
+    border-radius: var(--radius-full);
+  }
+
+  /* 2.1 Texto de marcador de posición (Placeholder) */
+  &::placeholder {
+    color: var(--ids-textarea-placeholder-color);
+    opacity: 1; /* Forzado multi-navegador */
+  }
+
+  /* 2.2 Estado Hover */
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--ids-textarea-hover-border);
+    background-color: var(--ids-textarea-hover-bg);
+  }
+
+  /* 2.3 Estado Foco Accesible (WCAG AAA - Focus Visible) */
+  &:focus {
+    outline: none;
+    border-color: var(--ids-textarea-focus-border);
+  }
+
+  &:focus-visible {
+    outline: var(--ids-textarea-focus-ring-width) solid var(--ids-textarea-focus-ring-color);
+    outline-offset: var(--ids-textarea-focus-ring-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. MODIFICADORES DE REDIMENSIONAMIENTO (Resize Behaviors)
+   -------------------------------------------------------------------------- */
+
+/* 3.1 Redimensionamiento Vertical (Estándar Seguro) */
+.ids-textarea--resize-vertical {
+  resize: vertical;
+}
+
+/* 3.2 Sin Redimensionamiento (Tamaño Fijo o Controlado) */
+.ids-textarea--resize-none,
+.ids-textarea--no-resize {
+  resize: none;
+}
+
+/* 3.3 Redimensionamiento Bidireccional */
+.ids-textarea--resize-both {
+  resize: both;
+}
+
+/* 3.4 Redimensionamiento Horizontal Exclusivo */
+.ids-textarea--resize-horizontal {
+  resize: horizontal;
+}
+
+/* --------------------------------------------------------------------------
+   4. AJUSTE DINÁMICO DE CONTENIDO (Modern CSS: field-sizing: content)
+   Permite al área crecer orgánicamente a medida que la persona redacta su
+   declaración o testimonio, previniendo barras de scroll prematuras.
+   -------------------------------------------------------------------------- */
+.ids-textarea--autosize,
+.ids-textarea--auto-grow {
+  /* Propiedad estándar moderna Baseline */
+  field-sizing: content;
+  block-size: auto;
+  height: auto;
+  min-block-size: var(--ids-textarea-min-height);
+  max-block-size: var(--ids-textarea-max-height);
+  resize: none; /* El tamaño lo gestiona el contenido */
+}
+
+/* --------------------------------------------------------------------------
+   5. MODIFICADORES DE ESCALA Y DENSIDAD (BEM)
+   -------------------------------------------------------------------------- */
+
+/* 5.1 Calibre Compacto (.ids-textarea--sm) - Notas breves, chats seguros */
+.ids-textarea--sm {
+  min-block-size: var(--ids-textarea-min-height-sm);
+  padding-block: var(--ids-textarea-padding-y-sm);
+  padding-inline: var(--ids-textarea-padding-x-sm);
+  font-size: var(--ids-textarea-font-size-sm);
+}
+
+/* 5.2 Calibre Amplio (.ids-textarea--lg) - Testimonios extensos, declaraciones */
+.ids-textarea--lg {
+  min-block-size: var(--ids-textarea-min-height-lg);
+  padding-block: var(--ids-textarea-padding-y-lg);
+  padding-inline: var(--ids-textarea-padding-x-lg);
+  font-size: var(--ids-textarea-font-size-lg);
+}
+
+/* --------------------------------------------------------------------------
+   6. ESTADOS DE VALIDACIÓN Y SOPORTE EMOCIONAL (Trauma-Informed)
+   Colores claros sin estridencias punitivas ni alarmas bloqueantes.
+   -------------------------------------------------------------------------- */
+
+/* 6.1 Estado Inválido / Error */
+.ids-textarea--invalid,
+.ids-textarea.is-invalid,
+.ids-textarea:user-invalid,
+.ids-textarea[aria-invalid="true"] {
+  border-color: var(--ids-textarea-invalid-border);
+
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--ids-textarea-invalid-border);
+  }
+
+  &:focus-visible {
+    border-color: var(--ids-textarea-invalid-border);
+    outline-color: var(--ids-textarea-invalid-focus-ring);
+  }
+}
+
+/* 6.2 Estado Válido / Confirmación */
+.ids-textarea--valid,
+.ids-textarea.is-valid,
+.ids-textarea[aria-invalid="false"] {
+  border-color: var(--ids-textarea-valid-border);
+
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--ids-textarea-valid-border);
+  }
+
+  &:focus-visible {
+    border-color: var(--ids-textarea-valid-border);
+    outline-color: var(--ids-textarea-valid-focus-ring);
+  }
+}
+
+/* 6.3 Estado Advertencia / Precaución */
+.ids-textarea--warning,
+.ids-textarea.is-warning {
+  border-color: var(--ids-textarea-warning-border);
+
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--ids-textarea-warning-border);
+  }
+
+  &:focus-visible {
+    border-color: var(--ids-textarea-warning-border);
+    outline-color: var(--ids-textarea-warning-focus-ring);
+  }
+}
+
+/* 6.4 Estado Información / Asistencia */
+.ids-textarea--info,
+.ids-textarea.is-info {
+  border-color: var(--ids-textarea-info-border);
+
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--ids-textarea-info-border);
+  }
+
+  &:focus-visible {
+    border-color: var(--ids-textarea-info-border);
+    outline-color: var(--ids-textarea-info-focus-ring);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ESTADOS DESHABILITADO Y SOLO LECTURA
+   -------------------------------------------------------------------------- */
+
+/* 7.1 Deshabilitado */
+.ids-textarea:disabled,
+.ids-textarea--disabled {
+  cursor: not-allowed;
+  opacity: var(--ids-textarea-disabled-opacity);
+  background-color: var(--ids-textarea-disabled-bg);
+  color: var(--ids-textarea-disabled-color);
+  border-color: var(--ids-textarea-disabled-border);
+  resize: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 7.2 Solo Lectura (Readonly) */
+.ids-textarea[readonly],
+.ids-textarea--readonly {
+  cursor: default;
+  background-color: var(--ids-textarea-disabled-bg);
+  border-style: dashed;
+  resize: none;
+
+  &:focus-visible {
+    outline-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ENVOLTORIO CON CONTADOR DE CARACTERES (.ids-textarea-wrapper)
+   Contenedor estructural para acoplar el área de texto con contadores
+   pasivos de caracteres sin provocar saltos visuales ni fatiga.
+   -------------------------------------------------------------------------- */
+.ids-textarea-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  width: 100%;
+
+  .ids-textarea {
+    inline-size: 100%;
+    width: 100%;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-block-start: var(--spacing-xs);
+  }
+
+  &__counter {
+    font-size: var(--font-size-caption);
+    color: var(--color-text-secondary);
+    margin-inline-start: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. TEMATIZACIÓN DINÁMICA (4 EJES IDS)
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Alto Contraste (WCAG AAA - data-theme="high-contrast") */
+[data-theme="high-contrast"] {
+  .ids-textarea,
+  textarea.ids-input {
+    --ids-textarea-bg: var(--color-surface-background);
+    --ids-textarea-color: var(--color-text-primary);
+    --ids-textarea-border-color: var(--color-border-subtle);
+    --ids-textarea-placeholder-color: var(--color-text-secondary);
+    --ids-textarea-focus-ring-color: var(--focus-ring-color);
+
+    border-color: var(--color-border-subtle);
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+      border-color: var(--color-border-interactive);
+    }
+
+    &:disabled {
+      border-color: var(--color-action-disabled-border);
+      color: var(--color-action-disabled-text);
+      background-color: var(--color-action-disabled-bg);
+    }
+  }
+}
+
+/* 9.2 Baja Estimulación (Neurodivergencia - data-theme="low-stimulation") */
+[data-theme="low-stimulation"] {
+  .ids-textarea,
+  textarea.ids-input {
+    --ids-textarea-bg: var(--color-surface-card);
+    --ids-textarea-color: var(--color-text-primary);
+    --ids-textarea-border-color: var(--color-border-subtle);
+    --ids-textarea-hover-bg: var(--color-surface-card);
+
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* 9.3 Modo Discreto / Stealth (Anti-Outing - data-theme="discrete") */
+[data-theme="discrete"] {
+  .ids-textarea,
+  textarea.ids-input {
+    --ids-textarea-bg: var(--color-surface-card);
+    --ids-textarea-color: var(--color-text-primary);
+    --ids-textarea-border-color: var(--color-border-subtle);
+
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-textarea,
+  textarea.ids-input {
+    border-color: ButtonText;
+    background-color: Field;
+    color: FieldText;
+
+    &:focus-visible {
+      outline-color: Highlight;
+      border-color: Highlight;
+    }
+
+    &:disabled {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. MOVIMIENTO REDUCIDO (Trauma-Informed Design)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-textarea,
+  textarea.ids-input {
+    transition: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. DISEÑO RESPONSIVO (Nativo mediante @media queries) - Mobile-First
+   El espaciado se define en escala compacta por defecto para pantallas móviles
+   y se amplía al estándar ergonómico a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+

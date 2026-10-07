@@ -1,0 +1,1084 @@
+/* ==========================================================================
+   04-organisms/_navbs-tabs.scss
+   Identity Design System (IDS) - Organismo de Navegación y Pestañas (Navbars & Tabs)
+   Soporte multivariable:
+     A) NAVBAR — Barra de navegación con botones y/o enlaces:
+        - Horizontal (predeterminada) y Vertical (apilada).
+        - Variantes: outlined, filled, pills, flush.
+        - Alineación: start, center, end, justify (stretch).
+        - Indicador de ítem activo (línea inferior, píldora, fondo).
+     B) TABS — Pestañas de contenido conmutable:
+        - Horizontal (predeterminada) y Vertical.
+        - Variantes: underline, pills, enclosed (con borde y fondo).
+        - Panel de contenido con cambio accesible (aria-selected, role="tabpanel").
+        - Scroll horizontal nativo (scroll-snap) en contenedores estrechos.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO NAVBAR / TABS (Contrato de Tokens)
+   Prohibición estricta de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color y espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* === NAVBAR (Compartidas) === */
+  --ids-navbar-radius:               var(--radius-sm);
+  --ids-navbar-border-width:         var(--focus-ring-width);
+  --ids-navbar-border-style:         solid;
+  --ids-navbar-border-color:         var(--color-border-subtle);
+  --ids-navbar-bg:                   transparent;
+  --ids-navbar-gap:                  var(--spacing-xs);
+  --ids-navbar-padding-y:            0;
+  --ids-navbar-padding-x:            0;
+
+  /* Ítems de Navbar */
+  --ids-navbar-item-min-height:      var(--target-size-min);       /* 44px WCAG AAA Touch Target */
+  --ids-navbar-item-padding-y:       var(--spacing-sm);
+  --ids-navbar-item-padding-x:       var(--spacing-md);
+  --ids-navbar-item-gap:             var(--spacing-sm);
+  --ids-navbar-item-radius:          var(--radius-sm);
+  --ids-navbar-item-bg:              transparent;
+  --ids-navbar-item-color:           var(--color-text-secondary);
+  --ids-navbar-item-hover-bg:        var(--color-surface-hover);
+  --ids-navbar-item-hover-color:     var(--color-text-primary);
+  --ids-navbar-item-active-bg:       transparent;
+  --ids-navbar-item-active-color:    var(--color-action-primary);
+
+  /* Tipografía de Ítems */
+  --ids-navbar-item-font-family:     var(--font-family-base);
+  --ids-navbar-item-font-size:       var(--font-size-body);
+  --ids-navbar-item-font-weight:     var(--font-weight-medium);
+  --ids-navbar-item-active-font-weight: var(--font-weight-semibold);
+  --ids-navbar-item-line-height:     var(--line-height-base);
+
+  /* Indicador de Ítem Activo (Línea inferior) */
+  --ids-navbar-indicator-height:     0.1875rem;                    /* 3px */
+  --ids-navbar-indicator-color:      var(--color-action-primary);
+  --ids-navbar-indicator-radius:     var(--radius-full);
+
+  /* Ícono dentro de ítems */
+  --ids-navbar-icon-size:            var(--icon-size);             /* 1.25rem = 20px */
+
+  /* === TABS (Específicas) === */
+  --ids-tabs-radius:                 var(--radius-sm);
+  --ids-tabs-border-width:           var(--focus-ring-width);
+  --ids-tabs-border-color:           var(--color-border-subtle);
+  --ids-tabs-bg:                     transparent;
+  --ids-tabs-gap:                    0;
+
+  /* Pestaña Individual */
+  --ids-tabs-tab-min-height:         var(--target-size-min);       /* 44px WCAG AAA */
+  --ids-tabs-tab-padding-y:          var(--spacing-sm);
+  --ids-tabs-tab-padding-x:          var(--spacing-md);
+  --ids-tabs-tab-gap:                var(--spacing-sm);
+  --ids-tabs-tab-bg:                 transparent;
+  --ids-tabs-tab-color:              var(--color-text-secondary);
+  --ids-tabs-tab-hover-bg:           var(--color-surface-hover);
+  --ids-tabs-tab-hover-color:        var(--color-text-primary);
+  --ids-tabs-tab-selected-bg:        transparent;
+  --ids-tabs-tab-selected-color:     var(--color-action-primary);
+
+  /* Tipografía de Pestaña */
+  --ids-tabs-tab-font-family:        var(--font-family-base);
+  --ids-tabs-tab-font-size:          var(--font-size-body);
+  --ids-tabs-tab-font-weight:        var(--font-weight-medium);
+  --ids-tabs-tab-selected-font-weight: var(--font-weight-semibold);
+  --ids-tabs-tab-line-height:        var(--line-height-base);
+
+  /* Indicador de Pestaña Seleccionada (Underline) */
+  --ids-tabs-indicator-height:       0.1875rem;                    /* 3px */
+  --ids-tabs-indicator-color:        var(--color-action-primary);
+  --ids-tabs-indicator-radius:       var(--radius-full);
+
+  /* Panel de Contenido */
+  --ids-tabs-panel-padding-y:        var(--spacing-lg);
+  --ids-tabs-panel-padding-x:        var(--spacing-md);
+  --ids-tabs-panel-bg:               transparent;
+  --ids-tabs-panel-color:            var(--color-text-primary);
+  --ids-tabs-panel-font-size:        var(--font-size-body);
+  --ids-tabs-panel-line-height:      var(--line-height-base);      /* Mínimo 1.5 WCAG AAA */
+
+  /* Ícono dentro de pestañas */
+  --ids-tabs-icon-size:              var(--icon-size);
+
+  /* Cinemática y Transiciones */
+  --ids-nav-transition-speed:        var(--transition-speed-fast);
+  --ids-nav-transition-ease:         var(--transition-ease);
+}
+
+/* ╔════════════════════════════════════════════════════════════════════════════╗
+   ║  PARTE A — NAVBAR (Barra de Navegación con Botones y Enlaces)            ║
+   ╚════════════════════════════════════════════════════════════════════════════╝ */
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR NAVBAR (.ids-navbar)
+   Semántica: <nav aria-label="..."> ⟶ <ul role="list"> ⟶ <li> ⟶ <a>|<button>
+   -------------------------------------------------------------------------- */
+.ids-navbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ids-navbar-gap);
+  margin: 0;
+  padding-block: var(--ids-navbar-padding-y);
+  padding-inline: var(--ids-navbar-padding-x);
+  list-style: none;
+  box-sizing: border-box;
+  background-color: var(--ids-navbar-bg);
+}
+
+/* --------------------------------------------------------------------------
+   3. ÍTEM DE NAVBAR (.ids-navbar__item)
+   -------------------------------------------------------------------------- */
+.ids-navbar__item {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: stretch;
+}
+
+/* --------------------------------------------------------------------------
+   4. ENLACE / BOTÓN DE NAVBAR (.ids-navbar__link)
+   Touch Target mínimo: 44px (WCAG AAA 2.5.5).
+   -------------------------------------------------------------------------- */
+.ids-navbar__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ids-navbar-item-gap);
+  box-sizing: border-box;
+  min-block-size: var(--ids-navbar-item-min-height);
+  padding-block: var(--ids-navbar-item-padding-y);
+  padding-inline: var(--ids-navbar-item-padding-x);
+  border-radius: var(--ids-navbar-item-radius);
+  background-color: var(--ids-navbar-item-bg);
+  color: var(--ids-navbar-item-color);
+  font-family: var(--ids-navbar-item-font-family);
+  font-size: var(--ids-navbar-item-font-size);
+  font-weight: var(--ids-navbar-item-font-weight);
+  line-height: var(--ids-navbar-item-line-height);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  border: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--ids-nav-transition-speed) var(--ids-nav-transition-ease),
+      color var(--ids-nav-transition-speed) var(--ids-nav-transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Hover */
+  &:hover {
+    background-color: var(--ids-navbar-item-hover-bg);
+    color: var(--ids-navbar-item-hover-color);
+    text-decoration: none;
+  }
+
+  /* Focus Visible (WCAG AAA: mínimo 2px, contraste 3:1) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Estado Activo / Seleccionado — aria-current="page" */
+  &.is-active,
+  &[aria-current="page"],
+  &[aria-current="true"] {
+    background-color: var(--ids-navbar-item-active-bg);
+    color: var(--ids-navbar-item-active-color);
+    font-weight: var(--ids-navbar-item-active-font-weight);
+
+    /* Indicador de línea inferior */
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: var(--spacing-xs);
+      inset-block-end: 0;
+      block-size: var(--ids-navbar-indicator-height);
+      background-color: var(--ids-navbar-indicator-color);
+      border-radius: var(--ids-navbar-indicator-radius);
+    }
+  }
+
+  /* Deshabilitado */
+  &[aria-disabled="true"],
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Ícono dentro del enlace */
+  .ids-navbar__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--ids-navbar-icon-size);
+    block-size: var(--ids-navbar-icon-size);
+    width: var(--ids-navbar-icon-size);
+    height: var(--ids-navbar-icon-size);
+    color: inherit;
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: var(--icon-stroke-width);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Badge / Chip junto al texto */
+  .ids-navbar__badge {
+    flex-shrink: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. VARIANTE: NAVBAR VERTICAL (.ids-navbar--vertical)
+   Ítems apilados como columna para sidebars ligeros o paneles.
+   -------------------------------------------------------------------------- */
+.ids-navbar--vertical {
+  flex-direction: column;
+  align-items: stretch;
+  flex-wrap: nowrap;
+
+  .ids-navbar__link {
+    justify-content: flex-start;
+    border-radius: var(--ids-navbar-item-radius);
+
+    /* El indicador activo es una línea lateral en vez de inferior */
+    &.is-active::after,
+    &[aria-current="page"]::after,
+    &[aria-current="true"]::after {
+      inset-inline: auto;
+      inset-inline-start: 0;
+      inset-block: var(--spacing-xs);
+      inset-block-end: var(--spacing-xs);
+      inline-size: var(--ids-navbar-indicator-height);
+      block-size: auto;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. VARIANTE: NAVBAR PILLS (.ids-navbar--pills)
+   Ítems con fondo píldora en lugar de indicador de línea.
+   -------------------------------------------------------------------------- */
+.ids-navbar--pills {
+  .ids-navbar__link {
+    border-radius: var(--radius-full);
+
+    &.is-active,
+    &[aria-current="page"],
+    &[aria-current="true"] {
+      background-color: var(--color-action-primary);
+      color: var(--color-action-primary-text);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. VARIANTE: NAVBAR FILLED (.ids-navbar--filled)
+   Ítems con fondo sutil al estar activos.
+   -------------------------------------------------------------------------- */
+.ids-navbar--filled {
+  .ids-navbar__link {
+    &.is-active,
+    &[aria-current="page"],
+    &[aria-current="true"] {
+      background-color: var(--color-surface-muted);
+      color: var(--ids-navbar-item-active-color);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. VARIANTE: NAVBAR OUTLINED (.ids-navbar--outlined)
+   Ítems con borde visible.
+   -------------------------------------------------------------------------- */
+.ids-navbar--outlined {
+  border: var(--ids-navbar-border-width) var(--ids-navbar-border-style) var(--ids-navbar-border-color);
+  border-radius: var(--ids-navbar-radius);
+  padding: var(--spacing-xs);
+
+  .ids-navbar__link {
+    &.is-active,
+    &[aria-current="page"],
+    &[aria-current="true"] {
+      background-color: var(--color-surface-muted);
+      border: var(--ids-navbar-border-width) var(--ids-navbar-border-style) var(--ids-navbar-border-color);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. VARIANTE: NAVBAR FLUSH (.ids-navbar--flush)
+   Sin fondo, sin bordes; solo el indicador de línea.
+   -------------------------------------------------------------------------- */
+.ids-navbar--flush {
+  border-block-end: var(--ids-navbar-border-width) var(--ids-navbar-border-style) var(--ids-navbar-border-color);
+  border-radius: 0;
+
+  .ids-navbar__link {
+    border-radius: 0;
+
+    &.is-active::after,
+    &[aria-current="page"]::after,
+    &[aria-current="true"]::after {
+      inset-inline: 0;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ALINEACIONES DE NAVBAR
+   -------------------------------------------------------------------------- */
+.ids-navbar--center {
+  justify-content: center;
+}
+
+.ids-navbar--end {
+  justify-content: flex-end;
+}
+
+.ids-navbar--justify {
+  .ids-navbar__item {
+    flex: 1;
+  }
+
+  .ids-navbar__link {
+    inline-size: 100%;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. TAMAÑOS DE NAVBAR
+   -------------------------------------------------------------------------- */
+
+/* Compacto */
+.ids-navbar--sm {
+  .ids-navbar__link {
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+    font-size: var(--font-size-caption);
+  }
+}
+
+/* Grande */
+.ids-navbar--lg {
+  .ids-navbar__link {
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-lg);
+    font-size: var(--font-size-body-large);
+  }
+}
+
+/* ╔════════════════════════════════════════════════════════════════════════════╗
+   ║  PARTE B — TABS (Pestañas de Contenido Conmutable)                       ║
+   ╚════════════════════════════════════════════════════════════════════════════╝ */
+
+/* --------------------------------------------------------------------------
+   12. CONTENEDOR DE TABS (.ids-tabs)
+   Envuelve la lista de pestañas (tablist) y los paneles (tabpanels).
+   -------------------------------------------------------------------------- */
+.ids-tabs {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   13. LISTA DE PESTAÑAS (.ids-tabs__list)
+   role="tablist" obligatorio. Contiene los botones de pestaña.
+   Scroll horizontal nativo con snap para pantallas estrechas.
+   -------------------------------------------------------------------------- */
+.ids-tabs__list {
+  display: flex;
+  align-items: stretch;
+  gap: var(--ids-tabs-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-sizing: border-box;
+  background-color: var(--ids-tabs-bg);
+  border-block-end: var(--ids-tabs-border-width) solid var(--ids-tabs-border-color);
+
+  /* Scroll horizontal nativo para contenedores estrechos */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   14. PESTAÑA INDIVIDUAL (.ids-tabs__tab)
+   role="tab" obligatorio. aria-selected="true/false".
+   aria-controls="<id-del-panel>" obligatorio.
+   Touch Target mínimo: 44px (WCAG AAA 2.5.5).
+   -------------------------------------------------------------------------- */
+.ids-tabs__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ids-tabs-tab-gap);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  min-block-size: var(--ids-tabs-tab-min-height);
+  padding-block: var(--ids-tabs-tab-padding-y);
+  padding-inline: var(--ids-tabs-tab-padding-x);
+  background-color: var(--ids-tabs-tab-bg);
+  color: var(--ids-tabs-tab-color);
+  font-family: var(--ids-tabs-tab-font-family);
+  font-size: var(--ids-tabs-tab-font-size);
+  font-weight: var(--ids-tabs-tab-font-weight);
+  line-height: var(--ids-tabs-tab-line-height);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  border: none;
+  border-radius: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+
+  /* Margen negativo para que el indicador tape el borde del contenedor */
+  margin-block-end: calc(-1 * var(--ids-tabs-border-width));
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--ids-nav-transition-speed) var(--ids-nav-transition-ease),
+      color var(--ids-nav-transition-speed) var(--ids-nav-transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Hover */
+  &:hover {
+    background-color: var(--ids-tabs-tab-hover-bg);
+    color: var(--ids-tabs-tab-hover-color);
+  }
+
+  /* Focus Visible */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Seleccionada — aria-selected="true" */
+  &.is-selected,
+  &[aria-selected="true"] {
+    background-color: var(--ids-tabs-tab-selected-bg);
+    color: var(--ids-tabs-tab-selected-color);
+    font-weight: var(--ids-tabs-tab-selected-font-weight);
+
+    /* Indicador de línea inferior (underline) */
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: 0;
+      block-size: var(--ids-tabs-indicator-height);
+      background-color: var(--ids-tabs-indicator-color);
+      border-radius: var(--ids-tabs-indicator-radius) var(--ids-tabs-indicator-radius) 0 0;
+    }
+  }
+
+  /* Deshabilitada */
+  &[aria-disabled="true"],
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Ícono dentro de la pestaña */
+  .ids-tabs__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--ids-tabs-icon-size);
+    block-size: var(--ids-tabs-icon-size);
+    width: var(--ids-tabs-icon-size);
+    height: var(--ids-tabs-icon-size);
+    color: inherit;
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: var(--icon-stroke-width);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Badge */
+  .ids-tabs__badge {
+    flex-shrink: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. PANEL DE CONTENIDO (.ids-tabs__panel)
+   role="tabpanel" obligatorio. aria-labelledby="<id-del-tab>" obligatorio.
+   Oculto por defecto; visible cuando la pestaña asociada está seleccionada.
+   -------------------------------------------------------------------------- */
+.ids-tabs__panel {
+  display: none;
+  box-sizing: border-box;
+  padding-block: var(--ids-tabs-panel-padding-y);
+  padding-inline: var(--ids-tabs-panel-padding-x);
+  background-color: var(--ids-tabs-panel-bg);
+  color: var(--ids-tabs-panel-color);
+  font-size: var(--ids-tabs-panel-font-size);
+  line-height: var(--ids-tabs-panel-line-height);
+
+  /* Enfoque accesible */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Panel visible (controlado por JS añadiendo .is-active) */
+  &.is-active {
+    display: block;
+  }
+
+  /* Párrafos internos — Trauma-Informed */
+  > p {
+    margin-block-start: 0;
+    margin-block-end: var(--spacing-sm);
+
+    &:last-child {
+      margin-block-end: 0;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. VARIANTE: TABS PILLS (.ids-tabs--pills)
+   Pestañas con fondo píldora en vez de línea inferior.
+   -------------------------------------------------------------------------- */
+.ids-tabs--pills {
+  .ids-tabs__list {
+    border-block-end: none;
+    gap: var(--spacing-xs);
+    background-color: var(--color-surface-muted);
+    padding: var(--spacing-xs);
+    border-radius: var(--ids-tabs-radius);
+  }
+
+  .ids-tabs__tab {
+    border-radius: var(--radius-sm);
+    margin-block-end: 0;
+
+    &.is-selected,
+    &[aria-selected="true"] {
+      background-color: var(--color-surface-card);
+      color: var(--ids-tabs-tab-selected-color);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   17. VARIANTE: TABS ENCLOSED (.ids-tabs--enclosed)
+   Pestañas con borde y fondo que se "conectan" al panel.
+   -------------------------------------------------------------------------- */
+.ids-tabs--enclosed {
+  .ids-tabs__list {
+    gap: calc(-1 * var(--ids-tabs-border-width));
+  }
+
+  .ids-tabs__tab {
+    border: var(--ids-tabs-border-width) solid transparent;
+    border-block-end: none;
+    border-radius: var(--ids-tabs-radius) var(--ids-tabs-radius) 0 0;
+    margin-block-end: calc(-1 * var(--ids-tabs-border-width));
+
+    &.is-selected,
+    &[aria-selected="true"] {
+      border-color: var(--ids-tabs-border-color);
+      background-color: var(--color-surface-card);
+
+      /* "Corta" la línea inferior del contenedor */
+      border-block-end: var(--ids-tabs-border-width) solid var(--color-surface-card);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   18. VARIANTE: TABS FULL-WIDTH (.ids-tabs--justify)
+   Pestañas expandidas a ancho uniforme.
+   -------------------------------------------------------------------------- */
+.ids-tabs--justify {
+  .ids-tabs__tab {
+    flex: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   19. VARIANTE: TABS VERTICAL (.ids-tabs--vertical)
+   Pestañas apiladas a la izquierda/derecha con panel adyacente.
+   -------------------------------------------------------------------------- */
+.ids-tabs--vertical {
+  flex-direction: row;
+
+  .ids-tabs__list {
+    flex-direction: column;
+    align-items: stretch;
+    border-block-end: none;
+    border-inline-end: var(--ids-tabs-border-width) solid var(--ids-tabs-border-color);
+    overflow-x: visible;
+    overflow-y: auto;
+    flex-shrink: 0;
+    min-inline-size: 10rem;
+  }
+
+  .ids-tabs__tab {
+    justify-content: flex-start;
+    margin-block-end: 0;
+    margin-inline-end: calc(-1 * var(--ids-tabs-border-width));
+
+    /* Indicador lateral en vez de inferior */
+    &.is-selected::after,
+    &[aria-selected="true"]::after {
+      inset-inline: auto;
+      inset-inline-end: 0;
+      inset-block: 0;
+      inline-size: var(--ids-tabs-indicator-height);
+      block-size: auto;
+      border-radius: var(--ids-tabs-indicator-radius) 0 0 var(--ids-tabs-indicator-radius);
+    }
+  }
+
+  .ids-tabs__panel {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}
+
+/* Vertical con pestañas al lado derecho */
+.ids-tabs--vertical-end {
+  flex-direction: row-reverse;
+
+  .ids-tabs__list {
+    flex-direction: column;
+    align-items: stretch;
+    border-block-end: none;
+    border-inline-start: var(--ids-tabs-border-width) solid var(--ids-tabs-border-color);
+    border-inline-end: none;
+    overflow-x: visible;
+    overflow-y: auto;
+    flex-shrink: 0;
+    min-inline-size: 10rem;
+  }
+
+  .ids-tabs__tab {
+    justify-content: flex-start;
+    margin-block-end: 0;
+    margin-inline-start: calc(-1 * var(--ids-tabs-border-width));
+
+    &.is-selected::after,
+    &[aria-selected="true"]::after {
+      inset-inline: auto;
+      inset-inline-start: 0;
+      inset-block: 0;
+      inline-size: var(--ids-tabs-indicator-height);
+      block-size: auto;
+      border-radius: 0 var(--ids-tabs-indicator-radius) var(--ids-tabs-indicator-radius) 0;
+    }
+  }
+
+  .ids-tabs__panel {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   20. TAMAÑOS DE TABS
+   -------------------------------------------------------------------------- */
+
+/* Compacto */
+.ids-tabs--sm {
+  .ids-tabs__tab {
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+    font-size: var(--font-size-caption);
+  }
+}
+
+/* Grande */
+.ids-tabs--lg {
+  .ids-tabs__tab {
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-lg);
+    font-size: var(--font-size-body-large);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   21. ALINEACIONES DE LA LISTA DE TABS
+   -------------------------------------------------------------------------- */
+.ids-tabs--center {
+  .ids-tabs__list {
+    justify-content: center;
+  }
+}
+
+.ids-tabs--end {
+  .ids-tabs__list {
+    justify-content: flex-end;
+  }
+}
+
+/* ╔════════════════════════════════════════════════════════════════════════════╗
+   ║  PARTE C — RESPONSIVIDAD, TEMAS Y ACCESIBILIDAD                         ║
+   ╚════════════════════════════════════════════════════════════════════════════╝ */
+
+/* --------------------------------------------------------------------------
+   22. RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   22. RESPONSIVIDAD NATIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+
+/* Estilos compactos móviles por defecto */
+.ids-navbar {
+  gap: var(--spacing-xs);
+}
+
+.ids-navbar__link {
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-sm);
+  font-size: var(--font-size-caption);
+}
+
+.ids-tabs__tab {
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-sm);
+  font-size: var(--font-size-caption);
+}
+
+/* Tabs vertical colapsa a horizontal en móvil por defecto */
+.ids-tabs--vertical,
+.ids-tabs--vertical-end {
+  flex-direction: column;
+
+  .ids-tabs__list {
+    flex-direction: row;
+    border-inline-end: none;
+    border-inline-start: none;
+    border-block-end: var(--ids-tabs-border-width) solid var(--ids-tabs-border-color);
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-inline-size: unset;
+  }
+
+  .ids-tabs__tab {
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    margin-block-end: calc(-1 * var(--ids-tabs-border-width));
+
+    &.is-selected::after,
+    &[aria-selected="true"]::after {
+      inset-inline: 0;
+      inset-block: auto;
+      inset-block-end: 0;
+      inline-size: auto;
+      block-size: var(--ids-tabs-indicator-height);
+      border-radius: var(--ids-tabs-indicator-radius) var(--ids-tabs-indicator-radius) 0 0;
+    }
+  }
+}
+
+/* Despliegue en pantallas medianas y de escritorio */
+@media (min-width: 48rem) {
+  .ids-navbar {
+    gap: var(--ids-nav-gap);
+  }
+
+  .ids-navbar__link {
+    padding-block: var(--ids-nav-link-padding-y);
+    padding-inline: var(--ids-nav-link-padding-x);
+    font-size: var(--ids-nav-link-font-size);
+  }
+
+  .ids-tabs__tab {
+    padding-block: var(--ids-tabs-tab-padding-y);
+    padding-inline: var(--ids-tabs-tab-padding-x);
+    font-size: var(--ids-tabs-tab-font-size);
+  }
+
+  .ids-tabs--vertical {
+    flex-direction: row;
+
+    .ids-tabs__list {
+      flex-direction: column;
+      align-items: stretch;
+      border-block-end: none;
+      border-inline-end: var(--ids-tabs-border-width) solid var(--ids-tabs-border-color);
+      border-inline-start: none;
+      overflow-x: visible;
+      overflow-y: auto;
+      flex-shrink: 0;
+      min-inline-size: 10rem;
+    }
+
+    .ids-tabs__tab {
+      justify-content: flex-start;
+      margin-block-end: 0;
+      margin-inline-end: calc(-1 * var(--ids-tabs-border-width));
+      margin-inline-start: 0;
+
+      &.is-selected::after,
+      &[aria-selected="true"]::after {
+        inset-inline: auto;
+        inset-inline-end: 0;
+        inset-block: 0;
+        inline-size: var(--ids-tabs-indicator-height);
+        block-size: auto;
+        border-radius: var(--ids-tabs-indicator-radius) 0 0 var(--ids-tabs-indicator-radius);
+      }
+    }
+  }
+
+  .ids-tabs--vertical-end {
+    flex-direction: row-reverse;
+
+    .ids-tabs__list {
+      flex-direction: column;
+      align-items: stretch;
+      border-block-end: none;
+      border-inline-start: var(--ids-tabs-border-width) solid var(--ids-tabs-border-color);
+      border-inline-end: none;
+      overflow-x: visible;
+      overflow-y: auto;
+      flex-shrink: 0;
+      min-inline-size: 10rem;
+    }
+
+    .ids-tabs__tab {
+      justify-content: flex-start;
+      margin-block-end: 0;
+      margin-inline-start: calc(-1 * var(--ids-tabs-border-width));
+      margin-inline-end: 0;
+
+      &.is-selected::after,
+      &[aria-selected="true"]::after {
+        inset-inline: auto;
+        inset-inline-start: 0;
+        inset-block: 0;
+        inline-size: var(--ids-tabs-indicator-height);
+        block-size: auto;
+        border-radius: 0 var(--ids-tabs-indicator-radius) var(--ids-tabs-indicator-radius) 0;
+      }
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   23. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   -------------------------------------------------------------------------- */
+
+/* 23.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-navbar__link,
+  .ids-tabs__tab {
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-border-interactive);
+    }
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+  }
+
+  .ids-navbar__link.is-active,
+  .ids-navbar__link[aria-current="page"],
+  .ids-navbar__link[aria-current="true"] {
+    color: var(--color-border-interactive);
+
+    &::after {
+      background-color: var(--color-border-interactive);
+    }
+  }
+
+  .ids-tabs__tab.is-selected,
+  .ids-tabs__tab[aria-selected="true"] {
+    color: var(--color-border-interactive);
+
+    &::after {
+      background-color: var(--color-border-interactive);
+    }
+  }
+
+  .ids-tabs__list {
+    border-color: var(--color-border-subtle);
+  }
+
+  /* Pills en alto contraste: borde fuerte */
+  .ids-navbar--pills .ids-navbar__link.is-active,
+  .ids-navbar--pills .ids-navbar__link[aria-current="page"] {
+    border: 0.125rem solid var(--color-border-interactive);
+    background-color: var(--color-surface-hover);
+    color: var(--color-border-interactive);
+  }
+
+  .ids-tabs--pills .ids-tabs__tab.is-selected,
+  .ids-tabs--pills .ids-tabs__tab[aria-selected="true"] {
+    border: 0.125rem solid var(--color-border-interactive);
+    background-color: var(--color-surface-background);
+    color: var(--color-border-interactive);
+  }
+}
+
+/* 23.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-navbar__link,
+  .ids-tabs__tab {
+    transition: none;
+  }
+}
+
+/* 23.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-navbar__link.is-active,
+  .ids-navbar__link[aria-current="page"] {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+
+    &::after {
+      background-color: var(--color-border-interactive);
+    }
+  }
+
+  .ids-tabs__tab.is-selected,
+  .ids-tabs__tab[aria-selected="true"] {
+    color: var(--color-text-primary);
+
+    &::after {
+      background-color: var(--color-border-interactive);
+    }
+  }
+
+  .ids-navbar--pills .ids-navbar__link.is-active,
+  .ids-navbar--pills .ids-navbar__link[aria-current="page"] {
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-primary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   24. MODO FORZADO DE COLORES DEL SISTEMA (Windows High Contrast)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-navbar__link,
+  .ids-tabs__tab {
+    color: CanvasText;
+    background-color: Canvas;
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+  }
+
+  .ids-navbar__link.is-active,
+  .ids-navbar__link[aria-current="page"],
+  .ids-navbar__link[aria-current="true"] {
+    color: HighlightText;
+    background-color: Highlight;
+
+    &::after {
+      background-color: HighlightText;
+    }
+  }
+
+  .ids-tabs__tab.is-selected,
+  .ids-tabs__tab[aria-selected="true"] {
+    color: HighlightText;
+    background-color: Highlight;
+
+    &::after {
+      background-color: HighlightText;
+    }
+  }
+
+  .ids-tabs__list {
+    border-color: CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   25. MOVIMIENTO REDUCIDO — Bloque consolidado final
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-navbar__link,
+  .ids-tabs__tab {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .ids-tabs__list {
+    scroll-behavior: auto !important;
+  }
+}

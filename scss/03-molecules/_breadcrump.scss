@@ -1,0 +1,641 @@
+/* ==========================================================================
+   03-molecules/_breadcrump.scss
+   Identity Design System (IDS) - Molécula de Migas de Pan (Breadcrumbs)
+   Navegación jerárquica con divisor personalizable mediante atributo style=""
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE BREADCRUMBS
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, tipografía o geometría se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Divisor y Separador Jerárquico (Configurable vía atributo style="") */
+  --ids-breadcrumb-separator: '/';
+  --ids-breadcrumb-divider: var(--ids-breadcrumb-separator);
+  --ids-breadcrump-separator: var(--ids-breadcrumb-separator);
+  --ids-breadcrump-divider: var(--ids-breadcrumb-separator);
+  --ids-separator: var(--ids-breadcrumb-separator);
+
+  --ids-breadcrumb-separator-color: var(--color-text-secondary);
+  --ids-breadcrumb-separator-gap: var(--spacing-xs);
+  --ids-breadcrumb-separator-size: var(--font-size-caption);
+  --ids-breadcrumb-separator-font-weight: var(--font-weight-regular);
+  --ids-breadcrumb-separator-opacity: 0.75;
+
+  /* Espaciado de Elementos y Estructura */
+  --ids-breadcrumb-gap: var(--spacing-xs);
+  --ids-breadcrumb-padding-y: var(--spacing-xs);
+  --ids-breadcrumb-padding-x: var(--spacing-sm);
+  --ids-breadcrumb-item-padding-y: var(--spacing-xs);
+  --ids-breadcrumb-item-padding-x: var(--spacing-xs);
+  --ids-breadcrumb-radius: var(--radius-sm);
+
+  /* Tipografía y Jerarquía Visual */
+  --ids-breadcrumb-font-family: var(--font-family-base);
+  --ids-breadcrumb-font-size: var(--font-size-caption);
+  --ids-breadcrumb-font-size-sm: calc(var(--font-size-caption) * 0.9);
+  --ids-breadcrumb-font-size-lg: var(--font-size-body);
+  --ids-breadcrumb-line-height: var(--line-height-base);
+  --ids-breadcrumb-font-weight: var(--font-weight-medium);
+
+  /* Piel Cromática de Enlaces Ancestros */
+  --ids-breadcrumb-link-color: var(--color-action-primary);
+  --ids-breadcrumb-link-hover-color: var(--color-action-hover);
+  --ids-breadcrumb-link-bg-hover: var(--color-surface-hover);
+  --ids-breadcrumb-link-underline-offset: 0.25rem;
+
+  /* Piel Cromática de la Página Actual (aria-current="page") */
+  --ids-breadcrumb-current-color: var(--color-text-primary);
+  --ids-breadcrumb-current-font-weight: var(--font-weight-semibold);
+  --ids-breadcrumb-current-bg: transparent;
+
+  /* Superficies y Bordes para Variantes en Barra o Tarjeta */
+  --ids-breadcrumb-bar-bg: var(--color-surface-card);
+  --ids-breadcrumb-bar-border: var(--color-border-subtle);
+  --ids-breadcrumb-bar-padding-y: var(--spacing-sm);
+  --ids-breadcrumb-bar-padding-x: var(--spacing-md);
+  --ids-breadcrumb-bar-radius: var(--radius-card);
+
+  /* Íconos Integrados */
+  --ids-breadcrumb-icon-size: var(--font-size-caption);
+  --ids-breadcrumb-icon-gap: var(--spacing-xs);
+  --ids-breadcrumb-icon-color: currentColor;
+
+  /* Botón de Elementos Colapsados (Ellipsis) */
+  --ids-breadcrumb-ellipsis-bg: var(--color-surface-muted);
+  --ids-breadcrumb-ellipsis-color: var(--color-text-secondary);
+  --ids-breadcrumb-ellipsis-hover-bg: var(--color-surface-hover);
+  --ids-breadcrumb-ellipsis-hover-color: var(--color-text-primary);
+  --ids-breadcrumb-ellipsis-radius: var(--radius-sm);
+  --ids-breadcrumb-ellipsis-size: calc(var(--font-size-caption) * 1.75);
+
+  /* Animaciones y Transiciones Suaves */
+  --ids-breadcrumb-transition-speed: var(--transition-speed-fast);
+  --ids-breadcrumb-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR PRINCIPAL (<nav> .ids-breadcrumb / .ids-breadcrump)
+   Esqueleto semántico accesible para orientación espacial y wayfinding.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb,
+.ids-breadcrump {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--ids-breadcrumb-font-family);
+  font-size: var(--ids-breadcrumb-font-size);
+  line-height: var(--ids-breadcrumb-line-height);
+
+  /* Reseteo para lectores de pantalla */
+  &[aria-label] {
+    position: relative;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. LISTA ORDENADA (<ol> .ids-breadcrumb__list)
+   Secuencia de pasos jerárquicos estructurada como lista ordenada para A11y.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__list,
+.ids-breadcrump__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--ids-breadcrumb-gap);
+  row-gap: var(--spacing-xs);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    row-gap: var(--ids-breadcrumb-gap);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ELEMENTO DE PASO (<li> .ids-breadcrumb__item) Y DIVISOR PERSONALIZABLE
+   El divisor se genera automáticamente mediante ::after en cada elemento
+   (excepto el último) y extrae el valor asignado en style="" mediante CSS vars.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__item,
+.ids-breadcrump__item {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+
+  /* 
+     DIVISOR PERSONALIZABLE DESDE EL ATRIBUTO style="" DEL ELEMENTO HTML:
+     Ejemplos en HTML:
+       style="--ids-breadcrumb-separator: '>';"
+       style="--ids-breadcrumb-separator: '→';"
+       style="--ids-breadcrumb-separator: '•';"
+       style="--ids-breadcrumb-separator: '|';"
+       style="--ids-breadcrumb-separator: '›';"
+       style="--ids-breadcrumb-separator: '\\';"
+       style="--ids-breadcrumb-separator: '~';"
+       style="--ids-breadcrumb-separator: '—';"
+  */
+  &:not(:last-child)::after {
+    content: var(
+      --ids-breadcrumb-separator,
+      var(
+        --ids-breadcrumb-divider,
+        var(
+          --ids-breadcrump-separator,
+          var(--ids-breadcrump-divider, var(--ids-separator, '/'))
+        )
+      )
+    );
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline-start: var(--ids-breadcrumb-separator-gap);
+    margin-inline-end: var(--ids-breadcrumb-separator-gap);
+    color: var(--ids-breadcrumb-separator-color);
+    font-size: var(--ids-breadcrumb-separator-size);
+    font-weight: var(--ids-breadcrumb-separator-font-weight);
+    opacity: var(--ids-breadcrumb-separator-opacity);
+    user-select: none;
+    pointer-events: none;
+    speak: never;
+    aria-hidden: true;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. ENLACES ANCESTROS (<a> .ids-breadcrumb__link)
+   Interacción accesible con foco visible WCAG AAA y soporte táctil generoso.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__link,
+.ids-breadcrump__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: calc(var(--target-size-min) * 0.75);
+  gap: var(--ids-breadcrumb-icon-gap);
+  padding-block: var(--ids-breadcrumb-item-padding-y);
+  padding-inline: var(--ids-breadcrumb-item-padding-x);
+  border-radius: var(--ids-breadcrumb-radius);
+  color: var(--ids-breadcrumb-link-color);
+  font-weight: var(--ids-breadcrumb-font-weight);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: var(--ids-breadcrumb-link-underline-offset);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    min-height: auto;
+  }
+  transition: color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease),
+              background-color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease),
+              text-decoration-color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease);
+
+  &:hover {
+    color: var(--ids-breadcrumb-link-hover-color);
+    background-color: var(--ids-breadcrumb-link-bg-hover);
+    text-decoration-color: currentColor;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  /* Visibilidad de Foco Estricta WCAG AAA (Mínimo 2px, 3:1) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--ids-breadcrumb-radius);
+    text-decoration: none;
+  }
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. PÁGINA O NODO ACTUAL (<span> .ids-breadcrumb__current o [aria-current="page"])
+   Elemento final no cliqueable con alto contraste y peso semántico claro.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__current,
+.ids-breadcrump__current,
+.ids-breadcrumb__link[aria-current="page"],
+.ids-breadcrump__link[aria-current="page"],
+.ids-breadcrumb__item[aria-current="page"] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ids-breadcrumb-icon-gap);
+  padding-block: var(--ids-breadcrumb-item-padding-y);
+  padding-inline: var(--ids-breadcrumb-item-padding-x);
+  color: var(--ids-breadcrumb-current-color);
+  font-weight: var(--ids-breadcrumb-current-font-weight);
+  text-decoration: none;
+  pointer-events: none;
+  cursor: default;
+  box-sizing: border-box;
+
+  &:hover {
+    background-color: transparent;
+    text-decoration: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. SEPARADOR EXPLÍCITO EN DOM (.ids-breadcrumb__separator)
+   Elemento opcional en el HTML para soportar íconos SVG como divisores.
+   Si está vacío, renderiza el contenido de la variable CSS de forma reactiva.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__separator,
+.ids-breadcrump__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: var(--ids-breadcrumb-separator-gap);
+  margin-inline-end: var(--ids-breadcrumb-separator-gap);
+  color: var(--ids-breadcrumb-separator-color);
+  font-size: var(--ids-breadcrumb-separator-size);
+  font-weight: var(--ids-breadcrumb-separator-font-weight);
+  opacity: var(--ids-breadcrumb-separator-opacity);
+  user-select: none;
+  pointer-events: none;
+
+  &:empty::before {
+    content: var(
+      --ids-breadcrumb-separator,
+      var(
+        --ids-breadcrumb-divider,
+        var(
+          --ids-breadcrump-separator,
+          var(--ids-breadcrump-divider, var(--ids-separator, '/'))
+        )
+      )
+    );
+  }
+
+  /* Si contiene un ícono SVG */
+  .ids-icon {
+    width: var(--ids-breadcrumb-separator-size);
+    height: var(--ids-breadcrumb-separator-size);
+  }
+}
+
+/* Ocultar ::after automático si el item ya contiene un separador explícito en el DOM */
+.ids-breadcrumb__item:has(.ids-breadcrumb__separator)::after,
+.ids-breadcrump__item:has(.ids-breadcrump__separator)::after {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   8. ÍCONOS INTEGRADOS EN PASOS (.ids-breadcrumb__icon)
+   Integración armónica con los átomos de _icons.scss.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__icon,
+.ids-breadcrump__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--ids-breadcrumb-icon-size);
+  height: var(--ids-breadcrumb-icon-size);
+  color: var(--ids-breadcrumb-icon-color);
+  vertical-align: middle;
+
+  .ids-icon {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. CONTROL DE PASOS COLAPSADOS (.ids-breadcrumb__ellipsis)
+   Botón accesible para expandir u ocultar ancestros intermedios en rutas largas.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb__ellipsis,
+.ids-breadcrump__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ids-breadcrumb-ellipsis-size);
+  height: var(--ids-breadcrumb-ellipsis-size);
+  padding: 0;
+  border: var(--focus-ring-width) solid transparent;
+  border-radius: var(--ids-breadcrumb-ellipsis-radius);
+  background-color: var(--ids-breadcrumb-ellipsis-bg);
+  color: var(--ids-breadcrumb-ellipsis-color);
+  font-family: inherit;
+  font-size: var(--ids-breadcrumb-font-size);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease),
+              color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease),
+              border-color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease);
+
+  &:hover {
+    background-color: var(--ids-breadcrumb-ellipsis-hover-bg);
+    color: var(--ids-breadcrumb-ellipsis-hover-color);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. VARIANTES DE ESCALA Y TAMAÑO
+   -------------------------------------------------------------------------- */
+/* Tamaño Pequeño / Compacto */
+.ids-breadcrumb--sm,
+.ids-breadcrump--sm {
+  --ids-breadcrumb-font-size: var(--ids-breadcrumb-font-size-sm);
+  --ids-breadcrumb-separator-size: var(--ids-breadcrumb-font-size-sm);
+  --ids-breadcrumb-icon-size: var(--ids-breadcrumb-font-size-sm);
+  --ids-breadcrumb-gap: calc(var(--spacing-xs) * 0.75);
+}
+
+/* Tamaño Grande / Destacado */
+.ids-breadcrumb--lg,
+.ids-breadcrump--lg {
+  --ids-breadcrumb-font-size: var(--ids-breadcrumb-font-size-lg);
+  --ids-breadcrumb-separator-size: var(--ids-breadcrumb-font-size-lg);
+  --ids-breadcrumb-icon-size: var(--ids-breadcrumb-font-size-lg);
+  --ids-breadcrumb-gap: var(--spacing-sm);
+  --ids-breadcrumb-separator-gap: var(--spacing-sm);
+}
+
+/* --------------------------------------------------------------------------
+   11. VARIANTES DE SUPERFICIE Y PRESENTACIÓN
+   -------------------------------------------------------------------------- */
+/* Variante en Barra Encapsulada (.ids-breadcrumb--bar) */
+.ids-breadcrumb--bar,
+.ids-breadcrump--bar {
+  padding-block: var(--ids-breadcrumb-bar-padding-y);
+  padding-inline: var(--ids-breadcrumb-bar-padding-x);
+  background-color: var(--ids-breadcrumb-bar-bg);
+  border: var(--focus-ring-width) solid var(--ids-breadcrumb-bar-border);
+  border-radius: var(--ids-breadcrumb-bar-radius);
+}
+
+/* Variante Píldora (.ids-breadcrumb--pill) */
+.ids-breadcrumb--pill,
+.ids-breadcrump--pill {
+  --ids-breadcrumb-bar-radius: var(--radius-full);
+  --ids-breadcrumb-radius: var(--radius-full);
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-md);
+  background-color: var(--color-surface-muted);
+  border: var(--focus-ring-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+}
+
+/* --------------------------------------------------------------------------
+   12. VARIANTES DE DIVISOR PREESTABLECIDAS (PRESETS DE CONVENIENCIA)
+   Nota: Toda propiedad style="--ids-breadcrumb-separator: '...';" en HTML
+   toma precedencia inmediata sobre estas clases.
+   -------------------------------------------------------------------------- */
+.ids-breadcrumb--chevron,
+.ids-breadcrump--chevron {
+  --ids-breadcrumb-separator: '›';
+}
+
+.ids-breadcrumb--arrow,
+.ids-breadcrump--arrow {
+  --ids-breadcrumb-separator: '→';
+}
+
+.ids-breadcrumb--bullet,
+.ids-breadcrump--bullet {
+  --ids-breadcrumb-separator: '•';
+}
+
+.ids-breadcrumb--pipe,
+.ids-breadcrump--pipe {
+  --ids-breadcrumb-separator: '|';
+}
+
+.ids-breadcrumb--backslash,
+.ids-breadcrump--backslash {
+  --ids-breadcrumb-separator: '\\';
+}
+
+.ids-breadcrumb--dash,
+.ids-breadcrump--dash {
+  --ids-breadcrumb-separator: '—';
+}
+
+/* --------------------------------------------------------------------------
+   13. FILOSOFÍA TRAUMA-INFORMED Y SEGURIDAD (T4HR)
+   Rutas de escape seguro y camuflaje de nodos sensibles.
+   -------------------------------------------------------------------------- */
+/* Botón / Enlace de Retorno Seguro Inmediato (.ids-breadcrumb__back) */
+.ids-breadcrumb__back,
+.ids-breadcrump__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-inline-end: var(--spacing-sm);
+  padding-block: var(--ids-breadcrumb-item-padding-y);
+  padding-inline: var(--spacing-sm);
+  border: var(--focus-ring-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: background-color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease),
+              border-color var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease);
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-border-interactive);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* Ocultamiento o Enmascaramiento de Elementos Sensibles (.ids-breadcrumb__item--sensitive) */
+.ids-breadcrumb__item--sensitive,
+.ids-breadcrump__item--sensitive {
+  .ids-breadcrumb__link,
+  .ids-breadcrumb__current {
+    letter-spacing: 0.125rem;
+    filter: blur(0.2rem);
+    user-select: none;
+    transition: filter var(--ids-breadcrumb-transition-speed) var(--ids-breadcrumb-transition-ease);
+
+    &:hover,
+    &:focus-visible {
+      filter: none;
+      letter-spacing: normal;
+      user-select: auto;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   14. DISEÑO RESPONSIVO (RESPONSIVE DESIGN)
+   Adaptación fluida a dispositivos móviles y pantallas estrechas.
+   -------------------------------------------------------------------------- */
+/* Desplazamiento Horizontal sin Fricción (.ids-breadcrumb--scroll) */
+.ids-breadcrumb--scroll,
+.ids-breadcrump--scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .ids-breadcrumb__list,
+  .ids-breadcrump__list {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Adaptación responsiva móvil integrada directamente en .ids-breadcrumb__list y .ids-breadcrumb__link */
+
+
+/* --------------------------------------------------------------------------
+   15. TEMATIZACIÓN DINÁMICA (4 EJES IDS)
+   -------------------------------------------------------------------------- */
+
+/* 1. TEMA DE ALTO CONTRASTE (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-breadcrumb,
+  .ids-breadcrump {
+    --ids-breadcrumb-separator-color: var(--color-border-subtle);
+    --ids-breadcrumb-separator-opacity: 1;
+    --ids-breadcrumb-link-color: var(--color-action-primary);
+    --ids-breadcrumb-link-hover-color: var(--color-border-interactive);
+    --ids-breadcrumb-current-color: var(--color-text-primary);
+    --ids-breadcrumb-bar-bg: var(--color-surface-background);
+    --ids-breadcrumb-bar-border: var(--color-border-subtle);
+    --ids-breadcrumb-ellipsis-bg: var(--color-surface-background);
+    --ids-breadcrumb-ellipsis-color: var(--color-text-primary);
+
+    .ids-breadcrumb__link,
+    .ids-breadcrump__link {
+      text-decoration: underline;
+      text-decoration-color: currentColor;
+
+      &:hover {
+        background-color: var(--color-surface-hover);
+        text-decoration: underline;
+      }
+    }
+
+    .ids-breadcrumb__current,
+    .ids-breadcrump__current {
+      font-weight: var(--font-weight-bold);
+      border-block-end: var(--focus-ring-width) solid var(--color-border-interactive);
+    }
+
+    .ids-breadcrumb__ellipsis,
+    .ids-breadcrump__ellipsis {
+      border: var(--focus-ring-width) solid var(--color-border-subtle);
+    }
+  }
+}
+
+/* Soporte Nativo para Alto Contraste de Sistema Operativo */
+@media (forced-colors: active) {
+  .ids-breadcrumb,
+  .ids-breadcrump {
+    .ids-breadcrumb__link,
+    .ids-breadcrump__link {
+      color: LinkText;
+      text-decoration: underline;
+
+      &:hover {
+        color: Highlight;
+      }
+
+      &:focus-visible {
+        outline: 2px solid Highlight;
+      }
+    }
+
+    .ids-breadcrumb__current,
+    .ids-breadcrump__current {
+      color: CanvasText;
+      font-weight: bold;
+    }
+
+    .ids-breadcrumb__item::after,
+    .ids-breadcrump__item::after,
+    .ids-breadcrumb__separator,
+    .ids-breadcrump__separator {
+      color: CanvasText;
+      opacity: 1;
+    }
+
+    .ids-breadcrumb__ellipsis,
+    .ids-breadcrump__ellipsis {
+      border: 1px solid ButtonBorder;
+      color: ButtonText;
+    }
+  }
+}
+
+/* 2. TEMA DE BAJA ESTIMULACIÓN (NEURODIVERGENCIA / CERO RESPLANDOR) */
+[data-theme="low-stimulation"] {
+  .ids-breadcrumb,
+  .ids-breadcrump {
+    --ids-breadcrumb-separator-color: var(--color-text-secondary);
+    --ids-breadcrumb-separator-opacity: 0.6;
+    --ids-breadcrumb-link-color: var(--color-action-primary);
+    --ids-breadcrumb-link-hover-color: var(--color-text-primary);
+    --ids-breadcrumb-current-color: var(--color-text-primary);
+    --ids-breadcrumb-bar-bg: var(--color-surface-card);
+    --ids-breadcrumb-bar-border: var(--color-border-subtle);
+  }
+}
+
+/* 3. TEMA DISCRETO / STEALTH (ANTI-OUTING / TECNOLOGÍA CONSENTIDA) */
+[data-theme="discrete"] {
+  .ids-breadcrumb,
+  .ids-breadcrump {
+    --ids-breadcrumb-separator-color: var(--color-text-secondary);
+    --ids-breadcrumb-separator-opacity: 0.5;
+    --ids-breadcrumb-link-color: var(--color-action-primary);
+    --ids-breadcrumb-link-hover-color: var(--color-action-hover);
+    --ids-breadcrumb-current-color: var(--color-text-primary);
+    --ids-breadcrumb-bar-bg: var(--color-surface-card);
+    --ids-breadcrumb-bar-border: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. CONTROL DE MOVIMIENTO (PREFERS-REDUCED-MOTION)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-breadcrumb,
+  .ids-breadcrump,
+  .ids-breadcrumb__link,
+  .ids-breadcrump__link,
+  .ids-breadcrumb__ellipsis,
+  .ids-breadcrump__ellipsis,
+  .ids-breadcrumb__back,
+  .ids-breadcrump__back {
+    transition: none !important;
+  }
+}

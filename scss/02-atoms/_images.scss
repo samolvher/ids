@@ -1,0 +1,287 @@
+/* ==========================================================================
+   02-atoms/_images.scss
+   Identity Design System (IDS) - Átomos de Imágenes y Miniaturas (Images & Thumbnails)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE IMÁGENES
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, borde o geometría se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Miniatura Thumbnail 200x200 (12.5rem = 200px exactos) */
+  --ids-img-thumbnail-size: var(--img-thumbnail-size, 12.5rem);
+  --ids-img-thumbnail-padding: var(--img-thumbnail-padding, var(--spacing-xs));
+  --ids-img-thumbnail-bg: var(--img-thumbnail-bg, var(--color-surface-card));
+  --ids-img-thumbnail-border-color: var(--img-thumbnail-border-color, var(--color-border-subtle));
+  --ids-img-thumbnail-border-width: var(--img-thumbnail-border-width, var(--focus-ring-width));
+  --ids-img-thumbnail-radius: var(--img-thumbnail-radius, var(--radius-sm));
+
+  /* Curvaturas y Formas Geométricas */
+  --ids-img-radius-rounded: var(--img-radius-rounded, var(--radius-base));
+  --ids-img-radius-circle: var(--img-radius-circle, var(--radius-full));
+
+  /* Contenedores de Figuras y Leyendas */
+  --ids-img-figure-margin-bottom: var(--img-figure-margin-bottom, var(--spacing-md));
+  --ids-img-caption-color: var(--img-caption-color, var(--color-text-secondary));
+  --ids-img-caption-font-size: var(--img-caption-font-size, var(--font-size-caption));
+  --ids-img-caption-margin-top: var(--img-caption-margin-top, var(--spacing-xs));
+
+  /* Trauma-Informed: Desenfoque de Protección para Contenido Sensible */
+  --ids-img-sensitive-blur: var(--img-sensitive-blur, 1.25rem);
+  --ids-img-sensitive-overlay-bg: var(--img-sensitive-overlay-bg);
+  --ids-img-sensitive-overlay-color: var(--img-sensitive-overlay-color);
+}
+
+/* --------------------------------------------------------------------------
+   2. IMAGEN FLUIDA Y RESPONSIVE (.ids-img-fluid / .ids-img--fluid)
+   Garantiza que la imagen se adapte al ancho del contenedor sin desbordarse.
+   -------------------------------------------------------------------------- */
+.ids-img-fluid,
+.ids-img--fluid {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  block-size: auto;
+  height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   3. MINIATURAS 200x200 (.ids-img-thumbnail / .ids-img--thumbnail)
+   Dimensión controlada de 200x200 (12.5rem) con recorte inteligente y borde.
+   -------------------------------------------------------------------------- */
+.ids-img-thumbnail,
+.ids-img--thumbnail,
+.ids-thumbnail {
+  display: inline-block;
+  vertical-align: middle;
+  inline-size: var(--ids-img-thumbnail-size);
+  block-size: var(--ids-img-thumbnail-size);
+  width: var(--ids-img-thumbnail-size);
+  height: var(--ids-img-thumbnail-size);
+  max-inline-size: 100%;
+  padding: var(--ids-img-thumbnail-padding);
+  background-color: var(--ids-img-thumbnail-bg);
+  border: var(--ids-img-thumbnail-border-width) solid var(--ids-img-thumbnail-border-color);
+  border-radius: var(--ids-img-thumbnail-radius);
+  object-fit: cover;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   4. FORMAS GEOMÉTRICAS Y RELACIONES DE ASPECTO (Shapes & Aspect Ratios)
+   -------------------------------------------------------------------------- */
+/* Bordes redondeados sutiles */
+.ids-img--rounded {
+  border-radius: var(--ids-img-radius-rounded);
+}
+
+/* Forma circular perfecta (Ideal para avatares o retratos de testimonios) */
+.ids-img--circle {
+  border-radius: var(--ids-img-radius-circle);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* Forma cuadrada forzada */
+.ids-img--square {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* Relación panorámica 16:9 estándar */
+.ids-img--16-9 {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  inline-size: 100%;
+}
+
+/* Relación documental 4:3 */
+.ids-img--4-3 {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  inline-size: 100%;
+}
+
+/* Modos de ajuste de objeto (Object-fit) */
+.ids-img--cover {
+  object-fit: cover;
+}
+
+.ids-img--contain {
+  object-fit: contain;
+}
+
+/* --------------------------------------------------------------------------
+   5. ESTRUCTURA DE FIGURA Y LEYENDA (<figure> y <figcaption>)
+   -------------------------------------------------------------------------- */
+.ids-figure {
+  display: inline-block;
+  margin: 0 0 var(--ids-img-figure-margin-bottom) 0;
+  max-inline-size: 100%;
+
+  &--center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  &--full {
+    display: block;
+    inline-size: 100%;
+  }
+}
+
+.ids-figcaption,
+.ids-figure__caption {
+  font-family: var(--font-family-base);
+  font-size: var(--ids-img-caption-font-size);
+  color: var(--ids-img-caption-color);
+  line-height: var(--line-height-base);
+  margin-block-start: var(--ids-img-caption-margin-top);
+  text-align: start;
+}
+
+/* --------------------------------------------------------------------------
+   6. TRAUMA-INFORMED DESIGN: CONTENIDO SENSIBLE Y TECNOLOGÍA CONSENTIDA
+   Enmascaramiento preventivo reversible con filtro de desenfoque.
+   Permite al usuario decidir conscientemente antes de exponerse a imágenes sensibles.
+   -------------------------------------------------------------------------- */
+.ids-figure--sensitive,
+.ids-img-container--sensitive {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: var(--ids-img-thumbnail-radius);
+
+  .ids-img-sensitive,
+  .ids-img--sensitive {
+    filter: blur(var(--ids-img-sensitive-blur));
+    transition: filter var(--transition-speed-base) var(--transition-ease);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* Capa de advertencia y botón de consentimiento */
+  .ids-figure__consent-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background-color: var(--ids-img-sensitive-overlay-bg);
+    color: var(--ids-img-sensitive-overlay-color);
+    text-align: center;
+    backdrop-filter: blur(0.25rem);
+    -webkit-backdrop-filter: blur(0.25rem);
+    transition: opacity var(--transition-speed-base) var(--transition-ease);
+    z-index: 2;
+  }
+
+  /* Estado Revelado tras consentimiento explícito */
+  &.is-revealed {
+    .ids-img-sensitive,
+    .ids-img--sensitive {
+      filter: none;
+      pointer-events: auto;
+    }
+
+    .ids-figure__consent-overlay {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ids-img-sensitive,
+    .ids-img--sensitive,
+    .ids-figure__consent-overlay {
+      transition: none !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 7.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-img-thumbnail,
+  .ids-img--thumbnail,
+  .ids-thumbnail {
+    --ids-img-thumbnail-bg: var(--color-img-thumbnail-bg);
+    --ids-img-thumbnail-border-color: var(--color-img-thumbnail-border);
+    --ids-img-thumbnail-border-width: var(--focus-ring-width);
+  }
+
+  .ids-figcaption,
+  .ids-figure__caption {
+    color: var(--color-text-primary);
+  }
+
+  .ids-figure--sensitive .ids-figure__consent-overlay {
+    background-color: var(--color-overlay-sensitive);
+    border: var(--focus-ring-width) solid var(--focus-ring-color);
+    color: var(--color-overlay-text);
+  }
+}
+
+/* 7.2 Baja Estimulación (Neurodivergencia y Prevención de Fatiga) */
+[data-theme="low-stimulation"] {
+  .ids-img-thumbnail,
+  .ids-img--thumbnail,
+  .ids-thumbnail {
+    --ids-img-thumbnail-bg: var(--color-img-thumbnail-bg);
+    --ids-img-thumbnail-border-color: var(--color-img-thumbnail-border);
+  }
+
+  .ids-figcaption,
+  .ids-figure__caption {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* 7.3 Modo Discreto / Stealth (Anti-Outing / Consentful Tech) */
+[data-theme="discrete"] {
+  .ids-img-thumbnail,
+  .ids-img--thumbnail,
+  .ids-thumbnail {
+    --ids-img-thumbnail-bg: var(--color-img-thumbnail-bg);
+    --ids-img-thumbnail-border-color: var(--color-img-thumbnail-border);
+  }
+
+  .ids-figcaption,
+  .ids-figure__caption {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. ADAPTACIÓN PARA ACCESIBILIDAD DEL SISTEMA OPERATIVO
+   Modo de Contraste Forzado de Windows (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-img-thumbnail,
+  .ids-img--thumbnail,
+  .ids-thumbnail {
+    border-color: CanvasText;
+  }
+
+  .ids-figcaption,
+  .ids-figure__caption {
+    color: CanvasText;
+  }
+
+  .ids-figure--sensitive .ids-figure__consent-overlay {
+    background-color: Canvas;
+    border: var(--focus-ring-width) solid CanvasText;
+    color: CanvasText;
+  }
+}

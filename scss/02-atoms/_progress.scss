@@ -1,0 +1,451 @@
+/* ==========================================================================
+   02-atoms/_progress.scss
+   Identity Design System (IDS) - Átomos de Barras de Progreso (Progress Bars)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE BARRAS DE PROGRESO
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, tipografía o geometría se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Escala de Alturas (Heights) */
+  --ids-progress-height-xs: var(--progress-height-xs, 0.25rem);
+  --ids-progress-height-sm: var(--progress-height-sm, 0.375rem);
+  --ids-progress-height: var(--progress-height, 0.5rem);
+  --ids-progress-height-lg: var(--progress-height-lg, 0.75rem);
+  --ids-progress-height-xl: var(--progress-height-xl, 1rem);
+
+  /* Curvaturas de Borde (Radii) */
+  --ids-progress-radius: var(--progress-radius, var(--radius-full));
+  --ids-progress-radius-square: var(--progress-radius-square, 0);
+
+  /* Fondos y Superficies - Dependientes de tokens globales */
+  --ids-progress-bg: var(--progress-bg, var(--color-surface-muted));
+  --ids-progress-bar-bg: var(--progress-bar-bg, var(--color-action-primary));
+  --ids-progress-bar-color: var(--progress-bar-color, var(--color-action-primary-text));
+  --ids-progress-border-color: transparent;
+
+  /* Rayado (Stripes) */
+  --ids-progress-stripe-size: var(--progress-stripe-size, 1rem);
+  --ids-progress-stripe-color: var(--progress-stripe-color, var(--color-surface-background));
+
+  /* Estados Semánticos (WCAG AAA) */
+  --ids-progress-success-bg: var(--progress-success-bg, var(--color-status-success));
+  --ids-progress-danger-bg: var(--progress-danger-bg, var(--color-status-danger));
+  --ids-progress-warning-bg: var(--progress-warning-bg, var(--color-status-warning));
+  --ids-progress-info-bg: var(--progress-info-bg, var(--color-status-info));
+
+  /* Tipografía y Textos de Acompañamiento */
+  --ids-progress-label-color: var(--progress-label-color, var(--color-text-primary));
+  --ids-progress-label-font-size: var(--progress-label-font-size, var(--font-size-caption));
+  --ids-progress-value-color: var(--progress-value-color, var(--color-text-secondary));
+  --ids-progress-value-font-size: var(--progress-value-font-size, var(--font-size-caption));
+  --ids-progress-header-gap: var(--spacing-xs);
+  --ids-progress-header-margin-bottom: var(--spacing-xs);
+}
+
+/* --------------------------------------------------------------------------
+   2. KEYFRAMES DE ANIMACIÓN (Respetando prefers-reduced-motion)
+   -------------------------------------------------------------------------- */
+@keyframes ids-progress-stripes {
+  0% {
+    background-position: var(--ids-progress-stripe-size) 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@keyframes ids-progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ÁTOMO CONTENEDOR DE PROGRESO (.ids-progress)
+   Soporta elementos <div role="progressbar"> y la etiqueta nativa <progress>.
+   -------------------------------------------------------------------------- */
+.ids-progress {
+  position: relative;
+  display: flex;
+  inline-size: 100%;
+  block-size: var(--ids-progress-height);
+  overflow: hidden;
+  border-radius: var(--ids-progress-radius);
+  background-color: var(--ids-progress-bg);
+  border: var(--focus-ring-width) solid var(--ids-progress-border-color);
+  contain: paint;
+  vertical-align: middle;
+
+  /* Reseteo para etiqueta nativa HTML5 <progress> */
+  appearance: none;
+  -webkit-appearance: none;
+  border-style: solid;
+
+  &::-webkit-progress-bar {
+    background-color: var(--ids-progress-bg);
+    border-radius: var(--ids-progress-radius);
+  }
+
+  &::-webkit-progress-value {
+    background-color: var(--ids-progress-bar-bg);
+    border-radius: inherit;
+    @media (prefers-reduced-motion: no-preference) {
+      transition: inline-size var(--transition-speed-base) var(--transition-ease);
+    }
+  }
+
+  &::-moz-progress-bar {
+    background-color: var(--ids-progress-bar-bg);
+    border-radius: inherit;
+    @media (prefers-reduced-motion: no-preference) {
+      transition: inline-size var(--transition-speed-base) var(--transition-ease);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     3.1 BARRA INTERNA DE LLENADO (.ids-progress__bar)
+     ------------------------------------------------------------------------ */
+  &__bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    block-size: 100%;
+    background-color: var(--ids-progress-bar-bg);
+    color: var(--ids-progress-bar-color);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--font-family-base);
+    font-size: var(--ids-progress-label-font-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-tight);
+    user-select: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: inline-size var(--transition-speed-base) var(--transition-ease),
+                  background-color var(--transition-speed-fast) var(--transition-ease);
+    }
+
+    /* Etiqueta interna dentro de la barra de progreso */
+    &__label {
+      padding-inline: var(--spacing-xs);
+      font-size: 0.6875rem;
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     3.2 VARIANTES DE ALTURA (HEIGHTS)
+     ------------------------------------------------------------------------ */
+  /* Extra Pequeña (--xs: 4px) - Para micro-indicadores sutiles */
+  &--xs {
+    block-size: var(--ids-progress-height-xs);
+  }
+
+  /* Pequeña (--sm: 6px) - Para encabezados o listas compactas */
+  &--sm {
+    block-size: var(--ids-progress-height-sm);
+  }
+
+  /* Grande (--lg: 12px) - Para barras cómodas en formularios y wizards */
+  &--lg {
+    block-size: var(--ids-progress-height-lg);
+  }
+
+  /* Extra Grande (--xl: 16px) - Permite texto interno legible */
+  &--xl {
+    block-size: var(--ids-progress-height-xl);
+  }
+
+  /* ------------------------------------------------------------------------
+     3.3 VARIANTES DE ANCHO (WIDTHS)
+     ------------------------------------------------------------------------ */
+  &--w-25 {
+    inline-size: 25%;
+  }
+
+  &--w-50 {
+    inline-size: 50%;
+  }
+
+  &--w-75 {
+    inline-size: 75%;
+  }
+
+  &--w-full {
+    inline-size: 100%;
+  }
+
+  /* ------------------------------------------------------------------------
+     3.4 VARIANTES DE GEOMETRÍA (SHAPES)
+     ------------------------------------------------------------------------ */
+  /* Esquinas rectas / Planas */
+  &--square {
+    border-radius: var(--ids-progress-radius-square);
+
+    &::-webkit-progress-bar,
+    &::-webkit-progress-value {
+      border-radius: var(--ids-progress-radius-square);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     3.5 RAYADO DIAGONAL (STRIPED)
+     ------------------------------------------------------------------------ */
+  &--striped &__bar,
+  &__bar--striped {
+    background-image: linear-gradient(
+      45deg,
+      var(--ids-progress-stripe-color) 25%,
+      transparent 25%,
+      transparent 50%,
+      var(--ids-progress-stripe-color) 50%,
+      var(--ids-progress-stripe-color) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: var(--ids-progress-stripe-size) var(--ids-progress-stripe-size);
+  }
+
+  /* Soporte de rayas en <progress> nativo */
+  &--striped::-webkit-progress-value {
+    background-image: linear-gradient(
+      45deg,
+      var(--ids-progress-stripe-color) 25%,
+      transparent 25%,
+      transparent 50%,
+      var(--ids-progress-stripe-color) 50%,
+      var(--ids-progress-stripe-color) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: var(--ids-progress-stripe-size) var(--ids-progress-stripe-size);
+  }
+
+  /* ------------------------------------------------------------------------
+     3.6 RAYADO ANIMADO (ANIMATED STRIPES)
+     Enfoque estricto WCAG AAA: la animación se cancela automáticamente si
+     el usuario tiene habilitado prefers-reduced-motion.
+     ------------------------------------------------------------------------ */
+  &--animated &__bar,
+  &__bar--animated {
+    background-image: linear-gradient(
+      45deg,
+      var(--ids-progress-stripe-color) 25%,
+      transparent 25%,
+      transparent 50%,
+      var(--ids-progress-stripe-color) 50%,
+      var(--ids-progress-stripe-color) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: var(--ids-progress-stripe-size) var(--ids-progress-stripe-size);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: ids-progress-stripes 1s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     3.7 ESTADO INDETERMINADO (CONTINUOUS LOADING)
+     ------------------------------------------------------------------------ */
+  &--indeterminate &__bar,
+  &__bar--indeterminate {
+    inline-size: 50% !important;
+    border-radius: inherit;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: ids-progress-indeterminate 1.5s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      inline-size: 100% !important;
+      opacity: var(--opacity-disabled);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     3.8 LOS 4 ESTADOS DE COLOR (SEMANTIC COLORS)
+     ------------------------------------------------------------------------ */
+  /* 1. Éxito / Completado / Canal Cifrado Confirmado */
+  &--success &__bar,
+  &__bar--success {
+    background-color: var(--ids-progress-success-bg);
+  }
+  &--success::-webkit-progress-value {
+    background-color: var(--ids-progress-success-bg);
+  }
+  &--success::-moz-progress-bar {
+    background-color: var(--ids-progress-success-bg);
+  }
+
+  /* 2. Peligro / Amenaza Crítica / Fallo Inminente */
+  &--danger &__bar,
+  &__bar--danger {
+    background-color: var(--ids-progress-danger-bg);
+  }
+  &--danger::-webkit-progress-value {
+    background-color: var(--ids-progress-danger-bg);
+  }
+  &--danger::-moz-progress-bar {
+    background-color: var(--ids-progress-danger-bg);
+  }
+
+  /* 3. Advertencia / Precaución / Cuota al Límite */
+  &--warning &__bar,
+  &__bar--warning {
+    background-color: var(--ids-progress-warning-bg);
+    color: var(--color-text-primary); /* Garantiza WCAG AAA sobre fondo amarillo */
+  }
+  &--warning::-webkit-progress-value {
+    background-color: var(--ids-progress-warning-bg);
+  }
+  &--warning::-moz-progress-bar {
+    background-color: var(--ids-progress-warning-bg);
+  }
+
+  /* 4. Informativo / Neutral / Descarga en Curso */
+  &--info &__bar,
+  &__bar--info {
+    background-color: var(--ids-progress-info-bg);
+  }
+  &--info::-webkit-progress-value {
+    background-color: var(--ids-progress-info-bg);
+  }
+  &--info::-moz-progress-bar {
+    background-color: var(--ids-progress-info-bg);
+  }
+
+  /* ------------------------------------------------------------------------
+     3.9 MÚLTIPLES BARRAS APILADAS (STACKED PROGRESS)
+     Para cuotas compuestas, segmentación de auditorías o gestión de memoria.
+     ------------------------------------------------------------------------ */
+  &--stacked,
+  &-stacked {
+    display: flex;
+    flex-direction: row;
+    inline-size: 100%;
+
+    .ids-progress__bar:not(:first-child) {
+      border-inline-start: var(--focus-ring-width) solid var(--ids-progress-bg);
+    }
+
+    .ids-progress__bar:first-child {
+      border-start-start-radius: inherit;
+      border-end-start-radius: inherit;
+    }
+
+    .ids-progress__bar:last-child {
+      border-start-end-radius: inherit;
+      border-end-end-radius: inherit;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ESTRUCTURA COMPUESTA CON ETIQUETA (.ids-progress-group / .ids-progress-wrapper)
+   Garantiza asociación accesible estricta (WAI-ARIA RNEP) con la etiqueta y el valor.
+   -------------------------------------------------------------------------- */
+.ids-progress-group,
+.ids-progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+}
+
+/* Encabezado con etiqueta a la izquierda y valor a la derecha */
+.ids-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--ids-progress-header-gap);
+  margin-block-end: var(--ids-progress-header-margin-bottom);
+}
+
+/* Texto de la etiqueta de progreso */
+.ids-progress-label {
+  font-family: var(--font-family-base);
+  font-size: var(--ids-progress-label-font-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--ids-progress-label-color);
+  user-select: none;
+}
+
+/* Lectura numérica o textual del porcentaje */
+.ids-progress-value {
+  font-family: var(--font-family-base);
+  font-size: var(--ids-progress-value-font-size);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-base);
+  color: var(--ids-progress-value-color);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   5. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 5.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-progress {
+    --ids-progress-border-color: var(--color-border-subtle);
+
+    /* Delimitador de contraste entre barras apiladas */
+    &--stacked .ids-progress__bar:not(:first-child) {
+      border-inline-start-color: var(--color-border-subtle);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. ADAPTACIÓN PARA ACCESIBILIDAD DEL SISTEMA OPERATIVO
+   Modo de Contraste Forzado de Windows (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-progress {
+    border: var(--focus-ring-width) solid CanvasText;
+
+    &__bar {
+      background-color: Highlight;
+      forced-color-adjust: none;
+
+      &--success,
+      &--danger,
+      &--warning,
+      &--info {
+        background-color: Highlight;
+        outline: var(--focus-ring-width) solid CanvasText;
+      }
+    }
+
+    &--stacked .ids-progress__bar:not(:first-child) {
+      border-inline-start: var(--focus-ring-width) solid CanvasText;
+    }
+  }
+
+  .ids-progress-label,
+  .ids-progress-value {
+    color: CanvasText;
+  }
+}

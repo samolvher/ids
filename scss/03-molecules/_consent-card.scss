@@ -1,0 +1,826 @@
+/* ==========================================================================
+   03-molecules/_consent-card.scss
+   Identity Design System (IDS) - Molécula de Tarjetas y Banners de Consentimiento Asistido
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL COMPONENTE DE CONSENTIMIENTO
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones Espaciales - Tarjeta (Card) */
+  --ids-consent-card-padding: var(--padding-card);
+  --ids-consent-card-padding-sm: var(--spacing-md);
+  --ids-consent-card-gap: var(--spacing-lg);
+  --ids-consent-card-section-gap: var(--spacing-md);
+  --ids-consent-card-item-gap: var(--spacing-sm);
+
+  /* Curvaturas de Borde */
+  --ids-consent-card-radius: var(--radius-card);
+  --ids-consent-card-radius-sm: var(--radius-sm);
+  --ids-consent-card-border-width: var(--focus-ring-width);
+  --ids-consent-card-border-style: solid;
+
+  /* Geometría y Proporciones Espaciales - Banner */
+  --ids-consent-banner-padding-y: var(--spacing-md);
+  --ids-consent-banner-padding-x: var(--spacing-xl);
+  --ids-consent-banner-gap: var(--spacing-lg);
+  --ids-consent-banner-actions-gap: var(--spacing-md);
+  --ids-consent-banner-z-index: var(--z-index-sticky);
+  --ids-consent-banner-floating-offset: var(--spacing-lg);
+  --ids-consent-banner-floating-offset-mobile: var(--spacing-sm);
+  --ids-consent-banner-floating-radius: var(--radius-card);
+
+  /* Piel y Colores Base (Flat / Clean, sin sombras complejas) */
+  --ids-consent-card-bg: var(--color-surface-card);
+  --ids-consent-card-border-color: var(--color-border-subtle);
+  --ids-consent-card-color: var(--color-text-primary);
+  --ids-consent-card-secondary-color: var(--color-text-secondary);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-consent-card-current-bg: var(--ids-consent-card-bg);
+  --ids-consent-card-current-border: var(--ids-consent-card-border-color);
+  --ids-consent-card-current-color: var(--ids-consent-card-color);
+  --ids-consent-card-current-focus: var(--focus-ring-color);
+
+  /* Tipografía Semántica */
+  --ids-consent-card-font-family: var(--font-family-base);
+  --ids-consent-card-title-font-size: var(--font-size-h4);
+  --ids-consent-card-title-font-weight: var(--font-weight-semibold);
+  --ids-consent-card-subtitle-font-size: var(--font-size-body-large);
+  --ids-consent-card-body-font-size: var(--font-size-body);
+  --ids-consent-card-body-line-height: var(--line-height-base);
+  --ids-consent-card-caption-font-size: var(--font-size-caption);
+
+  /* Botones de Consentimiento Simétricos (Tecnología Consentida: Idéntico Peso) */
+  --ids-consent-btn-accept-bg: var(--color-action-consent-accept-bg);
+  --ids-consent-btn-accept-color: var(--color-action-consent-accept-text);
+  --ids-consent-btn-accept-border: var(--color-action-consent-accept-border);
+  --ids-consent-btn-reject-bg: var(--color-action-consent-reject-bg);
+  --ids-consent-btn-reject-color: var(--color-action-consent-reject-text);
+  --ids-consent-btn-reject-border: var(--color-action-consent-reject-border);
+
+  /* Área Táctil Mínima Accesible (WCAG AAA >= 44px) */
+  --ids-consent-target-min: var(--target-size-min);
+
+  /* Elementos de Granularidad (Lista de Permisos / Switches) */
+  --ids-consent-item-padding-y: var(--spacing-sm);
+  --ids-consent-item-padding-x: var(--spacing-md);
+  --ids-consent-item-bg: var(--color-surface-muted);
+  --ids-consent-item-border: var(--color-border-subtle);
+  --ids-consent-item-radius: var(--radius-sm);
+  --ids-consent-item-hover-bg: var(--color-surface-hover);
+
+  /* Caja Informativa de Garantía / Reafirmación Trauma-Informed */
+  --ids-consent-guarantee-bg: var(--status-info-bg);
+  --ids-consent-guarantee-border: var(--status-info-border);
+  --ids-consent-guarantee-color: var(--color-text-primary);
+  --ids-consent-guarantee-icon-color: var(--status-info);
+
+  /* Estado de Consentimiento Otorgado (Granted) */
+  --ids-consent-granted-border: var(--status-success-border);
+  --ids-consent-granted-bg: var(--color-surface-card);
+  --ids-consent-granted-badge-bg: var(--status-success-bg);
+  --ids-consent-granted-badge-color: var(--status-success);
+
+  /* Estado de Consentimiento Revocado (Revoked / Neutral) */
+  --ids-consent-revoked-border: var(--color-border-subtle);
+  --ids-consent-revoked-bg: var(--color-surface-card);
+
+  /* Movimiento y Transiciones */
+  --ids-consent-transition-speed: var(--transition-speed-base);
+  --ids-consent-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE DE LA TARJETA (.ids-consent-card)
+   Lógica de accesibilidad, proporción y heurística WCAG AAA.
+   -------------------------------------------------------------------------- */
+.ids-consent-card,
+.consent-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-consent-card-gap);
+  width: 100%;
+  padding: var(--ids-consent-card-padding);
+  font-family: var(--ids-consent-card-font-family);
+  background-color: var(--ids-consent-card-current-bg);
+  color: var(--ids-consent-card-current-color);
+  border-width: var(--ids-consent-card-border-width);
+  border-style: var(--ids-consent-card-border-style);
+  border-color: var(--ids-consent-card-current-border);
+  border-radius: var(--ids-consent-card-radius);
+  box-sizing: border-box;
+
+  /* Respeto irrestricto de reducción de movimiento */
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      border-color var(--ids-consent-transition-speed) var(--ids-consent-transition-ease),
+      background-color var(--ids-consent-transition-speed) var(--ids-consent-transition-ease);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 Cabecera de la Tarjeta (.ids-consent-card__header)
+     ------------------------------------------------------------------------ */
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  &__header-main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1 1 15rem;
+    min-inline-size: 0;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--icon-box-size);
+    block-size: var(--icon-box-size);
+    min-inline-size: var(--icon-box-size);
+    min-block-size: var(--icon-box-size);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-muted);
+    color: var(--color-action-primary);
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+    box-sizing: border-box;
+
+    svg {
+      inline-size: var(--icon-size-lg);
+      block-size: var(--icon-size-lg);
+      fill: currentColor;
+    }
+  }
+
+  &__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--ids-consent-card-title-font-size);
+    font-weight: var(--ids-consent-card-title-font-weight);
+    line-height: var(--line-height-tight);
+    color: var(--ids-consent-card-current-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--ids-consent-card-caption-font-size);
+    color: var(--ids-consent-card-secondary-color);
+    line-height: var(--line-height-base);
+  }
+
+  &__badges {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 Cuerpo y Explicación en Lenguaje Claro (.ids-consent-card__body)
+     ------------------------------------------------------------------------ */
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-consent-card-section-gap);
+    font-size: var(--ids-consent-card-body-font-size);
+    line-height: var(--ids-consent-card-body-line-height);
+    color: var(--ids-consent-card-current-color);
+
+    p {
+      margin: 0;
+      line-height: var(--line-height-base);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.3 Desglose de Propósitos / Especificaciones Técnicas
+     ------------------------------------------------------------------------ */
+  &__specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background-color: var(--color-surface-muted);
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+    border-radius: var(--ids-consent-card-radius-sm);
+    box-sizing: border-box;
+  }
+
+  &__spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__spec-label {
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--ids-consent-card-secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__spec-value {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--ids-consent-card-current-color);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.4 Garantía / Reaseguro Trauma-Informed (.ids-consent-card__guarantee)
+     ------------------------------------------------------------------------ */
+  &__guarantee {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--ids-consent-guarantee-bg);
+    border-inline-start: var(--spacing-xs) solid var(--ids-consent-guarantee-border);
+    border-radius: 0 var(--ids-consent-card-radius-sm) var(--ids-consent-card-radius-sm) 0;
+    box-sizing: border-box;
+
+    svg {
+      inline-size: var(--icon-size);
+      block-size: var(--icon-size);
+      min-inline-size: var(--icon-size);
+      min-block-size: var(--icon-size);
+      margin-block-start: 0.125rem;
+      fill: var(--ids-consent-guarantee-icon-color);
+    }
+
+    &-text {
+      margin: 0;
+      font-size: var(--font-size-caption);
+      line-height: var(--line-height-base);
+      color: var(--ids-consent-guarantee-color);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.5 Sección Granular de Permisos (.ids-consent-card__permissions)
+     ------------------------------------------------------------------------ */
+  &__permissions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+
+  &__permissions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    margin-block-end: var(--spacing-xs);
+  }
+
+  &__permissions-title {
+    margin: 0;
+    font-size: var(--ids-consent-card-subtitle-font-size);
+    font-weight: var(--font-weight-semibold);
+    color: var(--ids-consent-card-current-color);
+    line-height: var(--line-height-tight);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-consent-card-item-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding: var(--ids-consent-item-padding-y) var(--ids-consent-item-padding-x);
+    background-color: var(--ids-consent-item-bg);
+    border: var(--focus-ring-width) solid var(--ids-consent-item-border);
+    border-radius: var(--ids-consent-item-radius);
+    box-sizing: border-box;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--transition-speed-fast) var(--transition-ease);
+    }
+
+    &:hover {
+      background-color: var(--ids-consent-item-hover-bg);
+    }
+
+    &--required {
+      border-inline-start-width: var(--spacing-xs);
+      border-inline-start-color: var(--color-action-primary);
+    }
+  }
+
+  &__item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  &__item-title {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--ids-consent-card-current-color);
+    line-height: var(--line-height-tight);
+  }
+
+  &__item-desc {
+    margin: 0;
+    font-size: var(--font-size-caption);
+    color: var(--ids-consent-card-secondary-color);
+    line-height: var(--line-height-base);
+  }
+
+  &__item-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-inline-size: var(--ids-consent-target-min);
+    min-block-size: var(--ids-consent-target-min);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.6 Acciones Simétricas (.ids-consent-card__actions)
+     Regla de Oro: Idéntica jerarquía, peso visual y escala física.
+     Previene Dark Patterns / Confirmshaming.
+     ------------------------------------------------------------------------ */
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    margin-block-start: var(--spacing-xs);
+  }
+
+  &__action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--button-gap);
+    min-inline-size: var(--ids-consent-target-min);
+    min-block-size: var(--ids-consent-target-min);
+    padding-block: var(--padding-button-y);
+    padding-inline: var(--padding-button-x);
+    font-family: inherit;
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    line-height: var(--button-line-height);
+    border-radius: var(--radius-button);
+    border-width: var(--button-border-width);
+    border-style: solid;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-decoration: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background-color var(--transition-speed-fast) var(--transition-ease),
+        border-color var(--transition-speed-fast) var(--transition-ease),
+        color var(--transition-speed-fast) var(--transition-ease);
+    }
+
+    &:focus-visible {
+      outline-width: var(--focus-ring-width);
+      outline-style: var(--focus-ring-style);
+      outline-color: var(--ids-consent-card-current-focus);
+      outline-offset: var(--focus-ring-offset);
+    }
+
+    /* Botón de Aceptar Simétrico */
+    &--accept {
+      background-color: var(--ids-consent-btn-accept-bg);
+      color: var(--ids-consent-btn-accept-color);
+      border-color: var(--ids-consent-btn-accept-border);
+
+      &:hover {
+        background-color: var(--color-surface-muted);
+      }
+    }
+
+    /* Botón de Rechazar Simétrico (Idéntico peso visual) */
+    &--reject {
+      background-color: var(--ids-consent-btn-reject-bg);
+      color: var(--ids-consent-btn-reject-color);
+      border-color: var(--ids-consent-btn-reject-border);
+
+      &:hover {
+        background-color: var(--color-surface-muted);
+      }
+    }
+
+    /* Botón Terciario / Ajustes Detallados */
+    &--secondary {
+      background-color: var(--color-action-secondary-bg);
+      color: var(--color-action-secondary-text);
+      border-color: var(--color-action-secondary-border);
+
+      &:hover {
+        background-color: var(--color-action-secondary-hover-bg);
+        color: var(--color-action-secondary-hover-text);
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.7 Pie y Revocación No Coercitiva (.ids-consent-card__footer)
+     ------------------------------------------------------------------------ */
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    padding-block-start: var(--spacing-sm);
+    border-block-start: var(--divider-thickness) solid var(--color-border-subtle);
+    font-size: var(--font-size-caption);
+    color: var(--ids-consent-card-secondary-color);
+  }
+
+  &__status-region {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    line-height: var(--line-height-base);
+  }
+
+  &__revoke-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: transparent;
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-family: inherit;
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    cursor: pointer;
+    min-block-size: var(--ids-consent-target-min);
+    border-radius: var(--radius-sm);
+    box-sizing: border-box;
+
+    &:hover {
+      color: var(--color-status-danger);
+      background-color: var(--color-surface-muted);
+    }
+
+    &:focus-visible {
+      outline-width: var(--focus-ring-width);
+      outline-style: var(--focus-ring-style);
+      outline-color: var(--ids-consent-card-current-focus);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.8 Modificador Compacto (.ids-consent-card--compact)
+     ------------------------------------------------------------------------ */
+  &--compact {
+    padding: var(--ids-consent-card-padding-sm);
+    gap: var(--spacing-md);
+
+    .ids-consent-card__title {
+      font-size: var(--font-size-body-large);
+    }
+
+    .ids-consent-card__specs {
+      grid-template-columns: 1fr;
+      padding: var(--spacing-sm);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     2.9 Estados del Ciclo de Vida: Otorgado y Revocado
+     ------------------------------------------------------------------------ */
+  &--granted {
+    --ids-consent-card-current-border: var(--ids-consent-granted-border);
+
+    .ids-consent-card__icon {
+      color: var(--status-success);
+      border-color: var(--status-success-border);
+    }
+  }
+
+  &--revoked {
+    --ids-consent-card-current-border: var(--ids-consent-revoked-border);
+
+    .ids-consent-card__icon {
+      color: var(--color-text-secondary);
+      border-color: var(--color-border-subtle);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. BANNER DE CONSENTIMIENTO ASISTIDO (.ids-consent-banner)
+   Franja flotante o acoplada para avisos transparentes sin bloqueo hostil.
+   -------------------------------------------------------------------------- */
+.ids-consent-banner,
+.consent-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-md);
+  background-color: var(--ids-consent-card-current-bg);
+  color: var(--ids-consent-card-current-color);
+  border-width: var(--ids-consent-card-border-width);
+  border-style: solid;
+  border-color: var(--ids-consent-card-current-border);
+  font-family: var(--ids-consent-card-font-family);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ids-consent-banner-gap);
+    padding-block: var(--ids-consent-banner-padding-y);
+    padding-inline: var(--ids-consent-banner-padding-x);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform var(--ids-consent-transition-speed) var(--ids-consent-transition-ease),
+      opacity var(--ids-consent-transition-speed) var(--ids-consent-transition-ease);
+  }
+
+  /* 3.1 Contenido del Banner */
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1 1 20rem;
+    min-inline-size: 0;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--icon-box-size-sm);
+    block-size: var(--icon-box-size-sm);
+    min-inline-size: var(--icon-box-size-sm);
+    min-block-size: var(--icon-box-size-sm);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-muted);
+    color: var(--color-action-primary);
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+    flex: 0 0 auto;
+
+    svg {
+      inline-size: var(--icon-size);
+      block-size: var(--icon-size);
+      fill: currentColor;
+    }
+  }
+
+  &__text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    color: var(--ids-consent-card-current-color);
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-base);
+    color: var(--ids-consent-card-secondary-color);
+  }
+
+  /* 3.2 Acciones Simétricas del Banner */
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    gap: var(--ids-consent-banner-actions-gap);
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    inline-size: 100%;
+
+    .ids-consent-card__action-btn,
+    .ids-button {
+      flex: 1 1 auto;
+    }
+
+    @media (min-width: 48rem) {
+      justify-content: flex-end;
+      flex: 0 0 auto;
+      inline-size: auto;
+
+      .ids-consent-card__action-btn,
+      .ids-button {
+        flex: 0 0 auto;
+      }
+    }
+  }
+
+  /* 3.3 Modalidades de Posicionamiento del Banner */
+  &--docked-bottom {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--ids-consent-banner-z-index);
+    border-inline: none;
+    border-block-end: none;
+    border-radius: 0;
+  }
+
+  &--docked-top {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: var(--ids-consent-banner-z-index);
+    border-inline: none;
+    border-block-start: none;
+    border-radius: 0;
+  }
+
+  &--floating {
+    position: fixed;
+    inset-inline: var(--ids-consent-banner-floating-offset-mobile);
+    inset-block-end: var(--ids-consent-banner-floating-offset-mobile);
+    max-inline-size: calc(100% - (var(--ids-consent-banner-floating-offset-mobile) * 2));
+    width: auto;
+    z-index: var(--ids-consent-banner-z-index);
+    border-radius: var(--ids-consent-banner-floating-radius);
+    margin-inline: auto;
+
+    @media (min-width: 48rem) {
+      inset-inline: var(--ids-consent-banner-floating-offset);
+      inset-block-end: var(--ids-consent-banner-floating-offset);
+      max-inline-size: calc(100% - (var(--ids-consent-banner-floating-offset) * 2));
+    }
+  }
+
+  /* 3.4 Responsividad del Banner - Mobile-First
+     La disposición vertical compacta y acciones al 100% se definen por defecto
+     para móviles y se expanden horizontalmente a partir de @media (min-width: 48rem). */
+}
+
+/* --------------------------------------------------------------------------
+   4. TEMATIZACIÓN DINÁMICA (4 Ejes Temáticos del IDS)
+   -------------------------------------------------------------------------- */
+
+/* 4.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-consent-card,
+  .consent-card,
+  .ids-consent-banner,
+  .consent-banner {
+    --ids-consent-card-current-bg: var(--color-surface-card);
+    --ids-consent-card-current-border: var(--color-border-subtle);
+    --ids-consent-card-current-color: var(--color-text-primary);
+    --ids-consent-card-current-focus: var(--focus-ring-color);
+
+    .ids-consent-card__icon,
+    .ids-consent-banner__icon {
+      border-color: var(--color-border-subtle);
+      color: var(--color-action-primary);
+      background-color: var(--color-surface-background);
+    }
+
+    .ids-consent-card__specs,
+    .ids-consent-card__item {
+      background-color: var(--color-surface-background);
+      border-color: var(--color-border-subtle);
+    }
+
+    .ids-consent-card__guarantee {
+      background-color: var(--color-surface-background);
+      border-color: var(--color-border-subtle);
+    }
+
+    .ids-consent-card__action-btn--accept,
+    .ids-consent-card__action-btn--reject {
+      border-width: var(--focus-ring-width);
+      border-color: var(--color-action-primary);
+      color: var(--color-action-primary);
+      background-color: var(--color-surface-background);
+
+      &:hover {
+        background-color: var(--color-surface-muted);
+        color: var(--color-text-primary);
+      }
+    }
+  }
+
+  @media (forced-colors: active) {
+    .ids-consent-card,
+    .consent-card,
+    .ids-consent-banner,
+    .consent-banner {
+      border: 0.125rem solid ButtonText;
+
+      .ids-consent-card__icon,
+      .ids-consent-banner__icon,
+      .ids-consent-card__item,
+      .ids-consent-card__specs {
+        border: 0.0625rem solid ButtonText;
+      }
+
+      .ids-consent-card__action-btn {
+        border: 0.125rem solid ButtonText;
+      }
+    }
+  }
+}
+
+/* 4.2 Baja Estimulación (Neurodivergencia y Reducción de Fatiga) */
+[data-theme="low-stimulation"] {
+  .ids-consent-card,
+  .consent-card,
+  .ids-consent-banner,
+  .consent-banner {
+    --ids-consent-card-current-bg: var(--color-surface-card);
+    --ids-consent-card-current-border: var(--color-border-subtle);
+    --ids-consent-card-current-color: var(--color-text-primary);
+    --ids-consent-card-current-focus: var(--focus-ring-color);
+
+    .ids-consent-card__icon,
+    .ids-consent-banner__icon {
+      background-color: var(--color-surface-muted);
+      border-color: var(--color-border-subtle);
+    }
+
+    .ids-consent-card__specs,
+    .ids-consent-card__item {
+      background-color: var(--color-surface-background);
+      border-color: var(--color-border-subtle);
+    }
+
+    .ids-consent-card__guarantee {
+      background-color: var(--color-surface-muted);
+      border-inline-start-color: var(--color-border-interactive);
+    }
+  }
+}
+
+/* 4.3 Discreto / Stealth (Anti-Outing y Resguardo en Espacio Público) */
+[data-theme="discrete"] {
+  .ids-consent-card,
+  .consent-card,
+  .ids-consent-banner,
+  .consent-banner {
+    --ids-consent-card-current-bg: var(--color-surface-card);
+    --ids-consent-card-current-border: var(--color-border-subtle);
+    --ids-consent-card-current-color: var(--color-text-primary);
+    --ids-consent-card-current-focus: var(--focus-ring-color);
+
+    .ids-consent-card__icon,
+    .ids-consent-banner__icon {
+      background-color: var(--color-surface-muted);
+      border-color: var(--color-border-subtle);
+      color: var(--color-action-primary);
+    }
+
+    .ids-consent-card__specs,
+    .ids-consent-card__item {
+      background-color: var(--color-surface-background);
+      border-color: var(--color-border-subtle);
+    }
+  }
+}

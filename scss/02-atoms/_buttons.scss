@@ -1,0 +1,389 @@
+/* ==========================================================================
+   02-atoms/_buttons.scss
+   Identity Design System (IDS) - Átomo de Botón y Variables Semánticas
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL COMPONENTE BOTÓN
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta por tokens CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones (Esqueleto) */
+  --ids-button-radius: var(--radius-button);
+  --ids-button-border-width: var(--button-border-width);
+  --ids-button-border-style: solid;
+  --ids-button-min-height: var(--button-min-height);
+  --ids-button-min-width: var(--button-min-width);
+
+  /* Espaciado Interno (Padding) y Separación (Gap) */
+  --ids-button-padding-y: var(--padding-button-y);
+  --ids-button-padding-x: var(--padding-button-x);
+  --ids-button-gap: var(--button-gap);
+
+  /* Formato Cápsula / Píldora (Capsule / Pill Tokens) */
+  --ids-button-radius-pill: var(--radius-full);
+  --ids-button-padding-x-pill: var(--spacing-lg);
+  --ids-button-padding-x-pill-sm: var(--spacing-md);
+  --ids-button-padding-x-pill-lg: var(--spacing-xl);
+
+  /* Escalas de Tamaño (Modificadores) */
+  --ids-button-padding-y-sm: var(--padding-button-sm-y);
+  --ids-button-padding-x-sm: var(--padding-button-sm-x);
+  --ids-button-font-size-sm: var(--font-size-button-sm);
+
+  --ids-button-padding-y-lg: var(--padding-button-lg-y);
+  --ids-button-padding-x-lg: var(--padding-button-lg-x);
+  --ids-button-font-size-lg: var(--font-size-button-lg);
+
+  /* Tipografía Semántica */
+  --ids-button-font-family: var(--font-family-base);
+  --ids-button-font-size: var(--button-font-size);
+  --ids-button-font-weight: var(--button-font-weight);
+  --ids-button-line-height: var(--button-line-height);
+
+  /* Movimiento y Transiciones */
+  --ids-button-transition-speed: var(--transition-speed-fast);
+  --ids-button-transition-ease: var(--transition-ease);
+
+  /* Estados de Interacción */
+  --ids-button-opacity-disabled: var(--opacity-disabled);
+  --ids-button-disabled-bg: var(--color-action-disabled-bg);
+  --ids-button-disabled-border: var(--color-action-disabled-border);
+  --ids-button-disabled-text: var(--color-action-disabled-text);
+
+  /* Piel y Mapeo Cromático - Botón Primario */
+  --ids-button-primary-bg: var(--color-action-primary);
+  --ids-button-primary-text: var(--color-action-primary-text);
+  --ids-button-primary-border: var(--color-action-primary);
+  --ids-button-primary-hover-bg: var(--color-action-hover);
+  --ids-button-primary-hover-border: var(--color-action-hover);
+  --ids-button-primary-hover-text: var(--color-action-primary-text);
+
+  /* Piel y Mapeo Cromático - Botón Secundario */
+  --ids-button-secondary-bg: var(--color-action-secondary-bg);
+  --ids-button-secondary-text: var(--color-action-secondary-text);
+  --ids-button-secondary-border: var(--color-action-secondary-border);
+  --ids-button-secondary-hover-bg: var(--color-action-secondary-hover-bg);
+  --ids-button-secondary-hover-border: var(--color-border-interactive);
+  --ids-button-secondary-hover-text: var(--color-action-secondary-hover-text);
+
+  /* Piel y Mapeo Cromático - Botón Fantasma (Ghost / Terciario) */
+  --ids-button-ghost-bg: var(--color-action-ghost);
+  --ids-button-ghost-text: var(--color-text-primary);
+  --ids-button-ghost-border: var(--color-action-ghost);
+  --ids-button-ghost-hover-bg: var(--color-surface-muted);
+  --ids-button-ghost-hover-border: var(--color-action-ghost);
+  --ids-button-ghost-hover-text: var(--color-action-hover);
+
+  /* Piel y Mapeo Cromático - Botón Peligro / Destructivo (Trauma-Informed) */
+  --ids-button-danger-bg: var(--color-action-danger-bg);
+  --ids-button-danger-text: var(--color-action-danger-text);
+  --ids-button-danger-border: var(--color-action-danger-bg);
+  --ids-button-danger-hover-bg: var(--color-action-danger-hover);
+  --ids-button-danger-hover-border: var(--color-action-danger-hover);
+  --ids-button-danger-hover-text: var(--color-action-danger-text);
+
+  /* Piel y Mapeo Cromático - Controles de Consentimiento (Tecnología Consentida) */
+  /* Ambos botones cuentan con idéntica prominencia y peso visual para prevenir dark patterns */
+  --ids-button-consent-accept-bg: var(--color-action-consent-accept-bg);
+  --ids-button-consent-accept-text: var(--color-action-consent-accept-text);
+  --ids-button-consent-accept-border: var(--color-action-consent-accept-border);
+  --ids-button-consent-accept-hover-bg: var(--color-surface-muted);
+
+  --ids-button-consent-reject-bg: var(--color-action-consent-reject-bg);
+  --ids-button-consent-reject-text: var(--color-action-consent-reject-text);
+  --ids-button-consent-reject-border: var(--color-action-consent-reject-border);
+  --ids-button-consent-reject-hover-bg: var(--color-surface-muted);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-button)
+   Lógica de accesibilidad, proporción y heurística WCAG AAA.
+   -------------------------------------------------------------------------- */
+.ids-button {
+  /* Variables locales de instancia con fallbacks limpios */
+  --button-current-bg: var(--ids-button-ghost-bg);
+  --button-current-color: var(--ids-button-ghost-text);
+  --button-current-border: var(--ids-button-ghost-border);
+  --button-current-hover-bg: var(--ids-button-ghost-hover-bg);
+  --button-current-hover-color: var(--ids-button-ghost-hover-text);
+  --button-current-hover-border: var(--ids-button-ghost-hover-border);
+
+  /* Modelo de caja y alineación */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ids-button-gap);
+
+  /* WCAG AAA Target Size: Objetivo táctil mínimo accesible */
+  min-inline-size: var(--ids-button-min-width);
+  min-block-size: var(--ids-button-min-height);
+  padding-block: var(--ids-button-padding-y);
+  padding-inline: var(--ids-button-padding-x);
+
+  /* Geometría plana (Clean / Flat, sin sombras complejas) */
+  border-radius: var(--ids-button-radius);
+  border-width: var(--ids-button-border-width);
+  border-style: var(--ids-button-border-style);
+  border-color: var(--button-current-border);
+  background-color: var(--button-current-bg);
+  color: var(--button-current-color);
+
+  /* Tipografía y legibilidad */
+  font-family: var(--ids-button-font-family);
+  font-size: var(--ids-button-font-size);
+  font-weight: var(--ids-button-font-weight);
+  line-height: var(--ids-button-line-height);
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+
+  /* Controles ergonómicos nativos */
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+
+  /* Movimiento suave y condicionado (Diseño Informado en el Trauma) */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color, border-color, color, outline-offset;
+    transition-duration: var(--ids-button-transition-speed);
+    transition-timing-function: var(--ids-button-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Estados de Interacción */
+  &:hover {
+    background-color: var(--button-current-hover-bg);
+    border-color: var(--button-current-hover-border);
+    color: var(--button-current-hover-color);
+  }
+
+  &:active {
+    background-color: var(--button-current-hover-bg);
+    border-color: var(--button-current-hover-border);
+  }
+
+  /* Foco de Accesibilidad WCAG AAA (Mínimo 2px, contraste 3:1) */
+  &:focus-visible {
+    outline-width: var(--focus-ring-width);
+    outline-style: var(--focus-ring-style);
+    outline-color: var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Estado Inactivo / Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: var(--ids-button-opacity-disabled);
+    background-color: var(--ids-button-disabled-bg);
+    border-color: var(--ids-button-disabled-border);
+    color: var(--ids-button-disabled-text);
+  }
+
+  /* ------------------------------------------------------------------------
+     3. PIEL Y VARIANTES SEMÁNTICAS (BEM)
+     ------------------------------------------------------------------------ */
+
+  /* 3.1 Primario: Acción Principal */
+  &--primary {
+    --button-current-bg: var(--ids-button-primary-bg);
+    --button-current-color: var(--ids-button-primary-text);
+    --button-current-border: var(--ids-button-primary-border);
+    --button-current-hover-bg: var(--ids-button-primary-hover-bg);
+    --button-current-hover-color: var(--ids-button-primary-hover-text);
+    --button-current-hover-border: var(--ids-button-primary-hover-border);
+  }
+
+  /* 3.2 Secundario: Contorno / Acción Secundaria */
+  &--secondary {
+    --button-current-bg: var(--ids-button-secondary-bg);
+    --button-current-color: var(--ids-button-secondary-text);
+    --button-current-border: var(--ids-button-secondary-border);
+    --button-current-hover-bg: var(--ids-button-secondary-hover-bg);
+    --button-current-hover-color: var(--ids-button-secondary-hover-text);
+    --button-current-hover-border: var(--ids-button-secondary-hover-border);
+  }
+
+  /* 3.3 Fantasma / Ghost: Acción Terciaria y Menor Carga Cognitiva */
+  &--ghost {
+    --button-current-bg: var(--ids-button-ghost-bg);
+    --button-current-color: var(--ids-button-ghost-text);
+    --button-current-border: var(--ids-button-ghost-border);
+    --button-current-hover-bg: var(--ids-button-ghost-hover-bg);
+    --button-current-hover-color: var(--ids-button-ghost-hover-text);
+    --button-current-hover-border: var(--ids-button-ghost-hover-border);
+  }
+
+  /* 3.4 Peligro / Destructivo: Trauma-Informed (Sin pánico visual, sobrio) */
+  &--danger {
+    --button-current-bg: var(--ids-button-danger-bg);
+    --button-current-color: var(--ids-button-danger-text);
+    --button-current-border: var(--ids-button-danger-border);
+    --button-current-hover-bg: var(--ids-button-danger-hover-bg);
+    --button-current-hover-color: var(--ids-button-danger-hover-text);
+    --button-current-hover-border: var(--ids-button-danger-hover-border);
+  }
+
+  /* 3.5 Controles de Consentimiento (Tecnología Consentida) */
+  /* Regla de Oro: Idéntica jerarquía, peso visual y escala física */
+  &--consent-accept {
+    --button-current-bg: var(--ids-button-consent-accept-bg);
+    --button-current-color: var(--ids-button-consent-accept-text);
+    --button-current-border: var(--ids-button-consent-accept-border);
+    --button-current-hover-bg: var(--ids-button-consent-accept-hover-bg);
+    --button-current-hover-color: var(--ids-button-consent-accept-text);
+    --button-current-hover-border: var(--ids-button-consent-accept-border);
+  }
+
+  &--consent-reject {
+    --button-current-bg: var(--ids-button-consent-reject-bg);
+    --button-current-color: var(--ids-button-consent-reject-text);
+    --button-current-border: var(--ids-button-consent-reject-border);
+    --button-current-hover-bg: var(--ids-button-consent-reject-hover-bg);
+    --button-current-hover-color: var(--ids-button-consent-reject-text);
+    --button-current-hover-border: var(--ids-button-consent-reject-border);
+  }
+
+  /* ------------------------------------------------------------------------
+     4. MODIFICADORES DE TAMAÑO Y FORMA
+     ------------------------------------------------------------------------ */
+  &--sm {
+    padding-block: var(--ids-button-padding-y-sm);
+    padding-inline: var(--ids-button-padding-x-sm);
+    font-size: var(--ids-button-font-size-sm);
+    min-block-size: var(--ids-button-min-height);
+  }
+
+  &--lg {
+    padding-block: var(--ids-button-padding-y-lg);
+    padding-inline: var(--ids-button-padding-x-lg);
+    font-size: var(--ids-button-font-size-lg);
+  }
+
+  /* Botón con Icono Único (Accesible y Proporcional) */
+  &--icon-only {
+    padding-inline: var(--ids-button-padding-y);
+    inline-size: var(--ids-button-min-width);
+    block-size: var(--ids-button-min-height);
+  }
+
+  /* Ancho completo utilitario */
+  &--full-width {
+    inline-size: 100%;
+  }
+
+  /* 4.5 Modificador Cápsula / Píldora (.ids-button--pill / .ids-button--capsule)
+     Geometría totalmente redondeada en los extremos con área táctil accesible WCAG AAA */
+  &--pill,
+  &--capsule {
+    border-radius: var(--ids-button-radius-pill, var(--radius-full));
+    padding-inline: var(--ids-button-padding-x-pill, var(--spacing-lg));
+
+    &.ids-button--sm,
+    &--sm {
+      padding-inline: var(--ids-button-padding-x-pill-sm, var(--spacing-md));
+    }
+
+    &.ids-button--lg,
+    &--lg {
+      padding-inline: var(--ids-button-padding-x-pill-lg, var(--spacing-xl));
+    }
+
+    /* Píldora en modo icono solo: se convierte en un círculo perfecto accesible */
+    &.ids-button--icon-only,
+    &--icon-only {
+      padding: 0;
+      border-radius: var(--radius-full);
+      inline-size: var(--ids-button-min-width);
+      block-size: var(--ids-button-min-height);
+      justify-content: center;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     5. ELEMENTOS INTERNOS (Iconos y Contenido)
+     ------------------------------------------------------------------------ */
+  &__icon,
+  svg.ids-button__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    block-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    width: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    height: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    max-inline-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    max-block-size: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    max-width: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    max-height: var(--ids-icon-size, var(--icon-size, 1.25rem));
+    line-height: 1;
+    fill: currentColor;
+    color: inherit;
+    pointer-events: none;
+
+    svg {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      width: 100%;
+      height: 100%;
+      fill: currentColor;
+    }
+  }
+
+  /* Modificadores de tamaño de icono según tamaño de botón */
+  &--sm &__icon,
+  &--sm svg.ids-button__icon {
+    inline-size: var(--icon-size-sm, 1rem);
+    block-size: var(--icon-size-sm, 1rem);
+    width: var(--icon-size-sm, 1rem);
+    height: var(--icon-size-sm, 1rem);
+    max-inline-size: var(--icon-size-sm, 1rem);
+    max-block-size: var(--icon-size-sm, 1rem);
+    max-width: var(--icon-size-sm, 1rem);
+    max-height: var(--icon-size-sm, 1rem);
+  }
+
+  &--lg &__icon,
+  &--lg svg.ids-button__icon {
+    inline-size: var(--icon-size-lg, 1.5rem);
+    block-size: var(--icon-size-lg, 1.5rem);
+    width: var(--icon-size-lg, 1.5rem);
+    height: var(--icon-size-lg, 1.5rem);
+    max-inline-size: var(--icon-size-lg, 1.5rem);
+    max-block-size: var(--icon-size-lg, 1.5rem);
+    max-width: var(--icon-size-lg, 1.5rem);
+    max-height: var(--icon-size-lg, 1.5rem);
+  }
+
+  &__label {
+    display: inline-block;
+  }
+
+  /* ------------------------------------------------------------------------
+     6. ADAPTACIÓN RESPONSIVA NATIVA (@media) - Mobile-First
+     ------------------------------------------------------------------------ */
+  &--responsive {
+    inline-size: 100%;
+    justify-content: center;
+
+    @media (min-width: 48rem) {
+      inline-size: auto;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. GRUPOS DE BOTONES (Delegados a 03-molecules/_button-group.scss)
+   La molécula .ids-button-group coordina los átomos .ids-button bajo Atomic Design.
+   -------------------------------------------------------------------------- */

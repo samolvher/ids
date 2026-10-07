@@ -1,0 +1,1194 @@
+/* ==========================================================================
+   04-organisms/_menu-laterales.scss
+   Identity Design System (IDS) - Organismo de Menú Lateral / Navegación Deslizante
+   Soporte multivariable:
+     - Posición: izquierda (start) o derecha (end).
+     - Secciones internas: header (título + botón cierre), body (acordeón,
+       grupos de listas, grupos de botones), footer (texto + botón/enlace).
+     - Ancho fijo y ancho fluido adaptativo.
+     - Superposición: backdrop oscurecedor con desenfoque opcional.
+     - Responsive: panel completo en móvil, ancho parcial en tablet/desktop.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO MENÚ LATERAL (Contrato de Tokens)
+   Prohibición estricta de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color y espacio proviene del sistema de tokens.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Dimensiones */
+  --ids-sidenav-width:               20rem;                          /* 320px - Ancho estándar */
+  --ids-sidenav-width-sm:            16rem;                          /* 256px - Compacto */
+  --ids-sidenav-width-lg:            28rem;                          /* 448px - Amplio */
+  --ids-sidenav-max-width:           90vw;                           /* Nunca supera 90% de la pantalla */
+  --ids-sidenav-radius:              0;                              /* Flat por defecto */
+  --ids-sidenav-radius-float:        var(--radius-lg);               /* Radio para modo flotante */
+  --ids-sidenav-border-width:        var(--focus-ring-width);
+  --ids-sidenav-border-style:        solid;
+  --ids-sidenav-border-color:        var(--color-border-subtle);
+
+  /* Piel y Superficies */
+  --ids-sidenav-bg:                  var(--color-surface-card);
+  --ids-sidenav-color:               var(--color-text-primary);
+
+  /* --- HEADER --- */
+  --ids-sidenav-header-padding-y:    var(--spacing-md);
+  --ids-sidenav-header-padding-x:    var(--spacing-md);
+  --ids-sidenav-header-min-height:   var(--target-size-min);         /* 44px WCAG AAA */
+  --ids-sidenav-header-bg:           var(--color-surface-card);
+  --ids-sidenav-header-color:        var(--color-text-primary);
+  --ids-sidenav-header-border-color: var(--color-border-subtle);
+  --ids-sidenav-header-border-width: var(--divider-thickness);
+  --ids-sidenav-header-gap:          var(--spacing-sm);
+
+  /* Tipografía del título del header */
+  --ids-sidenav-title-font-family:   var(--font-family-heading);
+  --ids-sidenav-title-font-size:     var(--font-size-h5);
+  --ids-sidenav-title-font-weight:   var(--font-weight-semibold);
+  --ids-sidenav-title-line-height:   var(--line-height-tight);
+
+  /* Botón de cierre del header */
+  --ids-sidenav-close-size:          var(--target-size-min);         /* 44px WCAG AAA Touch Target */
+
+  /* --- BODY --- */
+  --ids-sidenav-body-padding-y:      var(--spacing-md);
+  --ids-sidenav-body-padding-x:      var(--spacing-md);
+  --ids-sidenav-body-gap:            var(--spacing-md);
+
+  /* --- LISTA DE NAVEGACIÓN --- */
+  --ids-sidenav-nav-gap:             var(--spacing-xs);
+
+  /* Ítem de lista / enlace */
+  --ids-sidenav-item-min-height:     var(--target-size-min);         /* 44px WCAG AAA Touch Target */
+  --ids-sidenav-item-padding-y:      var(--spacing-sm);
+  --ids-sidenav-item-padding-x:      var(--spacing-md);
+  --ids-sidenav-item-gap:            var(--spacing-sm);
+  --ids-sidenav-item-radius:         var(--radius-sm);
+  --ids-sidenav-item-bg:             transparent;
+  --ids-sidenav-item-color:          var(--color-text-primary);
+  --ids-sidenav-item-hover-bg:       var(--color-surface-hover);
+  --ids-sidenav-item-hover-color:    var(--color-text-primary);
+  --ids-sidenav-item-active-bg:      var(--color-surface-muted);
+  --ids-sidenav-item-active-color:   var(--color-action-primary);
+  --ids-sidenav-item-selected-bg:    var(--color-surface-muted);
+  --ids-sidenav-item-selected-color: var(--color-action-primary);
+  --ids-sidenav-item-font-size:      var(--font-size-body);
+  --ids-sidenav-item-font-weight:    var(--font-weight-regular);
+  --ids-sidenav-item-line-height:    var(--line-height-base);
+
+  /* Indicador de ítem activo (línea lateral) */
+  --ids-sidenav-item-indicator-width: 0.1875rem;                     /* 3px */
+  --ids-sidenav-item-indicator-color: var(--color-action-primary);
+  --ids-sidenav-item-indicator-radius: var(--radius-full);
+
+  /* Etiqueta de Sección (Group Label) */
+  --ids-sidenav-label-font-size:     var(--font-size-caption);
+  --ids-sidenav-label-font-weight:   var(--font-weight-semibold);
+  --ids-sidenav-label-color:         var(--color-text-secondary);
+  --ids-sidenav-label-padding-y:     var(--spacing-sm);
+  --ids-sidenav-label-padding-x:     var(--spacing-md);
+  --ids-sidenav-label-letter-spacing: 0.05em;
+
+  /* Grupo de Botones en Body */
+  --ids-sidenav-btn-group-gap:       var(--spacing-xs);
+  --ids-sidenav-btn-group-padding-x: var(--spacing-md);
+
+  /* Acordeón interno */
+  --ids-sidenav-accordion-trigger-padding-y: var(--spacing-sm);
+  --ids-sidenav-accordion-trigger-padding-x: var(--spacing-md);
+  --ids-sidenav-accordion-panel-padding-start: var(--spacing-xl);    /* Indenta el sub-menú */
+
+  /* --- FOOTER --- */
+  --ids-sidenav-footer-padding-y:    var(--spacing-md);
+  --ids-sidenav-footer-padding-x:    var(--spacing-md);
+  --ids-sidenav-footer-gap:          var(--spacing-xs);
+  --ids-sidenav-footer-bg:           var(--color-surface-card);
+  --ids-sidenav-footer-color:        var(--color-text-secondary);
+  --ids-sidenav-footer-border-color: var(--color-border-subtle);
+  --ids-sidenav-footer-border-width: var(--divider-thickness);
+  --ids-sidenav-footer-font-size:    var(--font-size-caption);
+  --ids-sidenav-footer-line-height:  var(--line-height-base);
+
+  /* --- BACKDROP --- */
+  --ids-sidenav-backdrop-bg:         var(--overlay-backdrop-bg);
+  --ids-sidenav-backdrop-blur:       0.25rem;
+
+  /* Cinemática y Transiciones */
+  --ids-sidenav-transition-speed:    var(--transition-speed-slow);
+  --ids-sidenav-transition-ease:     var(--transition-ease);
+
+  /* Z-Index */
+  --ids-sidenav-z-index:             var(--z-index-overlay);
+  --ids-sidenav-backdrop-z-index:    calc(var(--z-index-overlay) - 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. BACKDROP / TELÓN DE FONDO (.ids-sidenav-backdrop)
+   Capa oscurecedora detrás del panel. Captura clics de cierre.
+   Semántica: aria-hidden="true" + listener click en JS para cerrar.
+   -------------------------------------------------------------------------- */
+.ids-sidenav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ids-sidenav-backdrop-z-index);
+  background-color: var(--ids-sidenav-backdrop-bg);
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      opacity var(--ids-sidenav-transition-speed) var(--ids-sidenav-transition-ease),
+      visibility 0s var(--ids-sidenav-transition-speed);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Activo */
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity var(--ids-sidenav-transition-speed) var(--ids-sidenav-transition-ease);
+    }
+  }
+
+  /* Variante con desenfoque (Backdrop Blur) */
+  &.ids-sidenav-backdrop--blur {
+    backdrop-filter: blur(var(--ids-sidenav-backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--ids-sidenav-backdrop-blur));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. PANEL PRINCIPAL (.ids-sidenav)
+   role="navigation" o role="dialog" + aria-modal="true" + aria-label.
+   Focus trap obligatorio cuando está abierto (implementado en JS).
+   -------------------------------------------------------------------------- */
+.ids-sidenav {
+  position: fixed;
+  inset-block: 0;
+  z-index: var(--ids-sidenav-z-index);
+  display: flex;
+  flex-direction: column;
+  inline-size: var(--ids-sidenav-width);
+  max-inline-size: var(--ids-sidenav-max-width);
+  block-size: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  /* Piel */
+  background-color: var(--ids-sidenav-bg);
+  color: var(--ids-sidenav-color);
+  border: none;
+
+  /* Estado CERRADO: fuera de la pantalla */
+  visibility: hidden;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform var(--ids-sidenav-transition-speed) var(--ids-sidenav-transition-ease),
+      visibility 0s var(--ids-sidenav-transition-speed);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: opacity var(--ids-sidenav-transition-speed) linear,
+                visibility 0s var(--ids-sidenav-transition-speed);
+  }
+
+  /* -----------------------------------------------------------------------
+     3.1 POSICIÓN IZQUIERDA / START (predeterminada)
+     ----------------------------------------------------------------------- */
+  &.ids-sidenav--start,
+  &:not(.ids-sidenav--end) {
+    inset-inline-start: 0;
+    transform: translateX(-100%);
+    border-inline-end: var(--ids-sidenav-border-width) var(--ids-sidenav-border-style) var(--ids-sidenav-border-color);
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: none;
+      opacity: 0;
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+     3.2 POSICIÓN DERECHA / END
+     ----------------------------------------------------------------------- */
+  &.ids-sidenav--end {
+    inset-inline-end: 0;
+    transform: translateX(100%);
+    border-inline-start: var(--ids-sidenav-border-width) var(--ids-sidenav-border-style) var(--ids-sidenav-border-color);
+
+    @media (prefers-reduced-motion: reduce) {
+      transform: none;
+      opacity: 0;
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+     3.3 ESTADO ABIERTO (.is-open añadido por JS)
+     ----------------------------------------------------------------------- */
+  &.is-open {
+    transform: translateX(0);
+    visibility: visible;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        transform var(--ids-sidenav-transition-speed) var(--ids-sidenav-transition-ease);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity var(--ids-sidenav-transition-speed) linear;
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+     3.4 VARIANTE FLOTANTE (con radio, separado de los bordes de pantalla)
+     ----------------------------------------------------------------------- */
+  &.ids-sidenav--float {
+    inset-block: var(--spacing-md);
+    block-size: calc(100% - 2 * var(--spacing-md));
+    border-radius: var(--ids-sidenav-radius-float);
+    border: var(--ids-sidenav-border-width) var(--ids-sidenav-border-style) var(--ids-sidenav-border-color);
+
+    &.ids-sidenav--start,
+    &:not(.ids-sidenav--end) {
+      inset-inline-start: var(--spacing-md);
+    }
+
+    &.ids-sidenav--end {
+      inset-inline-end: var(--spacing-md);
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+     3.5 TAMAÑOS DE PANEL
+     ----------------------------------------------------------------------- */
+  &.ids-sidenav--sm {
+    inline-size: var(--ids-sidenav-width-sm);
+  }
+
+  &.ids-sidenav--lg {
+    inline-size: var(--ids-sidenav-width-lg);
+  }
+
+  /* Focus ring visible al navegar dentro */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. CABECERA DEL PANEL (.ids-sidenav__header)
+   Contiene: título semántico + botón de cierre.
+   Sticky: permanece visible al hacer scroll en el body.
+   -------------------------------------------------------------------------- */
+.ids-sidenav__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-sidenav-header-gap);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-block-size: var(--ids-sidenav-header-min-height);
+  padding-block: var(--ids-sidenav-header-padding-y);
+  padding-inline: var(--ids-sidenav-header-padding-x);
+  background-color: var(--ids-sidenav-header-bg);
+  color: var(--ids-sidenav-header-color);
+  border-block-end: var(--ids-sidenav-header-border-width) solid var(--ids-sidenav-header-border-color);
+}
+
+/* Título / Nombre del panel */
+.ids-sidenav__title {
+  margin: 0;
+  flex: 1;
+  min-inline-size: 0;
+  font-family: var(--ids-sidenav-title-font-family);
+  font-size: var(--ids-sidenav-title-font-size);
+  font-weight: var(--ids-sidenav-title-font-weight);
+  line-height: var(--ids-sidenav-title-line-height);
+  color: inherit;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Subtítulo / Descripción opcional del panel */
+.ids-sidenav__subtitle {
+  margin: 0;
+  margin-block-start: var(--spacing-xs);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+}
+
+/* Grupo título + subtítulo */
+.ids-sidenav__title-group {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* Botón de cierre (X) — aria-label="Cerrar menú" obligatorio */
+.ids-sidenav__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-inline-size: var(--ids-sidenav-close-size);
+  min-block-size: var(--ids-sidenav-close-size);
+  width: var(--ids-sidenav-close-size);
+  height: var(--ids-sidenav-close-size);
+  box-sizing: border-box;
+  background-color: transparent;
+  color: inherit;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  margin-inline-end: calc(-1 * var(--spacing-xs));
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--transition-speed-fast) var(--transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--color-surface-hover);
+  }
+
+  &:active {
+    background-color: var(--color-surface-muted);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  svg,
+  .ids-icon {
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--icon-stroke-width);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. CUERPO DEL PANEL (.ids-sidenav__body)
+   Región con scroll interno. Contiene navegación, acordeones y grupos de botones.
+   -------------------------------------------------------------------------- */
+.ids-sidenav__body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-sidenav-body-gap);
+  padding-block: var(--ids-sidenav-body-padding-y);
+  padding-inline: 0;                /* El padding-x lo gestiona cada sub-componente */
+
+  /* Scrollbar estilizado con tokens del sistema */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+
+  &::-webkit-scrollbar {
+    width: var(--scrollbar-size-sm);
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-bg);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-bg);
+    border-radius: var(--scrollbar-thumb-radius);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-bg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. SECCIÓN DE NAVEGACIÓN (.ids-sidenav__nav)
+   Lista semántica de enlaces/botones de navegación.
+   role="list" implícito en <ul>; cada ítem es <li>.
+   -------------------------------------------------------------------------- */
+.ids-sidenav__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-sidenav-nav-gap);
+  margin: 0;
+  padding: 0;
+  padding-inline: var(--ids-sidenav-body-padding-x);
+  list-style: none;
+  box-sizing: border-box;
+}
+
+/* Etiqueta de grupo de navegación (Section Label / Divider Label) */
+.ids-sidenav__nav-label {
+  display: block;
+  padding-block: var(--ids-sidenav-label-padding-y);
+  padding-inline: var(--ids-sidenav-label-padding-x);
+  margin-inline: calc(-1 * var(--ids-sidenav-body-padding-x));
+  font-size: var(--ids-sidenav-label-font-size);
+  font-weight: var(--ids-sidenav-label-font-weight);
+  line-height: var(--line-height-base);
+  color: var(--ids-sidenav-label-color);
+  letter-spacing: var(--ids-sidenav-label-letter-spacing);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* Ítem de lista */
+.ids-sidenav__nav-item {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Enlace / Botón de ítem de navegación */
+.ids-sidenav__nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ids-sidenav-item-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: var(--ids-sidenav-item-min-height);
+  padding-block: var(--ids-sidenav-item-padding-y);
+  padding-inline: var(--ids-sidenav-item-padding-x);
+  border-radius: var(--ids-sidenav-item-radius);
+  background-color: var(--ids-sidenav-item-bg);
+  color: var(--ids-sidenav-item-color);
+  font-size: var(--ids-sidenav-item-font-size);
+  font-weight: var(--ids-sidenav-item-font-weight);
+  line-height: var(--ids-sidenav-item-line-height);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  border: none;
+  text-align: start;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--transition-speed-fast) var(--transition-ease),
+      color var(--transition-speed-fast) var(--transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-sidenav-item-hover-bg);
+    color: var(--ids-sidenav-item-hover-color);
+    text-decoration: none;
+  }
+
+  &:active {
+    background-color: var(--ids-sidenav-item-active-bg);
+    color: var(--ids-sidenav-item-active-color);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    z-index: 1;
+  }
+
+  /* Estado Activo / Seleccionado — aria-current="page" */
+  &.is-active,
+  &[aria-current="page"],
+  &[aria-current="true"] {
+    background-color: var(--ids-sidenav-item-selected-bg);
+    color: var(--ids-sidenav-item-selected-color);
+    font-weight: var(--font-weight-semibold);
+
+    /* Indicador visual de ítem activo (línea lateral) */
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: var(--spacing-xs);
+      inset-inline-start: 0;
+      inline-size: var(--ids-sidenav-item-indicator-width);
+      background-color: var(--ids-sidenav-item-indicator-color);
+      border-radius: var(--ids-sidenav-item-indicator-radius);
+    }
+  }
+
+  /* Estado Deshabilitado */
+  &[aria-disabled="true"],
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Ícono del ítem */
+  .ids-sidenav__nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: var(--icon-size);
+    block-size: var(--icon-size);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    color: var(--color-text-secondary);
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: var(--icon-stroke-width);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Texto del ítem */
+  .ids-sidenav__nav-text {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Badge o chip en el ítem */
+  .ids-sidenav__nav-badge {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. DIVISOR ENTRE SECCIONES DEL BODY (.ids-sidenav__divider)
+   Separa visualmente grupos de navegación o secciones temáticas.
+   -------------------------------------------------------------------------- */
+.ids-sidenav__divider {
+  display: block;
+  block-size: var(--divider-thickness);
+  background-color: var(--ids-sidenav-header-border-color);
+  margin-block: var(--spacing-xs);
+  margin-inline: var(--ids-sidenav-body-padding-x);
+  border: none;
+}
+
+/* --------------------------------------------------------------------------
+   8. ACORDEÓN INTERNO (.ids-sidenav__accordion)
+   Submenú colapsable dentro del body. Reutiliza la lógica del _collapse.scss
+   adaptada al contexto de menú lateral (anidación de ítems).
+   -------------------------------------------------------------------------- */
+.ids-sidenav__accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-inline: var(--ids-sidenav-body-padding-x);
+}
+
+/* Trigger del acordeón de submenú */
+.ids-sidenav__accordion-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ids-sidenav-item-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: var(--ids-sidenav-item-min-height);
+  padding-block: var(--ids-sidenav-accordion-trigger-padding-y);
+  padding-inline: var(--ids-sidenav-accordion-trigger-padding-x);
+  border-radius: var(--ids-sidenav-item-radius);
+  background-color: transparent;
+  color: var(--ids-sidenav-item-color);
+  font-size: var(--ids-sidenav-item-font-size);
+  font-weight: var(--ids-sidenav-item-font-weight);
+  line-height: var(--ids-sidenav-item-line-height);
+  text-align: start;
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  touch-action: manipulation;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--transition-speed-fast) var(--transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-sidenav-item-hover-bg);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Ícono chevron del acordeón */
+  .ids-sidenav__accordion-icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    inline-size: var(--icon-size-sm);
+    block-size: var(--icon-size-sm);
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    margin-inline-start: auto;
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    transform: rotate(0deg);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform var(--transition-speed-base) var(--transition-ease);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    svg {
+      inline-size: 100%;
+      block-size: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: var(--icon-stroke-width);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  /* Chevron girado al estar expandido */
+  &[aria-expanded="true"] .ids-sidenav__accordion-icon {
+    transform: rotate(180deg);
+  }
+}
+
+/* Panel de submenú del acordeón */
+.ids-sidenav__accordion-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      grid-template-rows var(--transition-speed-base) var(--transition-ease),
+      visibility 0s var(--transition-speed-base);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &.is-open {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+}
+
+/* Soporte selector adyacente */
+.ids-sidenav__accordion-trigger[aria-expanded="true"] + .ids-sidenav__accordion-panel {
+  grid-template-rows: 1fr;
+  visibility: visible;
+}
+
+/* Contenedor interno del sub-panel */
+.ids-sidenav__accordion-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-inline-start: var(--ids-sidenav-accordion-panel-padding-start);
+  padding-block-end: var(--spacing-xs);
+}
+
+/* Ítem de submenú (anidado) */
+.ids-sidenav__subnav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ids-sidenav-item-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: var(--ids-sidenav-item-min-height);
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-sm);
+  border-radius: var(--ids-sidenav-item-radius);
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: var(--ids-sidenav-item-font-weight);
+  line-height: var(--ids-sidenav-item-line-height);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  touch-action: manipulation;
+  text-align: start;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--transition-speed-fast) var(--transition-ease),
+      color var(--transition-speed-fast) var(--transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    background-color: var(--ids-sidenav-item-hover-bg);
+    color: var(--ids-sidenav-item-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  &.is-active,
+  &[aria-current="page"] {
+    color: var(--ids-sidenav-item-selected-color);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. GRUPO DE BOTONES EN EL BODY (.ids-sidenav__btn-group)
+   Pila vertical de botones de acción dentro del panel.
+   -------------------------------------------------------------------------- */
+.ids-sidenav__btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-sidenav-btn-group-gap);
+  padding-inline: var(--ids-sidenav-btn-group-padding-x);
+  box-sizing: border-box;
+
+  /* Botones ocupan el ancho completo del panel */
+  .ids-button,
+  button,
+  a {
+    inline-size: 100%;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. PIE DEL PANEL (.ids-sidenav__footer)
+   Fijo al fondo del panel. Contiene: texto (1 o 2 líneas) + botón/enlace.
+   -------------------------------------------------------------------------- */
+.ids-sidenav__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ids-sidenav-footer-gap);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding-block: var(--ids-sidenav-footer-padding-y);
+  padding-inline: var(--ids-sidenav-footer-padding-x);
+  background-color: var(--ids-sidenav-footer-bg);
+  color: var(--ids-sidenav-footer-color);
+  font-size: var(--ids-sidenav-footer-font-size);
+  line-height: var(--ids-sidenav-footer-line-height);
+  border-block-start: var(--ids-sidenav-footer-border-width) solid var(--ids-sidenav-footer-border-color);
+}
+
+/* Texto principal del footer (1 o 2 líneas) */
+.ids-sidenav__footer-text {
+  display: block;
+  margin: 0;
+  font-size: var(--ids-sidenav-footer-font-size);
+  line-height: var(--ids-sidenav-footer-line-height);
+  color: var(--ids-sidenav-footer-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Limitar a 2 líneas máximo */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Texto secundario del footer */
+.ids-sidenav__footer-subtext {
+  display: block;
+  margin: 0;
+  font-size: calc(var(--ids-sidenav-footer-font-size) * 0.9);
+  line-height: var(--ids-sidenav-footer-line-height);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botón o enlace del footer */
+.ids-sidenav__footer-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-block-start: var(--spacing-xs);
+  min-block-size: var(--target-size-min);
+  padding-block: var(--spacing-xs);
+  padding-inline: 0;
+  background-color: transparent;
+  color: var(--color-action-primary);
+  font-size: var(--ids-sidenav-footer-font-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-base);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  border: none;
+  touch-action: manipulation;
+  border-radius: var(--radius-sm);
+  align-self: flex-start;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color var(--transition-speed-fast) var(--transition-ease);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:hover {
+    color: var(--color-action-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  svg,
+  .ids-icon {
+    inline-size: var(--icon-size-sm);
+    block-size: var(--icon-size-sm);
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--icon-stroke-width);
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. VARIANTE: MENÚ LATERAL PERSISTENTE (.ids-sidenav--persistent)
+   No necesita backdrop. Empuja el contenido principal en vez de sobreponerse.
+   Uso típico: layout de escritorio con sidebar siempre visible.
+   -------------------------------------------------------------------------- */
+.ids-sidenav--persistent {
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100vh;
+  transform: none !important;
+  visibility: visible !important;
+  transition: none !important;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   12. RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   12. RESPONSIVIDAD NATIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+
+/* Estilos compactos móviles por defecto */
+.ids-sidenav {
+  inline-size: 100%;
+  max-inline-size: var(--ids-sidenav-max-width);
+  border-radius: 0 !important;
+}
+
+.ids-sidenav__nav,
+.ids-sidenav__accordion,
+.ids-sidenav__btn-group,
+.ids-sidenav__nav-link,
+.ids-sidenav__accordion-trigger,
+.ids-sidenav__footer {
+  padding-inline: var(--spacing-sm);
+}
+
+/* En móvil el menú flotante pierde el margen lateral */
+.ids-sidenav--float {
+  inset-block: 0;
+  block-size: 100%;
+
+  &.ids-sidenav--start,
+  &:not(.ids-sidenav--end) {
+    inset-inline-start: 0;
+  }
+
+  &.ids-sidenav--end {
+    inset-inline-end: 0;
+  }
+}
+
+/* Despliegue en pantallas medianas / tablets (>= 48rem) */
+@media (min-width: 48rem) {
+  .ids-sidenav {
+    inline-size: var(--ids-sidenav-width-sm);
+    border-radius: var(--ids-sidenav-radius);
+  }
+
+  .ids-sidenav--lg {
+    inline-size: var(--ids-sidenav-width);
+  }
+
+  .ids-sidenav__nav,
+  .ids-sidenav__accordion,
+  .ids-sidenav__btn-group,
+  .ids-sidenav__nav-link,
+  .ids-sidenav__accordion-trigger,
+  .ids-sidenav__footer {
+    padding-inline: var(--ids-sidenav-padding-x);
+  }
+
+  .ids-sidenav--float {
+    inset-block: var(--spacing-md);
+    block-size: calc(100% - 2 * var(--spacing-md));
+    border-radius: var(--ids-sidenav-radius-float);
+
+    &.ids-sidenav--start,
+    &:not(.ids-sidenav--end) {
+      inset-inline-start: var(--spacing-md);
+    }
+
+    &.ids-sidenav--end {
+      inset-inline-end: var(--spacing-md);
+    }
+  }
+}
+
+/* Despliegue en pantallas amplias / escritorio (>= 64rem) */
+@media (min-width: 64rem) {
+  .ids-sidenav {
+    inline-size: var(--ids-sidenav-width);
+  }
+
+  .ids-sidenav--lg {
+    inline-size: var(--ids-sidenav-width-lg);
+  }
+}
+
+/* ==========================================================================
+   13. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens de _themes.scss.
+   ========================================================================== */
+
+/* 13.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-sidenav {
+    background-color: var(--color-surface-background);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-sidenav__header {
+    background-color: var(--color-surface-background);
+    border-block-end-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+  }
+
+  .ids-sidenav__nav-link {
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-border-interactive);
+    }
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+
+    &.is-active,
+    &[aria-current="page"] {
+      background-color: var(--color-surface-hover);
+      color: var(--color-border-interactive);
+
+      &::before {
+        background-color: var(--color-border-interactive);
+      }
+    }
+  }
+
+  .ids-sidenav__close {
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+  }
+
+  .ids-sidenav__footer {
+    background-color: var(--color-surface-background);
+    border-block-start-color: var(--color-border-subtle);
+  }
+
+  .ids-sidenav-backdrop {
+    background-color: var(--overlay-backdrop-bg);
+  }
+}
+
+/* 13.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-sidenav,
+  .ids-sidenav__close,
+  .ids-sidenav__nav-link,
+  .ids-sidenav__accordion-trigger,
+  .ids-sidenav__accordion-icon,
+  .ids-sidenav__subnav-link,
+  .ids-sidenav-backdrop {
+    transition: none;
+    animation: none;
+  }
+
+  .ids-sidenav {
+    box-shadow: none;
+  }
+}
+
+/* 13.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-sidenav {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-sidenav__header {
+    background-color: var(--color-surface-card);
+  }
+
+  .ids-sidenav__footer {
+    background-color: var(--color-surface-card);
+  }
+
+  .ids-sidenav__nav-link.is-active,
+  .ids-sidenav__nav-link[aria-current="page"] {
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-primary);
+
+    &::before {
+      background-color: var(--color-border-interactive);
+    }
+  }
+}
+
+/* ==========================================================================
+   14. MODO FORZADO DE COLORES DEL SISTEMA (Windows High Contrast / Assistive Tech)
+   ========================================================================== */
+@media (forced-colors: active) {
+  .ids-sidenav {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-sidenav__header {
+    border-block-end: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-sidenav__footer {
+    border-block-start: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+  }
+
+  .ids-sidenav__close {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+  }
+
+  .ids-sidenav__nav-link {
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+    }
+
+    &.is-active,
+    &[aria-current="page"] {
+      background-color: Highlight;
+      color: HighlightText;
+
+      &::before {
+        background-color: HighlightText;
+      }
+    }
+  }
+
+  .ids-sidenav-backdrop {
+    background-color: var(--overlay-backdrop-bg);
+  }
+}
+
+/* ==========================================================================
+   15. MOVIMIENTO REDUCIDO — Bloque consolidado final
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ids-sidenav,
+  .ids-sidenav__close,
+  .ids-sidenav__nav-link,
+  .ids-sidenav__accordion-trigger,
+  .ids-sidenav__accordion-panel,
+  .ids-sidenav__accordion-icon,
+  .ids-sidenav__subnav-link,
+  .ids-sidenav__footer-action,
+  .ids-sidenav-backdrop {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Panel visible/oculto instantáneamente */
+  .ids-sidenav {
+    visibility: hidden;
+
+    &.is-open {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  /* Acordeón abre instantáneamente */
+  .ids-sidenav__accordion-panel.is-open,
+  .ids-sidenav__accordion-trigger[aria-expanded="true"] + .ids-sidenav__accordion-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+
+  /* Backdrop sin transición */
+  .ids-sidenav-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+}

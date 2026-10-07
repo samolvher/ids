@@ -1,0 +1,383 @@
+/* ==========================================================================
+   02-atoms/_select.scss
+   Identity Design System (IDS) - Átomo de Selección Desplegable (Select)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL COMPONENTE SELECT
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Proporciones (Esqueleto) */
+  --ids-select-radius: var(--radius-input);
+  --ids-select-border-width: var(--select-border-width);
+  --ids-select-border-style: solid;
+  --ids-select-min-height: var(--select-min-height);
+
+  /* Espaciado Interno (Padding) */
+  --ids-select-padding-y: var(--select-padding-y);
+  --ids-select-padding-x: var(--select-padding-x);
+  --ids-select-padding-end: var(--select-padding-end);
+  --ids-select-icon-size: var(--select-icon-size);
+
+  /* Escalas de Tamaño (Modificadores) */
+  --ids-select-padding-y-sm: var(--select-padding-sm-y);
+  --ids-select-padding-x-sm: var(--select-padding-sm-x);
+  --ids-select-font-size-sm: var(--select-font-size-sm);
+  --ids-select-min-height-sm: calc(var(--target-size-min) - var(--spacing-sm));
+
+  --ids-select-padding-y-lg: var(--select-padding-lg-y);
+  --ids-select-padding-x-lg: var(--select-padding-lg-x);
+  --ids-select-font-size-lg: var(--select-font-size-lg);
+  --ids-select-min-height-lg: calc(var(--target-size-min) + var(--spacing-sm));
+
+  /* Tipografía Semántica */
+  --ids-select-font-family: var(--font-family-base);
+  --ids-select-font-size: var(--select-font-size);
+  --ids-select-font-weight: var(--select-font-weight);
+  --ids-select-line-height: var(--select-line-height);
+
+  /* Movimiento y Transiciones */
+  --ids-select-transition-speed: var(--transition-speed-fast);
+  --ids-select-transition-ease: var(--transition-ease);
+
+  /* Piel y Mapeo Cromático - Estado Normal y Hover */
+  --ids-select-bg: var(--color-surface-background);
+  --ids-select-color: var(--color-text-primary);
+  --ids-select-border-color: var(--color-border-subtle);
+  --ids-select-hover-border: var(--color-border-interactive);
+  --ids-select-hover-bg: var(--color-surface-background);
+  --ids-select-icon-color: var(--select-icon-color, var(--color-text-secondary));
+
+  /* Foco Accesible WCAG AAA (Mínimo 2px, contraste 3:1) */
+  --ids-select-focus-border: var(--color-border-interactive);
+  --ids-select-focus-ring-color: var(--focus-ring-color);
+  --ids-select-focus-ring-width: var(--focus-ring-width);
+  --ids-select-focus-ring-offset: var(--focus-ring-offset);
+
+  /* Estados de Validación y Soporte Emocional (Trauma-Informed) */
+  --ids-select-invalid-border: var(--color-status-danger);
+  --ids-select-invalid-focus-ring: var(--color-status-danger);
+  --ids-select-valid-border: var(--color-status-success);
+  --ids-select-valid-focus-ring: var(--color-status-success);
+
+  /* Estado Deshabilitado / Solo Lectura */
+  --ids-select-disabled-bg: var(--color-surface-muted);
+  --ids-select-disabled-color: var(--color-text-secondary);
+  --ids-select-disabled-border: var(--color-border-subtle);
+  --ids-select-disabled-opacity: var(--opacity-disabled);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE DE SELECT (.ids-select, .ids-input--select)
+   Lógica de accesibilidad, proporción y heurística WCAG AAA.
+   Conserva controles nativos de picker para tecnologías asistivas del SO.
+   -------------------------------------------------------------------------- */
+.ids-select,
+.ids-input--select {
+  /* Reseteo de apariencia para personalización accesible */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Modelo de caja y proporciones */
+  display: block;
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: var(--ids-select-min-height);
+  padding-block: var(--ids-select-padding-y);
+  padding-inline-start: var(--ids-select-padding-x);
+  padding-inline-end: var(--ids-select-padding-end);
+
+  /* Geometría plana */
+  border-radius: var(--ids-select-radius);
+  border-width: var(--ids-select-border-width);
+  border-style: var(--ids-select-border-style);
+  border-color: var(--ids-select-border-color);
+  background-color: var(--ids-select-bg);
+  color: var(--ids-select-color);
+
+  /* Tipografía fluida */
+  font-family: var(--ids-select-font-family);
+  font-size: var(--ids-select-font-size);
+  font-weight: var(--ids-select-font-weight);
+  line-height: var(--ids-select-line-height);
+  cursor: pointer;
+  vertical-align: middle;
+
+  /* Movimiento condicionado */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: border-color, background-color, outline-color;
+    transition-duration: var(--ids-select-transition-speed);
+    transition-timing-function: var(--ids-select-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Estado Hover */
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    border-color: var(--ids-select-hover-border);
+    background-color: var(--ids-select-hover-bg);
+  }
+
+  /* Foco Accesible por Teclado WCAG AAA */
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    border-color: var(--ids-select-focus-border);
+    outline-width: var(--ids-select-focus-ring-width);
+    outline-style: solid;
+    outline-color: var(--ids-select-focus-ring-color);
+    outline-offset: var(--ids-select-focus-ring-offset);
+  }
+
+  /* Estado Inválido / Error (Trauma-Informed: claro, no alarmante) */
+  &:user-invalid,
+  &[aria-invalid="true"],
+  &--invalid,
+  &--error {
+    border-color: var(--ids-select-invalid-border);
+
+    &:focus-visible {
+      outline-color: var(--ids-select-invalid-focus-ring);
+    }
+  }
+
+  /* Estado Válido / Confirmación */
+  &:user-valid:not(:placeholder-shown),
+  &--valid,
+  &--success {
+    border-color: var(--ids-select-valid-border);
+
+    &:focus-visible {
+      outline-color: var(--ids-select-valid-focus-ring);
+    }
+  }
+
+  /* Estado Deshabilitado */
+  &:disabled,
+  &[aria-disabled="true"],
+  &--disabled {
+    cursor: not-allowed;
+    background-color: var(--ids-select-disabled-bg);
+    border-color: var(--ids-select-disabled-border);
+    color: var(--ids-select-disabled-color);
+    opacity: var(--ids-select-disabled-opacity);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.1 MODIFICADORES DE ESCALA (Tamaños)
+     ------------------------------------------------------------------------ */
+  &--sm {
+    min-block-size: var(--ids-select-min-height-sm);
+    padding-block: var(--ids-select-padding-y-sm);
+    padding-inline-start: var(--ids-select-padding-x-sm);
+    padding-inline-end: var(--spacing-xl);
+    font-size: var(--ids-select-font-size-sm);
+  }
+
+  &--lg {
+    min-block-size: var(--ids-select-min-height-lg);
+    padding-block: var(--ids-select-padding-y-lg);
+    padding-inline-start: var(--ids-select-padding-x-lg);
+    padding-inline-end: var(--spacing-xxxl);
+    font-size: var(--ids-select-font-size-lg);
+  }
+
+  /* ------------------------------------------------------------------------
+     2.2 SELECT MULTI-OPCIÓN O TAMAÑO EXPANDIDO (multiple o size > 1)
+     ------------------------------------------------------------------------ */
+  &[multiple],
+  &[size]:not([size="1"]) {
+    padding-inline-end: var(--ids-select-padding-x);
+    min-block-size: calc(var(--target-size-min) * 2.5);
+    height: auto;
+    background-image: none;
+
+    option {
+      padding-block: var(--spacing-xs);
+      padding-inline: var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      margin-block-end: calc(var(--spacing-xs) / 2);
+
+      &:checked {
+        background-color: var(--color-action-primary);
+        color: var(--color-action-primary-text);
+      }
+    }
+  }
+
+  /* Opciones y Grupos Semánticos Internos */
+  option {
+    background-color: var(--color-surface-card);
+    color: var(--color-text-primary);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+  }
+
+  optgroup {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-secondary);
+    background-color: var(--color-surface-muted);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ENVOLTORIO CON FLECHA / INDICADOR DESPLEGABLE (.ids-select-wrapper)
+   Garantiza una flecha limpia construida con tokens sin romper el control nativo.
+   -------------------------------------------------------------------------- */
+.ids-select-wrapper {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+
+  .ids-select,
+  .ids-input--select {
+    padding-inline-end: var(--ids-select-padding-end);
+  }
+
+  /* Chevron geométrico responsivo alineado con tokens */
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: var(--spacing-md);
+    inset-block-start: 50%;
+    inline-size: var(--ids-select-icon-size);
+    block-size: var(--ids-select-icon-size);
+    border-inline-end: var(--ids-select-border-width) solid var(--ids-select-icon-color);
+    border-block-end: var(--ids-select-border-width) solid var(--ids-select-icon-color);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform var(--ids-select-transition-speed) var(--ids-select-transition-ease),
+                  border-color var(--ids-select-transition-speed) var(--ids-select-transition-ease);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  /* Modificadores del envoltorio para sincronizar la flecha con el tamaño */
+  &--sm {
+    .ids-select,
+    .ids-input--select {
+      min-block-size: var(--ids-select-min-height-sm);
+      padding-block: var(--ids-select-padding-y-sm);
+      padding-inline-start: var(--ids-select-padding-x-sm);
+      padding-inline-end: var(--spacing-xl);
+      font-size: var(--ids-select-font-size-sm);
+    }
+
+    &::after {
+      inset-inline-end: var(--spacing-sm);
+      inline-size: calc(var(--ids-select-icon-size) * 0.8);
+      block-size: calc(var(--ids-select-icon-size) * 0.8);
+    }
+  }
+
+  &--lg {
+    .ids-select,
+    .ids-input--select {
+      min-block-size: var(--ids-select-min-height-lg);
+      padding-block: var(--ids-select-padding-y-lg);
+      padding-inline-start: var(--ids-select-padding-x-lg);
+      padding-inline-end: var(--spacing-xxxl);
+      font-size: var(--ids-select-font-size-lg);
+    }
+
+    &::after {
+      inset-inline-end: var(--spacing-lg);
+      inline-size: calc(var(--ids-select-icon-size) * 1.2);
+      block-size: calc(var(--ids-select-icon-size) * 1.2);
+    }
+  }
+
+  /* Reflejo de hover en la flecha */
+  &:hover:not(:has(:disabled))::after {
+    border-color: var(--ids-select-hover-border);
+  }
+
+  /* Deshabilitado */
+  &:has(:disabled)::after,
+  &:has([aria-disabled="true"])::after {
+    opacity: var(--ids-select-disabled-opacity);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   -------------------------------------------------------------------------- */
+/* 4.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-select,
+  .ids-input--select {
+    --ids-select-border-color: var(--color-border-subtle);
+    --ids-select-icon-color: var(--select-icon-color, var(--color-text-secondary));
+
+    option {
+      background-color: var(--color-surface-background);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .ids-select-wrapper::after {
+    border-color: var(--ids-select-icon-color);
+  }
+}
+
+/* 4.2 Baja Estimulación (Neurodivergencia) */
+[data-theme="low-stimulation"] {
+  .ids-select,
+  .ids-input--select {
+    --ids-select-border-color: var(--color-border-subtle);
+    --ids-select-icon-color: var(--select-icon-color, var(--color-text-secondary));
+
+    option {
+      background-color: var(--color-surface-card);
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+/* 4.3 Modo Discreto / Stealth (Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-select,
+  .ids-input--select {
+    --ids-select-border-color: var(--color-border-subtle);
+    --ids-select-icon-color: var(--select-icon-color, var(--color-text-secondary));
+
+    option {
+      background-color: var(--color-surface-card);
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. MODO DE ALTO CONTRASTE DEL SISTEMA OPERATIVO (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-select,
+  .ids-input--select {
+    border: var(--focus-ring-width) solid ButtonText;
+    color: ButtonText;
+    background-color: Field;
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) solid Highlight;
+    }
+  }
+
+  .ids-select-wrapper::after {
+    border-color: ButtonText;
+  }
+}

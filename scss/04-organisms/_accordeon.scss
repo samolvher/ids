@@ -1,0 +1,809 @@
+/* ==========================================================================
+   04-organisms/_accordeon.scss
+   Identity Design System (IDS) - Organismo de Acordeón y Paneles Colapsables
+   Estructura accesible compatible con <details>/<summary> nativo y ARIA region:
+     - Variantes de los 4 estados de colores semánticos (Success, Danger, Warning, Info).
+     - Modos de presentación: Estándar (Agrupado), Separado (Cards independientes) y Flush (Sin bordes externos).
+     - Densidades: Estándar, Compacto y Relajado.
+     - Indicador cinemático accesible con rotación suave y foco visible WCAG AAA.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DEL ORGANISMO ACORDEÓN (Contrato de Tokens)
+   Estricta prohibición de valores absolutos (px, hex, nominales).
+   Toda dimensión, geometría, color o espacio se inyecta por tokens CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Estructura Base (Flat/Clean, sin sombras complejas) */
+  --ids-accordion-radius: var(--radius-card);
+  --ids-accordion-radius-sm: var(--radius-sm);
+  --ids-accordion-border-width: var(--focus-ring-width);
+  --ids-accordion-border-style: solid;
+  --ids-accordion-border-color: var(--color-border-subtle);
+  --ids-accordion-gap: var(--spacing-sm);
+
+  /* Espaciado Interno del Encabezado (Header / Trigger) */
+  --ids-accordion-header-padding-y: var(--spacing-md);
+  --ids-accordion-header-padding-x: var(--spacing-lg);
+  --ids-accordion-header-min-height: var(--target-size-min); /* 44px WCAG AAA Touch Target */
+  --ids-accordion-header-gap: var(--spacing-md);
+
+  /* Espaciado Interno del Panel de Contenido (Body) */
+  --ids-accordion-body-padding-y: var(--spacing-lg);
+  --ids-accordion-body-padding-x: var(--spacing-lg);
+  --ids-accordion-body-gap: var(--spacing-md);
+
+  /* Tipografía Semántica */
+  --ids-accordion-font-family: var(--font-family-base);
+  --ids-accordion-title-font-size: var(--font-size-body);
+  --ids-accordion-title-font-weight: var(--font-weight-semibold);
+  --ids-accordion-title-line-height: var(--line-height-tight);
+  --ids-accordion-subtitle-font-size: var(--font-size-caption);
+  --ids-accordion-body-font-size: var(--font-size-body);
+  --ids-accordion-body-line-height: var(--line-height-base); /* Mínimo 1.5 WCAG AAA */
+
+  /* Icono Indicador de Expansión (Chevron) */
+  --ids-accordion-icon-size: var(--ids-icon-size, 1.25rem);
+  --ids-accordion-icon-color: var(--color-text-secondary);
+  --ids-accordion-icon-active-color: var(--color-action-primary);
+
+  /* Piel y Superficies Base (Reposo / Flat & Clean) */
+  --ids-accordion-bg: var(--color-surface-card);
+  --ids-accordion-header-bg: var(--color-surface-card);
+  --ids-accordion-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-body-bg: var(--color-surface-card);
+  --ids-accordion-color: var(--color-text-primary);
+  --ids-accordion-body-color: var(--color-text-secondary);
+  --ids-accordion-divider-color: var(--color-border-subtle);
+  --ids-accordion-divider-thickness: var(--divider-thickness);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-accordion-current-bg: var(--ids-accordion-bg);
+  --ids-accordion-current-border: var(--ids-accordion-border-color);
+  --ids-accordion-current-header-bg: var(--ids-accordion-header-bg);
+  --ids-accordion-current-header-hover-bg: var(--ids-accordion-header-hover-bg);
+  --ids-accordion-current-body-bg: var(--ids-accordion-body-bg);
+  --ids-accordion-current-color: var(--ids-accordion-color);
+  --ids-accordion-current-body-color: var(--ids-accordion-body-color);
+  --ids-accordion-current-icon-color: var(--ids-accordion-icon-color);
+  --ids-accordion-current-divider: var(--ids-accordion-divider-color);
+  --ids-accordion-current-accent: var(--color-action-primary);
+  --ids-accordion-current-focus: var(--focus-ring-color);
+
+  /* Variantes de Densidad (Compacto y Relajado) */
+  --ids-accordion-compact-padding-y: var(--spacing-sm);
+  --ids-accordion-compact-padding-x: var(--spacing-md);
+  --ids-accordion-relaxed-padding-y: var(--spacing-lg);
+  --ids-accordion-relaxed-padding-x: var(--spacing-xl);
+
+  /* Cinemática y Transiciones */
+  --ids-accordion-transition-speed: var(--transition-speed-fast);
+  --ids-accordion-transition-ease: var(--transition-ease);
+
+  /* ------------------------------------------------------------------------
+     LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA & Trauma-Informed)
+     ------------------------------------------------------------------------ */
+  /* 1. Éxito / Success (Confirmación, tareas completadas, protocolos seguros) */
+  --ids-accordion-success-border: var(--status-success-border);
+  --ids-accordion-success-bg: var(--color-surface-card);
+  --ids-accordion-success-header-bg: var(--status-success-bg);
+  --ids-accordion-success-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-success-color: var(--color-text-primary);
+  --ids-accordion-success-icon-color: var(--status-success);
+  --ids-accordion-success-accent: var(--status-success);
+
+  /* 2. Peligro / Danger (Atención crítica, acciones destructivas - Trauma-Informed) */
+  --ids-accordion-danger-border: var(--status-danger-border);
+  --ids-accordion-danger-bg: var(--color-surface-card);
+  --ids-accordion-danger-header-bg: var(--status-danger-bg);
+  --ids-accordion-danger-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-danger-color: var(--color-text-primary);
+  --ids-accordion-danger-icon-color: var(--status-danger);
+  --ids-accordion-danger-accent: var(--status-danger);
+
+  /* 3. Advertencia / Warning (Precaución, revisión recomendada) */
+  --ids-accordion-warning-border: var(--status-warning-border);
+  --ids-accordion-warning-bg: var(--color-surface-card);
+  --ids-accordion-warning-header-bg: var(--status-warning-bg);
+  --ids-accordion-warning-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-warning-color: var(--color-text-primary);
+  --ids-accordion-warning-icon-color: var(--status-warning);
+  --ids-accordion-warning-accent: var(--status-warning);
+
+  /* 4. Información / Info (Contexto neutral, documentación, orientaciones) */
+  --ids-accordion-info-border: var(--status-info-border);
+  --ids-accordion-info-bg: var(--color-surface-card);
+  --ids-accordion-info-header-bg: var(--status-info-bg);
+  --ids-accordion-info-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-info-color: var(--color-text-primary);
+  --ids-accordion-info-icon-color: var(--status-info);
+  --ids-accordion-info-accent: var(--status-info);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR AGRUPADOR PRINCIPAL (.ids-accordion)
+   Modelo estándar: Caja unificada con divisores internos entre ítems.
+   -------------------------------------------------------------------------- */
+.ids-accordion {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+  background-color: var(--ids-accordion-current-bg);
+  border: var(--ids-accordion-border-width) var(--ids-accordion-border-style) var(--ids-accordion-current-border);
+  border-radius: var(--ids-accordion-radius);
+  overflow: hidden;
+
+  /* Geometría plana (Clean / Flat, sin sombras complejas) */
+  box-shadow: none;
+
+  /* Línea divisoria entre ítems en modo agrupado */
+  & > .ids-accordion__item:not(:last-child) {
+    border-block-end: var(--ids-accordion-divider-thickness) solid var(--ids-accordion-current-divider);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. ELEMENTO ÍTEM DE ACORDEÓN (.ids-accordion__item)
+   Soporte nativo para HTML5 <details> y para contenedores ARIA.
+   -------------------------------------------------------------------------- */
+.ids-accordion__item {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  box-sizing: border-box;
+  background-color: var(--ids-accordion-current-bg);
+  color: var(--ids-accordion-current-color);
+  font-family: var(--ids-accordion-font-family);
+
+  /* Reseteo para <details> nativo */
+  margin: 0;
+  padding: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease),
+                border-color var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. ENCABEZADO Y ACTIVADOR ACCESIBLE (.ids-accordion__header / __trigger)
+   Compatible con <summary> nativo y elemento <button> con aria-expanded.
+   -------------------------------------------------------------------------- */
+.ids-accordion__header,
+.ids-accordion__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-accordion-header-gap);
+  inline-size: 100%;
+  min-block-size: var(--ids-accordion-header-min-height);
+  padding-block: var(--ids-accordion-header-padding-y);
+  padding-inline: var(--spacing-md);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    padding-inline: var(--ids-accordion-header-padding-x);
+  }
+  background-color: var(--ids-accordion-current-header-bg);
+  color: var(--ids-accordion-current-color);
+  font-family: inherit;
+  text-align: start;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  outline: none;
+
+  /* Reseteo para el marcador triangular nativo de <summary> */
+  list-style: none;
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease),
+                color var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease),
+                outline-offset var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  /* Estado Hover */
+  &:hover {
+    background-color: var(--ids-accordion-current-header-hover-bg);
+  }
+
+  /* Visibilidad de Foco Accesible (:focus-visible WCAG AAA) */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--ids-accordion-current-focus);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Estructura Interior del Encabezado (Texto, Metadatos y Badges) */
+.ids-accordion__header-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.ids-accordion__header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.ids-accordion__title-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.ids-accordion__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--ids-accordion-title-font-size);
+  font-weight: var(--ids-accordion-title-font-weight);
+  line-height: var(--ids-accordion-title-line-height);
+  color: inherit;
+  word-wrap: break-word;
+}
+
+.ids-accordion__subtitle {
+  margin: 0;
+  font-size: var(--ids-accordion-subtitle-font-size);
+  color: var(--ids-accordion-current-body-color);
+  line-height: var(--line-height-base);
+}
+
+/* --------------------------------------------------------------------------
+   5. ICONOS DE ESTADO Y CHEVRON (.ids-accordion__icon / .ids-accordion__chevron)
+   Rotación suave de 180 grados al desplegarse, basada en tokens de iconos.
+   -------------------------------------------------------------------------- */
+.ids-accordion__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--ids-accordion-icon-size);
+  block-size: var(--ids-accordion-icon-size);
+  width: var(--ids-accordion-icon-size);
+  height: var(--ids-accordion-icon-size);
+  max-inline-size: var(--ids-accordion-icon-size);
+  max-block-size: var(--ids-accordion-icon-size);
+  max-width: var(--ids-accordion-icon-size);
+  max-height: var(--ids-accordion-icon-size);
+  color: var(--ids-accordion-current-icon-color);
+  pointer-events: none;
+
+  svg,
+  .ids-icon {
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+/* Icono Indicador de Expansión (Chevron) */
+.ids-accordion__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--ids-accordion-icon-size);
+  block-size: var(--ids-accordion-icon-size);
+  width: var(--ids-accordion-icon-size);
+  height: var(--ids-accordion-icon-size);
+  max-inline-size: var(--ids-accordion-icon-size);
+  max-block-size: var(--ids-accordion-icon-size);
+  max-width: var(--ids-accordion-icon-size);
+  max-height: var(--ids-accordion-icon-size);
+  color: var(--ids-accordion-current-icon-color);
+  margin-inline-start: auto;
+  transform-origin: center;
+  pointer-events: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease),
+                color var(--ids-accordion-transition-speed) var(--ids-accordion-transition-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+
+  svg,
+  .ids-icon {
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+/* Icono Prefijo Opcional en el Título */
+.ids-accordion__prefix-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--ids-accordion-icon-size);
+  block-size: var(--ids-accordion-icon-size);
+  width: var(--ids-accordion-icon-size);
+  height: var(--ids-accordion-icon-size);
+  max-inline-size: var(--ids-accordion-icon-size);
+  max-block-size: var(--ids-accordion-icon-size);
+  max-width: var(--ids-accordion-icon-size);
+  max-height: var(--ids-accordion-icon-size);
+  color: var(--ids-accordion-current-icon-color);
+
+  svg,
+  .ids-icon {
+    inline-size: 100%;
+    block-size: 100%;
+    width: 100%;
+    height: 100%;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. PANEL DE CONTENIDO (.ids-accordion__panel / __body)
+   -------------------------------------------------------------------------- */
+.ids-accordion__panel,
+.ids-accordion__body {
+  padding-block: var(--ids-accordion-body-padding-y);
+  padding-inline: var(--spacing-md);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    padding-inline: var(--ids-accordion-body-padding-x);
+  }
+  background-color: var(--ids-accordion-current-body-bg);
+  color: var(--ids-accordion-current-body-color);
+  font-size: var(--ids-accordion-body-font-size);
+  line-height: var(--ids-accordion-body-line-height);
+  word-wrap: break-word;
+
+  /* Reseteo espaciado entre párrafos (Trauma-Informed) */
+  & > *:first-child {
+    margin-block-start: 0;
+  }
+
+  & > *:last-child {
+    margin-block-end: 0;
+  }
+
+  p {
+    margin-block-end: var(--spacing-md);
+    line-height: var(--line-height-base);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. COMPORTAMIENTO DE APERTURA (Open States)
+   Manejo simétrico para HTML5 <details[open]> y clase interactiva .is-open / aria-expanded
+   -------------------------------------------------------------------------- */
+/* 7.1 Rotación del Chevron al Abrir */
+details.ids-accordion__item[open] > summary .ids-accordion__chevron,
+details.ids-accordion__item[open] > summary .ids-accordion__icon:last-child,
+.ids-accordion__item.is-open .ids-accordion__chevron,
+.ids-accordion__trigger[aria-expanded="true"] .ids-accordion__chevron {
+  transform: rotate(180deg);
+  color: var(--ids-accordion-current-icon-color);
+}
+
+/* 7.2 Divisor Inferior del Encabezado al Abrir */
+details.ids-accordion__item[open] > .ids-accordion__header,
+.ids-accordion__item.is-open > .ids-accordion__header,
+.ids-accordion__trigger[aria-expanded="true"] {
+  border-block-end: var(--ids-accordion-divider-thickness) solid var(--ids-accordion-current-divider);
+}
+
+/* 7.3 Borde de Acento Lateral en Estado Abierto */
+details.ids-accordion__item[open],
+.ids-accordion__item.is-open {
+  border-inline-start: var(--ids-accordion-border-width) solid var(--ids-accordion-current-accent);
+}
+
+/* 7.4 Control de Visibilidad para Paneles con ARIA */
+.ids-accordion__panel[hidden],
+.ids-accordion__panel:not(.is-open):not(:only-child):not([role="region"]) {
+  /* En contenedores no nativos sin [open] */
+  &[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA & Trauma-Informed)
+   Aplicables al contenedor completo (.ids-accordion--*) o a ítems individuales (.ids-accordion__item--*).
+   -------------------------------------------------------------------------- */
+
+/* 8.1 ESTADO ÉXITO / SUCCESS (Protocolos Seguros, Verificados, Completados) */
+.ids-accordion--success,
+.ids-accordion__item--success {
+  --ids-accordion-current-border: var(--ids-accordion-success-border);
+  --ids-accordion-current-header-bg: var(--ids-accordion-success-header-bg);
+  --ids-accordion-current-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-current-icon-color: var(--ids-accordion-success-icon-color);
+  --ids-accordion-current-accent: var(--ids-accordion-success-accent);
+  --ids-accordion-current-divider: var(--ids-accordion-success-border);
+
+  &.ids-accordion {
+    border-color: var(--ids-accordion-success-border);
+  }
+
+  &.ids-accordion__item {
+    border-color: var(--ids-accordion-success-border);
+  }
+}
+
+/* 8.2 ESTADO PELIGRO / DANGER (Atención Crítica, Destructiva - Trauma-Informed) */
+.ids-accordion--danger,
+.ids-accordion__item--danger {
+  --ids-accordion-current-border: var(--ids-accordion-danger-border);
+  --ids-accordion-current-header-bg: var(--ids-accordion-danger-header-bg);
+  --ids-accordion-current-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-current-icon-color: var(--ids-accordion-danger-icon-color);
+  --ids-accordion-current-accent: var(--ids-accordion-danger-accent);
+  --ids-accordion-current-divider: var(--ids-accordion-danger-border);
+
+  &.ids-accordion {
+    border-color: var(--ids-accordion-danger-border);
+  }
+
+  &.ids-accordion__item {
+    border-color: var(--ids-accordion-danger-border);
+  }
+
+  .ids-accordion__title {
+    color: var(--status-danger);
+  }
+}
+
+/* 8.3 ESTADO ADVERTENCIA / WARNING (Precaución, Revisión Requerida) */
+.ids-accordion--warning,
+.ids-accordion__item--warning {
+  --ids-accordion-current-border: var(--ids-accordion-warning-border);
+  --ids-accordion-current-header-bg: var(--ids-accordion-warning-header-bg);
+  --ids-accordion-current-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-current-icon-color: var(--ids-accordion-warning-icon-color);
+  --ids-accordion-current-accent: var(--ids-accordion-warning-accent);
+  --ids-accordion-current-divider: var(--ids-accordion-warning-border);
+
+  &.ids-accordion {
+    border-color: var(--ids-accordion-warning-border);
+  }
+
+  &.ids-accordion__item {
+    border-color: var(--ids-accordion-warning-border);
+  }
+}
+
+/* 8.4 ESTADO INFORMACIÓN / INFO (Contextual, Neutral, Educativo) */
+.ids-accordion--info,
+.ids-accordion__item--info {
+  --ids-accordion-current-border: var(--ids-accordion-info-border);
+  --ids-accordion-current-header-bg: var(--ids-accordion-info-header-bg);
+  --ids-accordion-current-header-hover-bg: var(--color-surface-hover);
+  --ids-accordion-current-icon-color: var(--ids-accordion-info-icon-color);
+  --ids-accordion-current-accent: var(--ids-accordion-info-accent);
+  --ids-accordion-current-divider: var(--ids-accordion-info-border);
+
+  &.ids-accordion {
+    border-color: var(--ids-accordion-info-border);
+  }
+
+  &.ids-accordion__item {
+    border-color: var(--ids-accordion-info-border);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. MODOS DE PRESENTACIÓN Y LAYOUT (Structural Modifiers)
+   -------------------------------------------------------------------------- */
+
+/* 9.1 Modo Separado (.ids-accordion--separated)
+   Cada ítem es una tarjeta independiente separada por gap. */
+.ids-accordion--separated {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  gap: var(--ids-accordion-gap);
+  overflow: visible;
+
+  & > .ids-accordion__item {
+    border: var(--ids-accordion-border-width) var(--ids-accordion-border-style) var(--ids-accordion-current-border);
+    border-radius: var(--ids-accordion-radius);
+    overflow: hidden;
+
+    &:not(:last-child) {
+      border-block-end: var(--ids-accordion-border-width) var(--ids-accordion-border-style) var(--ids-accordion-current-border);
+    }
+  }
+}
+
+/* 9.2 Modo Flush (.ids-accordion--flush)
+   Sin bordes exteriores ni curvatura, ideal para barras laterales o tarjetas anidadas. */
+.ids-accordion--flush {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+
+  & > .ids-accordion__item {
+    border-radius: 0;
+    border-inline: none;
+    border-block-start: none;
+    border-block-end: var(--ids-accordion-divider-thickness) solid var(--ids-accordion-current-divider);
+    background-color: transparent;
+
+    &:first-child {
+      border-block-start: var(--ids-accordion-divider-thickness) solid var(--ids-accordion-current-divider);
+    }
+  }
+
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    padding-inline: 0;
+    background-color: transparent;
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  .ids-accordion__panel,
+  .ids-accordion__body {
+    padding-inline: 0;
+    background-color: transparent;
+  }
+}
+
+/* 9.3 Variantes de Densidad (Compact y Relaxed) */
+.ids-accordion--compact {
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    padding-block: var(--ids-accordion-compact-padding-y);
+    padding-inline: var(--ids-accordion-compact-padding-x);
+    min-block-size: calc(var(--target-size-min) - var(--spacing-sm));
+  }
+
+  .ids-accordion__panel,
+  .ids-accordion__body {
+    padding-block: var(--ids-accordion-compact-padding-y);
+    padding-inline: var(--ids-accordion-compact-padding-x);
+  }
+}
+
+.ids-accordion--relaxed {
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    padding-block: var(--ids-accordion-relaxed-padding-y);
+    padding-inline: var(--ids-accordion-relaxed-padding-x);
+  }
+
+  .ids-accordion__panel,
+  .ids-accordion__body {
+    padding-block: var(--ids-accordion-relaxed-padding-y);
+    padding-inline: var(--ids-accordion-relaxed-padding-x);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ESTADO DESHABILITADO (.is-disabled / [disabled])
+   -------------------------------------------------------------------------- */
+.ids-accordion__item[disabled],
+.ids-accordion__item.is-disabled,
+details.ids-accordion__item[disabled],
+.ids-accordion__header[disabled],
+.ids-accordion__trigger[disabled],
+.ids-accordion__trigger[aria-disabled="true"] {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    cursor: not-allowed;
+    background-color: var(--color-action-disabled-bg);
+    color: var(--color-action-disabled-text);
+  }
+
+  .ids-accordion__icon {
+    color: var(--color-action-disabled-text);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. SOPORTE DE TEMAS DEL SISTEMA (Theming)
+   Sobrescrituras exactas según tokens de _themes.scss.
+   -------------------------------------------------------------------------- */
+
+/* 11.1 Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-accordion {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-accordion__item {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    background-color: var(--color-surface-background);
+    color: var(--color-text-primary);
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    &:focus-visible {
+      outline-color: var(--focus-ring-color);
+    }
+  }
+
+  .ids-accordion__panel,
+  .ids-accordion__body {
+    background-color: var(--color-surface-background);
+    color: var(--color-text-primary);
+  }
+
+  .ids-accordion__icon {
+    color: var(--color-text-primary);
+  }
+
+  /* Estados de color en Alto Contraste */
+  .ids-accordion--success,
+  .ids-accordion__item--success {
+    --ids-accordion-current-border: var(--color-status-success);
+    --ids-accordion-current-icon-color: var(--color-status-success);
+  }
+
+  .ids-accordion--danger,
+  .ids-accordion__item--danger {
+    --ids-accordion-current-border: var(--color-action-danger-bg);
+    --ids-accordion-current-icon-color: var(--color-action-danger-bg);
+  }
+
+  .ids-accordion--warning,
+  .ids-accordion__item--warning {
+    --ids-accordion-current-border: var(--color-status-warning);
+    --ids-accordion-current-icon-color: var(--color-status-warning);
+  }
+
+  .ids-accordion--info,
+  .ids-accordion__item--info {
+    --ids-accordion-current-border: var(--color-status-info);
+    --ids-accordion-current-icon-color: var(--color-status-info);
+  }
+}
+
+/* 11.2 Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-accordion,
+  .ids-accordion__item,
+  .ids-accordion__header,
+  .ids-accordion__icon {
+    transition: none;
+    box-shadow: none;
+  }
+}
+
+/* 11.3 Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-accordion {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    background-color: var(--color-surface-card);
+
+    &:hover {
+      background-color: var(--color-surface-muted);
+    }
+  }
+
+  .ids-accordion__panel,
+  .ids-accordion__body {
+    background-color: var(--color-surface-card);
+  }
+}
+
+/* 11.4 Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-accordion {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-accordion__item {
+    border-color: CanvasText;
+  }
+
+  .ids-accordion__header,
+  .ids-accordion__trigger {
+    background-color: Canvas;
+    color: CanvasText;
+
+    &:focus-visible {
+      outline: 0.1875rem solid Highlight;
+      outline-offset: 0.125rem;
+    }
+  }
+
+  .ids-accordion__panel,
+  .ids-accordion__body {
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-accordion__icon {
+    color: CanvasText;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+
+/* Movimiento Reducido (Accesibilidad Vestibular Universal) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-accordion,
+  .ids-accordion__item,
+  .ids-accordion__header,
+  .ids-accordion__trigger,
+  .ids-accordion__icon {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTABILIDAD RESPONSIVA - MOBILE-FIRST
+   -------------------------------------------------------------------------- */
+/* Las dimensiones compactas en móviles están configuradas por defecto en
+   .ids-accordion__header y .ids-accordion__panel (padding-inline: var(--spacing-md)),
+   desplegando los valores amplios a partir de @media (min-width: 48rem). */
+

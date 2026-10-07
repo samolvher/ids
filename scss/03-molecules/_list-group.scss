@@ -1,0 +1,557 @@
+/* ==========================================================================
+   03-molecules/_list-group.scss
+   Identity Design System (IDS) - Molécula de Grupos de Listas (List Group)
+   Presentaciones estáticas e interactivas (con/sin hover), activos, deshabilitados,
+   con/sin numeración y badges, variante flush y los 4 estados cromáticos.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE LIST GROUP
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría y Superficie Base */
+  --ids-list-group-bg: var(--color-surface-card);
+  --ids-list-group-border-width: var(--focus-ring-width);
+  --ids-list-group-border-color: var(--color-border-subtle);
+  --ids-list-group-radius: var(--radius-card);
+
+  /* Espaciado de Ítems y Proporciones */
+  --ids-list-group-item-padding-y: var(--spacing-sm);
+  --ids-list-group-item-padding-x: var(--spacing-md);
+  --ids-list-group-item-gap: var(--spacing-sm);
+  --ids-list-group-item-min-height: var(--target-size-min); /* 44px WCAG AAA Touch Target */
+  --ids-list-group-divider-thickness: var(--divider-thickness);
+  --ids-list-group-divider-color: var(--color-border-subtle);
+
+  /* Tipografía y Color de Texto */
+  --ids-list-group-item-color: var(--color-text-primary);
+  --ids-list-group-item-desc-color: var(--color-text-secondary);
+  --ids-list-group-font-family: var(--font-family-base);
+  --ids-list-group-font-size: var(--font-size-body);
+  --ids-list-group-line-height: var(--line-height-base);
+
+  /* Estados de Interacción (Con Hover) */
+  --ids-list-group-item-hover-bg: var(--color-surface-hover);
+  --ids-list-group-item-hover-color: var(--color-text-primary);
+  --ids-list-group-item-active-bg: var(--color-action-primary);
+  --ids-list-group-item-active-color: var(--color-action-primary-text);
+  --ids-list-group-item-active-border: var(--color-action-primary);
+  --ids-list-group-badge-active-bg: var(--badge-active-contrast-bg);
+
+  /* Numeración (Lista Numerada) */
+  --ids-list-group-number-color: var(--color-text-secondary);
+  --ids-list-group-number-font-weight: var(--font-weight-bold);
+  --ids-list-group-number-min-width: var(--spacing-lg);
+
+  /* Los 4 Estados de Color Semánticos (Acentos y Superficies de Estado) */
+  /* 1. Éxito / Success */
+  --ids-list-group-success-bg: var(--color-surface-muted);
+  --ids-list-group-success-color: var(--color-status-success);
+  --ids-list-group-success-border: var(--color-status-success);
+  --ids-list-group-success-text: var(--color-text-primary);
+
+  /* 2. Peligro / Danger (Trauma-Informed) */
+  --ids-list-group-danger-bg: var(--color-surface-muted);
+  --ids-list-group-danger-color: var(--color-status-danger);
+  --ids-list-group-danger-border: var(--color-status-danger);
+  --ids-list-group-danger-text: var(--color-text-primary);
+
+  /* 3. Advertencia / Warning */
+  --ids-list-group-warning-bg: var(--color-surface-muted);
+  --ids-list-group-warning-color: var(--color-status-warning);
+  --ids-list-group-warning-border: var(--color-status-warning);
+  --ids-list-group-warning-text: var(--color-text-primary);
+
+  /* 4. Información / Info (o Primario) */
+  --ids-list-group-info-bg: var(--color-surface-muted);
+  --ids-list-group-info-color: var(--color-status-info);
+  --ids-list-group-info-border: var(--color-status-info);
+  --ids-list-group-info-text: var(--color-text-primary);
+
+  /* Cinemática y Movimiento */
+  --ids-list-group-transition-speed: var(--transition-speed-fast);
+  --ids-list-group-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR PRINCIPAL (.ids-list-group)
+   Esqueleto semántico para listas agrupadas (<ul> o <ol>).
+   -------------------------------------------------------------------------- */
+.ids-list-group {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background-color: var(--ids-list-group-bg);
+  border: var(--ids-list-group-border-width) solid var(--ids-list-group-border-color);
+  border-radius: var(--ids-list-group-radius);
+  overflow: hidden;
+  font-family: var(--ids-list-group-font-family);
+  font-size: var(--ids-list-group-font-size);
+  line-height: var(--ids-list-group-line-height);
+}
+
+/* --------------------------------------------------------------------------
+   3. ELEMENTO DE LISTA (.ids-list-group__item)
+   Celda individual estructurada con división visual continua.
+   -------------------------------------------------------------------------- */
+.ids-list-group__item {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--spacing-xs);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-list-group-item-gap);
+  width: 100%;
+  min-height: var(--ids-list-group-item-min-height);
+  padding-block: var(--ids-list-group-item-padding-y);
+  padding-inline: var(--ids-list-group-item-padding-x);
+  box-sizing: border-box;
+
+  @media (min-width: 48rem) {
+    flex-wrap: nowrap;
+    row-gap: 0;
+  }
+  color: var(--ids-list-group-item-color);
+  background-color: transparent;
+  border: none;
+  border-block-end: var(--ids-list-group-divider-thickness) solid var(--ids-list-group-divider-color);
+  text-decoration: none;
+  text-align: start;
+  transition: background-color var(--ids-list-group-transition-speed) var(--ids-list-group-transition-ease),
+              color var(--ids-list-group-transition-speed) var(--ids-list-group-transition-ease),
+              border-color var(--ids-list-group-transition-speed) var(--ids-list-group-transition-ease);
+
+  /* El último ítem suprime el divisor inferior */
+  &:last-child {
+    border-block-end: none;
+  }
+}
+
+/* Contenido Principal y Estructura de Texto */
+.ids-list-group__content {
+  display: flex;
+  align-items: center;
+  gap: var(--ids-list-group-item-gap);
+  flex: 1 1 100%;
+  min-width: 0;
+
+  @media (min-width: 48rem) {
+    flex: 1 1 auto;
+  }
+}
+
+.ids-list-group__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ids-list-group__title {
+  font-weight: var(--font-weight-medium);
+  color: inherit;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.ids-list-group__desc {
+  margin: 0;
+  font-size: var(--font-size-caption);
+  color: var(--ids-list-group-item-desc-color);
+  line-height: var(--line-height-base);
+}
+
+.ids-list-group__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--font-size-body);
+  height: var(--font-size-body);
+  color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   4. CON Y SIN HOVER (INTERACCIÓN)
+   -------------------------------------------------------------------------- */
+
+/* A. CON HOVER: Elementos Interactivos (Enlaces, Botones o .ids-list-group--interactive) */
+.ids-list-group--interactive .ids-list-group__item,
+.ids-list-group--hover .ids-list-group__item,
+a.ids-list-group__item,
+button.ids-list-group__item,
+.ids-list-group__item--action {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background-color: var(--ids-list-group-item-hover-bg);
+    color: var(--ids-list-group-item-hover-color);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  /* Visibilidad de Foco Estricta WCAG AAA */
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: calc(var(--focus-ring-offset) * -1);
+    z-index: 1;
+    background-color: var(--ids-list-group-item-hover-bg);
+  }
+}
+
+/* B. SIN HOVER: Lista Estática de Solo Lectura (.ids-list-group--static) */
+.ids-list-group--static .ids-list-group__item {
+  cursor: default;
+  user-select: auto;
+
+  &:hover {
+    background-color: transparent;
+    color: inherit;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. CON Y SIN ÍTEMS ACTIVOS
+   -------------------------------------------------------------------------- */
+
+/* Ítem Activo / Seleccionado (.ids-list-group__item--active o [aria-current="true"]) */
+.ids-list-group__item--active,
+.ids-list-group__item[aria-current="true"],
+.ids-list-group__item[aria-selected="true"],
+.ids-list-group__item.is-active {
+  background-color: var(--ids-list-group-item-active-bg);
+  color: var(--ids-list-group-item-active-color);
+  font-weight: var(--font-weight-semibold);
+  border-block-end-color: var(--ids-list-group-item-active-border);
+  z-index: 2;
+
+  .ids-list-group__desc {
+    color: var(--ids-list-group-item-active-color);
+    opacity: 0.9;
+  }
+
+  .ids-list-group__number {
+    color: var(--ids-list-group-item-active-color);
+  }
+
+  /* Si contiene insignias (badges), garantizar legibilidad */
+  .ids-badge {
+    background-color: var(--ids-list-group-badge-active-bg);
+    color: var(--ids-list-group-item-active-color);
+    border-color: transparent;
+  }
+
+  &:hover {
+    background-color: var(--color-action-hover);
+    color: var(--ids-list-group-item-active-color);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. PRESENTACIÓN DESHABILITADA (.ids-list-group__item--disabled)
+   Protección contra pulsaciones accidentales o estados inaccesibles.
+   -------------------------------------------------------------------------- */
+.ids-list-group__item--disabled,
+.ids-list-group__item[aria-disabled="true"],
+.ids-list-group__item:disabled,
+.ids-list-group--disabled .ids-list-group__item {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: var(--color-action-disabled-bg);
+  color: var(--color-action-disabled-text);
+  user-select: none;
+
+  .ids-list-group__desc,
+  .ids-list-group__number {
+    color: var(--color-action-disabled-text);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. CON Y SIN NUMERACIÓN Y BADGES
+   -------------------------------------------------------------------------- */
+
+/* A. LISTA NUMERADA (.ids-list-group--numbered) */
+.ids-list-group--numbered {
+  counter-reset: ids-list-counter;
+
+  & > .ids-list-group__item {
+    counter-increment: ids-list-counter;
+
+    /* Si no existe un elemento .ids-list-group__number explícito, inyecta contador */
+    &:not(:has(.ids-list-group__number))::before {
+      content: counter(ids-list-counter) ".";
+      font-weight: var(--ids-list-group-number-font-weight);
+      color: var(--ids-list-group-number-color);
+      min-width: var(--ids-list-group-number-min-width);
+      flex-shrink: 0;
+      margin-inline-end: var(--spacing-xs);
+    }
+  }
+}
+
+/* Elemento explícito de numeración */
+.ids-list-group__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ids-list-group-number-min-width);
+  font-weight: var(--ids-list-group-number-font-weight);
+  color: var(--ids-list-group-number-color);
+  flex-shrink: 0;
+}
+
+/* B. INTEGRACIÓN CON BADGES / INSIGNIAS */
+.ids-list-group__badge,
+.ids-list-group__item > .ids-badge {
+  flex-shrink: 0;
+  margin-inline-start: 0;
+
+  @media (min-width: 48rem) {
+    margin-inline-start: var(--spacing-sm);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. PRESENTACIÓN FLUSH (.ids-list-group--flush)
+   Elimina bordes exteriores y curvatura para incrustación al ras en tarjetas.
+   -------------------------------------------------------------------------- */
+.ids-list-group--flush {
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+
+  & > .ids-list-group__item {
+    border-inline: none;
+    border-radius: 0;
+
+    &:first-child {
+      border-block-start: none;
+    }
+
+    &:last-child {
+      border-block-end: none;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (SUCCESS, DANGER, WARNING, INFO)
+   Acentos visuales accesibles WCAG AAA y acordes a Trauma-Informed Design.
+   -------------------------------------------------------------------------- */
+
+/* 1. Éxito / Success (.ids-list-group__item--success) */
+.ids-list-group__item--success {
+  border-inline-start: var(--focus-ring-width) solid var(--ids-list-group-success-border);
+  background-color: var(--ids-list-group-success-bg);
+  color: var(--ids-list-group-success-text);
+
+  .ids-list-group__icon,
+  .ids-list-group__title {
+    color: var(--ids-list-group-success-color);
+  }
+
+  &.ids-list-group__item--action:hover,
+  &.ids-list-group__item:hover {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+/* 2. Peligro / Danger (.ids-list-group__item--danger) */
+.ids-list-group__item--danger {
+  border-inline-start: var(--focus-ring-width) solid var(--ids-list-group-danger-border);
+  background-color: var(--ids-list-group-danger-bg);
+  color: var(--ids-list-group-danger-text);
+
+  .ids-list-group__icon,
+  .ids-list-group__title {
+    color: var(--ids-list-group-danger-color);
+  }
+
+  &.ids-list-group__item--action:hover,
+  &.ids-list-group__item:hover {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+/* 3. Advertencia / Warning (.ids-list-group__item--warning) */
+.ids-list-group__item--warning {
+  border-inline-start: var(--focus-ring-width) solid var(--ids-list-group-warning-border);
+  background-color: var(--ids-list-group-warning-bg);
+  color: var(--ids-list-group-warning-text);
+
+  .ids-list-group__icon,
+  .ids-list-group__title {
+    color: var(--ids-list-group-warning-color);
+  }
+
+  &.ids-list-group__item--action:hover,
+  &.ids-list-group__item:hover {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+/* 4. Información / Info (.ids-list-group__item--info o .ids-list-group__item--primary) */
+.ids-list-group__item--info,
+.ids-list-group__item--primary {
+  border-inline-start: var(--focus-ring-width) solid var(--ids-list-group-info-border);
+  background-color: var(--ids-list-group-info-bg);
+  color: var(--ids-list-group-info-text);
+
+  .ids-list-group__icon,
+  .ids-list-group__title {
+    color: var(--ids-list-group-info-color);
+  }
+
+  &.ids-list-group__item--action:hover,
+  &.ids-list-group__item:hover {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+/* Listas completas con estado temático */
+.ids-list-group--success .ids-list-group__item { @extend .ids-list-group__item--success; }
+.ids-list-group--danger .ids-list-group__item { @extend .ids-list-group__item--danger; }
+.ids-list-group--warning .ids-list-group__item { @extend .ids-list-group__item--warning; }
+.ids-list-group--info .ids-list-group__item { @extend .ids-list-group__item--info; }
+
+/* --------------------------------------------------------------------------
+   10. ESCALAS DE TAMAÑO / DENSIDAD
+   -------------------------------------------------------------------------- */
+/* Compacto / Pequeño (.ids-list-group--sm) */
+.ids-list-group--sm {
+  font-size: var(--font-size-caption);
+
+  .ids-list-group__item {
+    min-height: calc(var(--target-size-min) * 0.75);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+  }
+}
+
+/* Grande / Destacado (.ids-list-group--lg) */
+.ids-list-group--lg {
+  .ids-list-group__item {
+    min-height: calc(var(--target-size-min) * 1.25);
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-lg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. DISEÑO RESPONSIVO (RESPONSIVE DESIGN) - Mobile-First
+   Los ítems de lista se definen con envoltura flexible y badges adaptados
+   para pantallas móviles por defecto y se alinean a partir de @media (min-width: 48rem).
+   -------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------
+   12. TEMATIZACIÓN DINÁMICA (4 EJES IDS)
+   -------------------------------------------------------------------------- */
+
+/* 1. TEMA DE ALTO CONTRASTE (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-list-group {
+    --ids-list-group-bg: var(--color-surface-background);
+    --ids-list-group-border-color: var(--color-border-subtle);
+    --ids-list-group-border-width: var(--focus-ring-width);
+    --ids-list-group-divider-color: var(--color-border-subtle);
+    --ids-list-group-item-color: var(--color-text-primary);
+    --ids-list-group-item-desc-color: var(--color-text-secondary);
+    --ids-list-group-item-hover-bg: var(--color-surface-hover);
+    --ids-list-group-item-hover-color: var(--color-text-primary);
+    --ids-list-group-item-active-bg: var(--color-surface-muted);
+    --ids-list-group-item-active-color: var(--color-action-primary);
+    --ids-list-group-item-active-border: var(--color-border-interactive);
+
+    .ids-list-group__item:focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      background-color: var(--color-surface-hover);
+    }
+
+    .ids-list-group__item--active {
+      border: var(--focus-ring-width) solid var(--color-border-interactive);
+    }
+  }
+}
+
+/* Soporte Nativo de Sistema Operativo para Alto Contraste */
+@media (forced-colors: active) {
+  .ids-list-group {
+    border: 2px solid CanvasText;
+    background-color: Canvas;
+
+    .ids-list-group__item {
+      color: CanvasText;
+      border-block-end: 1px solid CanvasText;
+
+      &:hover,
+      &:focus {
+        background-color: Highlight;
+        color: HighlightText;
+      }
+
+      &:focus-visible {
+        outline: 2px solid Highlight;
+      }
+
+      &.ids-list-group__item--active {
+        background-color: Highlight;
+        color: HighlightText;
+      }
+    }
+  }
+}
+
+/* 2. TEMA DE BAJA ESTIMULACIÓN (NEURODIVERGENCIA / CERO RESPLANDOR) */
+[data-theme="low-stimulation"] {
+  .ids-list-group {
+    --ids-list-group-bg: var(--color-surface-card);
+    --ids-list-group-border-color: var(--color-border-subtle);
+    --ids-list-group-divider-color: var(--color-border-subtle);
+    --ids-list-group-item-color: var(--color-text-primary);
+    --ids-list-group-item-desc-color: var(--color-text-secondary);
+    --ids-list-group-item-hover-bg: var(--color-surface-muted);
+    --ids-list-group-item-hover-color: var(--color-text-primary);
+    --ids-list-group-item-active-bg: var(--color-action-primary);
+    --ids-list-group-item-active-color: var(--color-surface-background);
+  }
+}
+
+/* 3. TEMA DISCRETO / STEALTH (ANTI-OUTING / SOFTWARE CORPORATIVO) */
+[data-theme="discrete"] {
+  .ids-list-group {
+    --ids-list-group-bg: var(--color-surface-card);
+    --ids-list-group-border-color: var(--color-border-subtle);
+    --ids-list-group-divider-color: var(--color-border-subtle);
+    --ids-list-group-item-color: var(--color-text-primary);
+    --ids-list-group-item-desc-color: var(--color-text-secondary);
+    --ids-list-group-item-hover-bg: var(--color-surface-hover);
+    --ids-list-group-item-hover-color: var(--color-text-primary);
+    --ids-list-group-item-active-bg: var(--color-surface-muted);
+    --ids-list-group-item-active-color: var(--color-action-primary);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. CONTROL DE MOVIMIENTO (PREFERS-REDUCED-MOTION)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ids-list-group__item {
+    transition: none !important;
+  }
+}

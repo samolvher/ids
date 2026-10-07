@@ -1,0 +1,405 @@
+/* ==========================================================================
+   02-atoms/_table.scss
+   Identity Design System (IDS) - Átomos de Tablas de Datos (Data Tables)
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE TABLAS
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, color, padding, borde o contraste se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Espaciados y Relleno de Celdas (Paddings) */
+  --ids-table-cell-padding-y: var(--table-cell-padding-y, var(--spacing-sm));
+  --ids-table-cell-padding-x: var(--table-cell-padding-x, var(--spacing-md));
+  --ids-table-cell-padding-sm-y: var(--table-cell-padding-sm-y, var(--spacing-xs));
+  --ids-table-cell-padding-sm-x: var(--table-cell-padding-sm-x, var(--spacing-sm));
+  --ids-table-cell-padding-lg-y: var(--table-cell-padding-lg-y, var(--spacing-md));
+  --ids-table-cell-padding-lg-x: var(--table-cell-padding-lg-x, var(--spacing-lg));
+
+  /* Tipografía y Escalas */
+  --ids-table-font-family: var(--font-family-base);
+  --ids-table-font-size: var(--table-font-size, var(--font-size-body));
+  --ids-table-font-size-sm: var(--table-font-size-sm, var(--font-size-caption));
+  --ids-table-font-size-lg: var(--table-font-size-lg, var(--font-size-body-large));
+  --ids-table-line-height: var(--table-line-height, var(--line-height-base));
+  --ids-table-header-font-weight: var(--table-header-font-weight, var(--font-weight-bold));
+
+  /* Superficies y Bordes Base - Dependientes de tokens globales */
+  --ids-table-bg: var(--table-bg, transparent);
+  --ids-table-color: var(--table-color, var(--color-text-primary));
+  --ids-table-header-bg: var(--table-header-bg, var(--color-surface-muted));
+  --ids-table-header-color: var(--table-header-color, var(--color-text-primary));
+  --ids-table-border-color: var(--table-border-color, var(--color-border-subtle));
+  --ids-table-border-width: var(--table-border-width, 0.0625rem); /* 1px */
+
+  /* Rayado (Zebra Striping) y Filas Interactiva (Hover) */
+  --ids-table-striped-bg: var(--table-striped-bg, var(--color-surface-muted));
+  --ids-table-hover-bg: var(--table-hover-bg, var(--color-surface-hover));
+
+  /* Fila y Celda Destacada (Highlight) */
+  --ids-table-highlight-bg: var(--table-highlight-bg, var(--color-surface-muted));
+  --ids-table-highlight-border: var(--table-highlight-border, var(--color-action-primary));
+  --ids-table-highlight-color: var(--table-highlight-color, var(--color-text-primary));
+
+  /* Estados Semánticos de Filas/Celdas (WCAG AAA) */
+  --ids-table-success-bg: var(--table-success-bg, var(--status-success-bg, var(--color-surface-muted)));
+  --ids-table-success-color: var(--table-success-color, var(--color-text-primary));
+  --ids-table-success-border: var(--table-success-border, var(--color-status-success));
+
+  --ids-table-danger-bg: var(--table-danger-bg, var(--status-danger-bg, var(--color-surface-muted)));
+  --ids-table-danger-color: var(--table-danger-color, var(--color-text-primary));
+  --ids-table-danger-border: var(--table-danger-border, var(--color-status-danger));
+
+  --ids-table-warning-bg: var(--table-warning-bg, var(--status-warning-bg, var(--color-surface-muted)));
+  --ids-table-warning-color: var(--table-warning-color, var(--color-text-primary));
+  --ids-table-warning-border: var(--table-warning-border, var(--color-status-warning));
+
+  --ids-table-info-bg: var(--table-info-bg, var(--status-info-bg, var(--color-surface-muted)));
+  --ids-table-info-color: var(--table-info-color, var(--color-text-primary));
+  --ids-table-info-border: var(--table-info-border, var(--color-status-info));
+
+  /* Subtítulo Caption de Tabla */
+  --ids-table-caption-color: var(--table-caption-color, var(--color-text-secondary));
+  --ids-table-caption-font-size: var(--table-caption-font-size, var(--font-size-caption));
+  --ids-table-caption-padding-y: var(--table-caption-padding-y, var(--spacing-xs));
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR RESPONSIVE ACCESIBLE (.ids-table-responsive)
+   Garantiza navegación por teclado (tabindex="0") y desplazamiento horizontal en móviles.
+   -------------------------------------------------------------------------- */
+.ids-table-responsive,
+.ids-table-container {
+  display: block;
+  inline-size: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-block-end: var(--spacing-md);
+  border-radius: var(--radius-sm);
+
+  /* Foco de teclado visible en el contenedor al desplazarse */
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. CLASE BASE DE TABLA (.ids-table)
+   Semántica nativa HTML5 (table, caption, thead, tbody, th, td).
+   -------------------------------------------------------------------------- */
+.ids-table {
+  inline-size: 100%;
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+  vertical-align: top;
+  font-family: var(--ids-table-font-family);
+  font-size: var(--ids-table-font-size);
+  line-height: var(--ids-table-line-height);
+  color: var(--ids-table-color);
+  background-color: var(--ids-table-bg);
+
+  /* Subtítulo Caption Semántico */
+  caption,
+  &__caption {
+    padding-block: var(--ids-table-caption-padding-y);
+    font-size: var(--ids-table-caption-font-size);
+    color: var(--ids-table-caption-color);
+    text-align: start;
+    caption-side: bottom;
+
+    &--top {
+      caption-side: top;
+      font-weight: var(--font-weight-medium);
+      color: var(--ids-table-color);
+    }
+  }
+
+  /* Celdas Genéricas (th y td) */
+  th,
+  td,
+  &__cell {
+    padding: var(--ids-table-cell-padding-y) var(--ids-table-cell-padding-x);
+    border-bottom: var(--ids-table-border-width) solid var(--ids-table-border-color);
+    vertical-align: middle;
+  }
+
+  /* Celdas de Encabezado */
+  th,
+  &__header-cell {
+    font-weight: var(--ids-table-header-font-weight);
+    color: var(--ids-table-header-color);
+    background-color: var(--ids-table-header-bg);
+    text-align: inherit;
+    white-space: nowrap;
+  }
+
+  /* Encabezado Principal */
+  thead th,
+  &__header th {
+    border-bottom: calc(var(--ids-table-border-width) * 2) solid var(--ids-table-border-color);
+  }
+
+  /* Pie de Tabla */
+  tfoot th,
+  tfoot td,
+  &__footer th,
+  &__footer td {
+    font-weight: var(--ids-table-header-font-weight);
+    border-top: calc(var(--ids-table-border-width) * 2) solid var(--ids-table-border-color);
+    border-bottom: none;
+  }
+
+  /* ------------------------------------------------------------------------
+     4. RAYADO Y ZEBRA-STRIPING (.ids-table--striped / .ids-table--zebra)
+     Facilita la lectura de filas densas alternando tonos de superficie.
+     ------------------------------------------------------------------------ */
+  &--striped,
+  &--zebra {
+    tbody tr:nth-of-type(odd) {
+      background-color: var(--ids-table-striped-bg);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     5. FILAS INTERACTIVAS (Hoverable Rows: .ids-table--hover)
+     Seguimiento de cursor ergonómico y no mareante.
+     ------------------------------------------------------------------------ */
+  &--hover,
+  &--hoverable {
+    tbody tr {
+      transition: background-color var(--transition-speed-fast) var(--transition-ease);
+
+      &:hover {
+        background-color: var(--ids-table-hover-bg);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none !important;
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     6. FILA Y CELDA DESTACADA (Highlight-row y Highlight-cell)
+     Identifica claramente el registro activo, seleccionado o en edición.
+     ------------------------------------------------------------------------ */
+  /* Fila Destacada (Highlight-row) */
+  &__row--highlight,
+  &--row-highlight,
+  tbody tr.is-highlighted,
+  tbody tr.ids-table__row--highlight {
+    background-color: var(--ids-table-highlight-bg) !important;
+    color: var(--ids-table-highlight-color);
+    font-weight: var(--font-weight-medium);
+    box-shadow: inset 0.25rem 0 0 var(--ids-table-highlight-border); /* 4px */
+
+    td:first-child,
+    th:first-child {
+      border-inline-start: 0.25rem solid var(--ids-table-highlight-border);
+    }
+  }
+
+  /* Celda Destacada (Highlight-cell) */
+  &__cell--highlight,
+  &--cell-highlight,
+  td.is-highlighted,
+  th.is-highlighted,
+  td.ids-table__cell--highlight,
+  th.ids-table__cell--highlight {
+    background-color: var(--ids-table-highlight-bg) !important;
+    color: var(--ids-table-highlight-color);
+    font-weight: var(--font-weight-bold);
+    outline: var(--focus-ring-width) solid var(--ids-table-highlight-border);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+
+  /* ------------------------------------------------------------------------
+     7. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (Filas y Celdas)
+     Mapeo estricto con los estados success, danger, warning e info.
+     ------------------------------------------------------------------------ */
+  /* 7.1 Estado de Éxito / Verificado (Success) */
+  &__row--success,
+  tbody tr.ids-table__row--success,
+  tbody tr.ids-table--success {
+    background-color: var(--ids-table-success-bg) !important;
+    color: var(--ids-table-success-color);
+    border-inline-start: 0.25rem solid var(--ids-table-success-border);
+
+    td:first-child,
+    th:first-child {
+      border-inline-start: 0.25rem solid var(--ids-table-success-border);
+    }
+  }
+
+  &__cell--success,
+  td.ids-table__cell--success,
+  th.ids-table__cell--success,
+  td.ids-table--success,
+  th.ids-table--success {
+    background-color: var(--ids-table-success-bg) !important;
+    color: var(--ids-table-success-color);
+    border-inline-start: 0.25rem solid var(--ids-table-success-border);
+  }
+
+  /* 7.2 Estado de Peligro / Amenaza / Error (Danger) */
+  &__row--danger,
+  tbody tr.ids-table__row--danger,
+  tbody tr.ids-table--danger {
+    background-color: var(--ids-table-danger-bg) !important;
+    color: var(--ids-table-danger-color);
+
+    td:first-child,
+    th:first-child {
+      border-inline-start: 0.25rem solid var(--ids-table-danger-border);
+    }
+  }
+
+  &__cell--danger,
+  td.ids-table__cell--danger,
+  th.ids-table__cell--danger,
+  td.ids-table--danger,
+  th.ids-table--danger {
+    background-color: var(--ids-table-danger-bg) !important;
+    color: var(--ids-table-danger-color);
+    border-inline-start: 0.25rem solid var(--ids-table-danger-border);
+  }
+
+  /* 7.3 Estado de Advertencia / Observación (Warning) */
+  &__row--warning,
+  tbody tr.ids-table__row--warning,
+  tbody tr.ids-table--warning {
+    background-color: var(--ids-table-warning-bg) !important;
+    color: var(--ids-table-warning-color);
+
+    td:first-child,
+    th:first-child {
+      border-inline-start: 0.25rem solid var(--ids-table-warning-border);
+    }
+  }
+
+  &__cell--warning,
+  td.ids-table__cell--warning,
+  th.ids-table__cell--warning,
+  td.ids-table--warning,
+  th.ids-table--warning {
+    background-color: var(--ids-table-warning-bg) !important;
+    color: var(--ids-table-warning-color);
+    border-inline-start: 0.25rem solid var(--ids-table-warning-border);
+  }
+
+  /* 7.4 Estado Informativo / Proceso Seguro (Info) */
+  &__row--info,
+  tbody tr.ids-table__row--info,
+  tbody tr.ids-table--info {
+    background-color: var(--ids-table-info-bg) !important;
+    color: var(--ids-table-info-color);
+
+    td:first-child,
+    th:first-child {
+      border-inline-start: 0.25rem solid var(--ids-table-info-border);
+    }
+  }
+
+  &__cell--info,
+  td.ids-table__cell--info,
+  th.ids-table__cell--info,
+  td.ids-table--info,
+  th.ids-table--info {
+    background-color: var(--ids-table-info-bg) !important;
+    color: var(--ids-table-info-color);
+    border-inline-start: 0.25rem solid var(--ids-table-info-border);
+  }
+
+  /* ------------------------------------------------------------------------
+     8. VARIACIONES DE DENSIDAD Y BORDES (Density & Border Styles)
+     ------------------------------------------------------------------------ */
+  /* Densidad Compacta (Para auditorías densas o registros forenses) */
+  &--compact,
+  &--sm {
+    font-size: var(--ids-table-font-size-sm);
+
+    th,
+    td {
+      padding: var(--ids-table-cell-padding-sm-y) var(--ids-table-cell-padding-sm-x);
+    }
+  }
+
+  /* Densidad Espaciosa (Para lectura pausada e interfaces accesibles) */
+  &--spacious,
+  &--lg {
+    font-size: var(--ids-table-font-size-lg);
+
+    th,
+    td {
+      padding: var(--ids-table-cell-padding-lg-y) var(--ids-table-cell-padding-lg-x);
+    }
+  }
+
+  /* Tabla con Cuadrícula Completa (Bordered) */
+  &--bordered {
+    border: var(--ids-table-border-width) solid var(--ids-table-border-color);
+
+    th,
+    td {
+      border: var(--ids-table-border-width) solid var(--ids-table-border-color);
+    }
+  }
+
+  /* Tabla sin Bordes Internos (Borderless) */
+  &--borderless {
+    th,
+    td {
+      border-bottom: none;
+    }
+
+    thead th {
+      border-bottom: none;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. ADAPTACIÓN A LOS 4 EJES TEMÁTICOS DE IDS
+   Default, High Contrast (AAA 7:1), Low Stimulation y Stealth/Discrete.
+   -------------------------------------------------------------------------- */
+/* 9.1 Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-table {
+    --ids-table-border-width: var(--focus-ring-width);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. ADAPTACIÓN PARA ACCESIBILIDAD DEL SISTEMA OPERATIVO
+   Modo de Contraste Forzado de Windows (forced-colors: active)
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .ids-table {
+    border-color: CanvasText;
+
+    th,
+    td {
+      border-color: CanvasText;
+    }
+
+    th {
+      background-color: Canvas;
+      color: CanvasText;
+    }
+
+    &__row--highlight,
+    tbody tr.is-highlighted {
+      outline: var(--focus-ring-width) solid Highlight;
+    }
+
+    &__cell--highlight,
+    td.is-highlighted {
+      outline: var(--focus-ring-width) solid Highlight;
+    }
+  }
+}

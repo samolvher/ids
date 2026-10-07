@@ -1,0 +1,803 @@
+/* ==========================================================================
+   03-molecules/_snackbar.scss
+   Identity Design System (IDS) - Molécula de Barras de Notificación (Snackbar)
+   Notificaciones efímeras y contextuales con resguardo emocional Trauma-Informed,
+   soporte para múltiples posiciones en pantalla, 1 y 2 líneas de texto,
+   con y sin botón/enlace de acción y variantes de los 4 estados de color.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE SNACKBAR
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría, Ancho y Dimensiones Base (WCAG AAA Touch Target: mínimo 2.75rem) */
+  --ids-snackbar-min-width: 18rem;
+  --ids-snackbar-max-width: 38rem;
+  --ids-snackbar-min-height: var(--target-size-min); /* 2.75rem - área táctil mínima WCAG AAA */
+  --ids-snackbar-radius: var(--radius-sm);
+  --ids-snackbar-border-width: var(--focus-ring-width);
+  --ids-snackbar-border-style: solid;
+  --ids-snackbar-z-index: var(--z-index-toast);     /* 1100 - Capa flotante de notificación */
+
+  /* Coordenadas de Posicionamiento y Márgenes Seguros */
+  --ids-snackbar-offset: var(--spacing-lg);
+  --ids-snackbar-offset-mobile: var(--spacing-sm);
+
+  /* Espaciado Interno (Paddings Semánticos) */
+  --ids-snackbar-padding-y: var(--spacing-sm);
+  --ids-snackbar-padding-x: var(--spacing-md);
+  --ids-snackbar-padding-stacked-y: var(--spacing-md);
+  --ids-snackbar-gap: var(--spacing-md);
+  --ids-snackbar-text-gap: calc(var(--spacing-xs) / 2);
+
+  /* Tipografía y Jerarquía Visual */
+  --ids-snackbar-font-family: var(--font-family-base);
+  --ids-snackbar-font-size: var(--font-size-body);
+  --ids-snackbar-line-height: var(--line-height-base);
+  --ids-snackbar-font-weight: var(--font-weight-regular);
+  --ids-snackbar-title-font-size: var(--font-size-body);
+  --ids-snackbar-title-font-weight: var(--font-weight-semibold);
+  --ids-snackbar-title-line-height: var(--line-height-tight);
+  --ids-snackbar-caption-font-size: var(--font-size-caption);
+
+  /* Piel y Superficies Base (Flat / Clean con Alta Legibilidad) */
+  --ids-snackbar-bg: var(--color-surface-card);
+  --ids-snackbar-color: var(--color-text-primary);
+  --ids-snackbar-border-color: var(--color-border-subtle);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-snackbar-current-bg: var(--ids-snackbar-bg);
+  --ids-snackbar-current-color: var(--ids-snackbar-color);
+  --ids-snackbar-current-border: var(--ids-snackbar-border-color);
+  --ids-snackbar-current-action-color: var(--color-action-primary);
+  --ids-snackbar-current-action-hover: var(--color-action-hover);
+
+  /* Botones y Enlaces de Acción */
+  --ids-snackbar-action-font-size: var(--font-size-caption);
+  --ids-snackbar-action-font-weight: var(--font-weight-semibold);
+  --ids-snackbar-action-padding-x: var(--spacing-sm);
+  --ids-snackbar-action-padding-y: var(--spacing-xs);
+  --ids-snackbar-action-radius: var(--radius-sm);
+
+  /* Botón de Cierre / Descarte */
+  --ids-snackbar-close-size: var(--target-size-min);
+  --ids-snackbar-close-icon-size: 1.25rem;
+
+  /* Movimiento y Transiciones */
+  --ids-snackbar-transition-speed: var(--transition-speed-base);
+  --ids-snackbar-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. ESQUELETO Y ESTRUCTURA BASE (.ids-snackbar / .snackbar)
+   Notificación contextual accesible y no bloqueante (WAI-ARIA role="status").
+   -------------------------------------------------------------------------- */
+.ids-snackbar,
+.snackbar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ids-snackbar-gap);
+  box-sizing: border-box;
+
+  /* Proporciones y Escala - Mobile-First */
+  min-inline-size: auto;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-block-size: var(--ids-snackbar-min-height);
+  padding-block: var(--ids-snackbar-padding-y);
+  padding-inline: var(--ids-snackbar-padding-x);
+
+  @media (min-width: 48rem) {
+    min-inline-size: var(--ids-snackbar-min-width);
+    max-inline-size: var(--ids-snackbar-max-width);
+    inline-size: auto;
+  }
+
+  /* Piel y Geometría */
+  background-color: var(--ids-snackbar-current-bg);
+  color: var(--ids-snackbar-current-color);
+  border: var(--ids-snackbar-border-width) var(--ids-snackbar-border-style) var(--ids-snackbar-current-border);
+  border-radius: var(--ids-snackbar-radius);
+
+  /* Tipografía */
+  font-family: var(--ids-snackbar-font-family);
+  font-size: var(--ids-snackbar-font-size);
+  line-height: var(--ids-snackbar-line-height);
+  font-weight: var(--ids-snackbar-font-weight);
+
+  /* Transición de Aparición Suave */
+  transition: opacity var(--ids-snackbar-transition-speed) var(--ids-snackbar-transition-ease),
+              transform var(--ids-snackbar-transition-speed) var(--ids-snackbar-transition-ease),
+              visibility var(--ids-snackbar-transition-speed) var(--ids-snackbar-transition-ease);
+
+  /* Contenido Principal (Icono + Textos) */
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  /* Icono de Estado / Categoría */
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    color: currentColor;
+
+    .ids-icon {
+      inline-size: 100%;
+      block-size: 100%;
+      fill: currentColor;
+    }
+  }
+
+  /* Bloque de Textos */
+  &__body,
+  &__text-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ids-snackbar-text-gap);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  /* Título de Notificación */
+  &__title {
+    font-size: var(--ids-snackbar-title-font-size);
+    font-weight: var(--ids-snackbar-title-font-weight);
+    line-height: var(--ids-snackbar-title-line-height);
+    color: inherit;
+    margin: 0;
+  }
+
+  /* Mensaje de Notificación */
+  &__text,
+  &__message {
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  /* Contenedor de Acciones */
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+  }
+
+  /* Botón de Acción Semántico (e.g. Deshacer / Undo) */
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--target-size-min); /* Touch target accesible WCAG AAA */
+    min-inline-size: var(--target-size-min);
+    padding-block: var(--ids-snackbar-action-padding-y);
+    padding-inline: var(--ids-snackbar-action-padding-x);
+    box-sizing: border-box;
+    background: transparent;
+    border: var(--focus-ring-width) solid transparent;
+    border-radius: var(--ids-snackbar-action-radius);
+    color: var(--ids-snackbar-current-action-color);
+    font-family: var(--ids-snackbar-font-family);
+    font-size: var(--ids-snackbar-action-font-size);
+    font-weight: var(--ids-snackbar-action-font-weight);
+    line-height: var(--line-height-tight);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease),
+                outline var(--transition-speed-fast) var(--transition-ease);
+
+    &:hover:not(:disabled) {
+      color: var(--ids-snackbar-current-action-hover);
+      background-color: var(--color-surface-hover);
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+      z-index: 1;
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-surface-muted);
+    }
+
+    &:disabled,
+    &[aria-disabled="true"] {
+      opacity: var(--opacity-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  /* Enlace de Acción Semántico (e.g. Ver Detalles / Revisar) */
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--target-size-min); /* Touch target accesible WCAG AAA */
+    padding-block: var(--ids-snackbar-action-padding-y);
+    padding-inline: var(--ids-snackbar-action-padding-x);
+    box-sizing: border-box;
+    color: var(--ids-snackbar-current-action-color);
+    font-family: var(--ids-snackbar-font-family);
+    font-size: var(--ids-snackbar-action-font-size);
+    font-weight: var(--ids-snackbar-action-font-weight);
+    line-height: var(--line-height-tight);
+    text-decoration: underline;
+    border: var(--focus-ring-width) solid transparent;
+    border-radius: var(--ids-snackbar-action-radius);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: color var(--transition-speed-fast) var(--transition-ease);
+
+    &:hover {
+      color: var(--ids-snackbar-current-action-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+      z-index: 1;
+    }
+  }
+
+  /* Botón de Cierre / Descarte Accesible */
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--ids-snackbar-close-size);
+    block-size: var(--ids-snackbar-close-size);
+    min-inline-size: var(--target-size-min);
+    min-block-size: var(--target-size-min);
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    background: transparent;
+    border: var(--focus-ring-width) solid transparent;
+    border-radius: var(--ids-snackbar-action-radius);
+    color: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background-color var(--transition-speed-fast) var(--transition-ease),
+                color var(--transition-speed-fast) var(--transition-ease);
+
+    .ids-icon {
+      inline-size: var(--ids-snackbar-close-icon-size);
+      block-size: var(--ids-snackbar-close-icon-size);
+      fill: currentColor;
+    }
+
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+      z-index: 1;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. VARIANTES DE 1 Y 2 LÍNEAS DE TEXTO
+   -------------------------------------------------------------------------- */
+/* Variante 1 Línea (Single-Line): Disposición horizontal estricta y compacta */
+.ids-snackbar--single-line,
+.snackbar--single-line {
+  align-items: center;
+
+  .ids-snackbar__content,
+  .snackbar__content {
+    align-items: center;
+  }
+
+  .ids-snackbar__text,
+  .snackbar__text {
+    white-space: normal;
+  }
+}
+
+/* Variante 2 Líneas (Two-Line / Multi-Line): Soporta título + descripción o texto extendido */
+.ids-snackbar--two-line,
+.ids-snackbar--multi-line,
+.snackbar--two-line,
+.snackbar--multi-line {
+  align-items: flex-start;
+  padding-block: var(--ids-snackbar-padding-stacked-y);
+
+  .ids-snackbar__content,
+  .snackbar__content {
+    align-items: flex-start;
+  }
+
+  .ids-snackbar__icon,
+  .snackbar__icon {
+    margin-block-start: 0.125rem;
+  }
+
+  .ids-snackbar__actions,
+  .snackbar__actions {
+    align-self: center;
+  }
+}
+
+/* Variante con Acciones Apiladas (Stacked Layout para 2 líneas extensas) */
+.ids-snackbar--stacked,
+.snackbar--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+  padding-block: var(--ids-snackbar-padding-stacked-y);
+
+  .ids-snackbar__content,
+  .snackbar__content {
+    align-items: flex-start;
+    inline-size: 100%;
+  }
+
+  .ids-snackbar__actions,
+  .snackbar__actions {
+    justify-content: flex-end;
+    inline-size: 100%;
+    margin-block-start: var(--spacing-xs);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. VARIANTES CON Y SIN BOTÓN / LINK
+   -------------------------------------------------------------------------- */
+/* Sin Botón ni Enlace (Solo Mensaje Informativo) */
+.ids-snackbar--no-action,
+.snackbar--no-action {
+  .ids-snackbar__actions,
+  .snackbar__actions {
+    display: none;
+  }
+}
+
+/* Solo con Botón de Cierre (Dismissible Only) */
+.ids-snackbar--dismiss-only,
+.snackbar--dismiss-only {
+  .ids-snackbar__action,
+  .ids-snackbar__link,
+  .snackbar__action,
+  .snackbar__link {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. POSICIONES DE PANTALLA (CONTENEDORES Y MODIFICADORES)
+   -------------------------------------------------------------------------- */
+/* Contenedor Fijo de Notificaciones en Pantalla (.ids-snackbar-container) */
+.ids-snackbar-container {
+  position: fixed;
+  z-index: var(--ids-snackbar-z-index);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-sizing: border-box;
+  padding: var(--ids-snackbar-offset);
+  pointer-events: none;
+  max-inline-size: 100vw;
+
+  /* Permitir interacción sobre las notificaciones individuales */
+  .ids-snackbar,
+  .snackbar {
+    pointer-events: auto;
+  }
+
+  /* 5.1 Inferior Centro (Default ergonómico) */
+  &--bottom-center {
+    inset-block-end: 0;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+
+  /* 5.2 Inferior Izquierda (Bottom-Start) */
+  &--bottom-start,
+  &--bottom-left {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    align-items: flex-start;
+  }
+
+  /* 5.3 Inferior Derecha (Bottom-End) */
+  &--bottom-end,
+  &--bottom-right {
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    align-items: flex-end;
+  }
+
+  /* 5.4 Superior Centro (Top-Center) */
+  &--top-center {
+    inset-block-start: 0;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+  }
+
+  /* 5.5 Superior Izquierda (Top-Start) */
+  &--top-start,
+  &--top-left {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    align-items: flex-start;
+  }
+
+  /* 5.6 Superior Derecha (Top-End) */
+  &--top-end,
+  &--top-right {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    align-items: flex-end;
+  }
+}
+
+/* Modificadores Directos de Posicionamiento Fijo sobre el Snackbar Individual */
+.ids-snackbar--fixed,
+.snackbar--fixed {
+  position: fixed;
+  z-index: var(--ids-snackbar-z-index);
+
+  &.ids-snackbar--bottom-center,
+  &.snackbar--bottom-center {
+    inset-block-end: var(--ids-snackbar-offset);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.ids-snackbar--bottom-start,
+  &.ids-snackbar--bottom-left,
+  &.snackbar--bottom-start,
+  &.snackbar--bottom-left {
+    inset-block-end: var(--ids-snackbar-offset);
+    inset-inline-start: var(--ids-snackbar-offset);
+  }
+
+  &.ids-snackbar--bottom-end,
+  &.ids-snackbar--bottom-right,
+  &.snackbar--bottom-end,
+  &.snackbar--bottom-right {
+    inset-block-end: var(--ids-snackbar-offset);
+    inset-inline-end: var(--ids-snackbar-offset);
+  }
+
+  &.ids-snackbar--top-center,
+  &.snackbar--top-center {
+    inset-block-start: var(--ids-snackbar-offset);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.ids-snackbar--top-start,
+  &.ids-snackbar--top-left,
+  &.snackbar--top-start,
+  &.snackbar--top-left {
+    inset-block-start: var(--ids-snackbar-offset);
+    inset-inline-start: var(--ids-snackbar-offset);
+  }
+
+  &.ids-snackbar--top-end,
+  &.ids-snackbar--top-right,
+  &.snackbar--top-end,
+  &.snackbar--top-right {
+    inset-block-start: var(--ids-snackbar-offset);
+    inset-inline-end: var(--ids-snackbar-offset);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. VARIANTES DE LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA)
+   -------------------------------------------------------------------------- */
+/* 6.1 Estado de Éxito / Confirmación Segura */
+.ids-snackbar--success,
+.snackbar--success {
+  --ids-snackbar-current-border: var(--color-status-success);
+  --ids-snackbar-current-action-color: var(--color-status-success);
+
+  .ids-snackbar__icon,
+  .snackbar__icon {
+    color: var(--color-status-success);
+  }
+}
+
+/* 6.2 Estado de Peligro / Alerta Crítica (Trauma-Informed Panic/Exit) */
+.ids-snackbar--danger,
+.snackbar--danger {
+  --ids-snackbar-current-border: var(--color-status-danger);
+  --ids-snackbar-current-action-color: var(--color-status-danger);
+
+  .ids-snackbar__icon,
+  .snackbar__icon {
+    color: var(--color-status-danger);
+  }
+}
+
+/* 6.3 Estado de Advertencia / Precaución */
+.ids-snackbar--warning,
+.snackbar--warning {
+  --ids-snackbar-current-border: var(--color-status-warning);
+  --ids-snackbar-current-action-color: var(--color-status-warning);
+
+  .ids-snackbar__icon,
+  .snackbar__icon {
+    color: var(--color-status-warning);
+  }
+}
+
+/* 6.4 Estado Informativo / Orientativo */
+.ids-snackbar--info,
+.snackbar--info {
+  --ids-snackbar-current-border: var(--color-status-info);
+  --ids-snackbar-current-action-color: var(--color-status-info);
+
+  .ids-snackbar__icon,
+  .snackbar__icon {
+    color: var(--color-status-info);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. ADAPTABILIDAD A LOS 4 EJES TEMÁTICOS DEL IDS
+   -------------------------------------------------------------------------- */
+/* Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-snackbar,
+  .snackbar {
+    background-color: var(--color-surface-background);
+    border-width: var(--focus-ring-width);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    .ids-snackbar__action,
+    .snackbar__action {
+      color: var(--color-action-primary);
+      border-color: var(--color-border-subtle);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+        color: var(--color-action-hover);
+        outline: var(--focus-ring-width) solid var(--color-border-interactive);
+      }
+    }
+
+    .ids-snackbar__link,
+    .snackbar__link {
+      color: var(--color-action-primary);
+
+      &:hover {
+        color: var(--color-action-hover);
+        outline: var(--focus-ring-width) solid var(--color-border-interactive);
+      }
+    }
+
+    .ids-snackbar__close,
+    .snackbar__close {
+      &:hover {
+        outline: var(--focus-ring-width) solid var(--color-border-interactive);
+      }
+    }
+  }
+
+  .ids-snackbar--success,
+  .snackbar--success {
+    border-color: var(--color-status-success);
+  }
+
+  .ids-snackbar--danger,
+  .snackbar--danger {
+    border-color: var(--color-status-danger);
+  }
+
+  .ids-snackbar--warning,
+  .snackbar--warning {
+    border-color: var(--color-status-warning);
+  }
+
+  .ids-snackbar--info,
+  .snackbar--info {
+    border-color: var(--color-status-info);
+  }
+}
+
+/* Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-snackbar,
+  .snackbar {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    .ids-snackbar__action,
+    .snackbar__action {
+      border: 0.0625rem solid ButtonText;
+      color: ButtonText;
+
+      &:hover:not(:disabled) {
+        background-color: Highlight;
+        color: HighlightText;
+      }
+    }
+
+    .ids-snackbar__link,
+    .snackbar__link {
+      color: LinkText;
+
+      &:hover {
+        color: Highlight;
+      }
+    }
+
+    .ids-snackbar__close,
+    .snackbar__close {
+      border: 0.0625rem solid ButtonText;
+      color: ButtonText;
+
+      &:hover {
+        background-color: Highlight;
+        color: HighlightText;
+      }
+    }
+  }
+}
+
+/* Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-snackbar,
+  .snackbar {
+    transition: none;
+    border-color: var(--color-border-subtle);
+
+    .ids-snackbar__action,
+    .snackbar__action {
+      transition: none;
+    }
+  }
+}
+
+/* Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-snackbar,
+  .snackbar {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+    color: var(--color-text-primary);
+
+    .ids-snackbar__action,
+    .snackbar__action {
+      color: var(--color-text-primary);
+
+      &:hover:not(:disabled) {
+        background-color: var(--color-surface-hover);
+        color: var(--color-text-primary);
+      }
+    }
+
+    .ids-snackbar__icon,
+    .snackbar__icon {
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+/* Movimiento Reducido (Accesibilidad Vestibular) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-snackbar,
+  .snackbar,
+  .ids-snackbar-container {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Diseño Responsivo - Mobile-First */
+.ids-snackbar-container {
+  padding: var(--ids-snackbar-offset-mobile);
+  inline-size: 100vw;
+
+  &--bottom-center,
+  &--top-center {
+    transform: none;
+    inset-inline-start: 0;
+    align-items: stretch;
+  }
+
+  &--bottom-start,
+  &--bottom-left,
+  &--bottom-end,
+  &--bottom-right,
+  &--top-start,
+  &--top-left,
+  &--top-end,
+  &--top-right {
+    align-items: stretch;
+    inset-inline: 0;
+  }
+
+  @media (min-width: 48rem) {
+    padding: var(--ids-snackbar-offset);
+    inline-size: auto;
+
+    &--bottom-center {
+      inset-inline-start: 50%;
+      transform: translateX(-50%);
+      align-items: center;
+    }
+
+    &--top-center {
+      inset-inline-start: 50%;
+      transform: translateX(-50%);
+      align-items: center;
+    }
+
+    &--bottom-start,
+    &--bottom-left {
+      align-items: flex-start;
+      inset-inline-end: auto;
+    }
+
+    &--bottom-end,
+    &--bottom-right {
+      align-items: flex-end;
+      inset-inline-start: auto;
+    }
+
+    &--top-start,
+    &--top-left {
+      align-items: flex-start;
+      inset-inline-end: auto;
+    }
+
+    &--top-end,
+    &--top-right {
+      align-items: flex-end;
+      inset-inline-start: auto;
+    }
+  }
+}
+
+.ids-snackbar,
+.snackbar {
+  &.ids-snackbar--fixed,
+  &.snackbar--fixed {
+    inset-inline: var(--ids-snackbar-offset-mobile);
+    transform: none;
+    inline-size: calc(100% - (var(--ids-snackbar-offset-mobile) * 2));
+
+    @media (min-width: 48rem) {
+      inset-inline: auto;
+      inline-size: auto;
+    }
+  }
+}

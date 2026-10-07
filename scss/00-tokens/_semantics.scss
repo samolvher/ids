@@ -1,0 +1,698 @@
+/* ==========================================================================
+   _semantics.scss
+   Identity Design System (IDS) - Mapeo Funcional y Semántico
+   ========================================================================== */
+
+:root {
+  /* ----------------------------------------------------------------------
+     1. SEMÁNTICA TIPOGRÁFICA (Familia y Escalabilidad Modular)
+     ---------------------------------------------------------------------- */
+  
+  /* Inyección de Lexend respaldada por la red de seguridad del sistema */
+  --font-family-base: 'Lexend', var(--font-stack-system);
+  --font-family-heading: 'Lexend', var(--font-stack-system);
+
+  /* Cuerpos de texto y metadatos */
+  --font-size-body: var(--text-base);
+  --font-size-body-large: calc(var(--text-base) * var(--text-scale-ratio));
+  --font-size-caption: 0.875rem; /* 14px - Usado para aria-describedby y labels */
+
+  /* Jerarquía de Encabezados (H1-H6) */
+  --font-size-h6: calc(var(--text-base) * var(--text-scale-ratio));
+  --font-size-h5: calc(var(--font-size-h6) * var(--text-scale-ratio));
+  --font-size-h4: calc(var(--font-size-h5) * var(--text-scale-ratio));
+  --font-size-h3: calc(var(--font-size-h4) * var(--text-scale-ratio));
+  --font-size-h2: calc(var(--font-size-h3) * var(--text-scale-ratio));
+  --font-size-h1: calc(var(--font-size-h2) * var(--text-scale-ratio)); 
+
+  /* Pesos Tipográficos Semánticos (Aprovechando la fuente variable Lexend) */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ----------------------------------------------------------------------
+     2. SEMÁNTICA DE COMPONENTES Y FORMAS
+     ---------------------------------------------------------------------- */
+  
+  --radius-input: var(--radius-sm);
+  --radius-button: var(--radius-sm);
+  --radius-card: var(--radius-base);
+  --radius-modal: var(--radius-base);
+  --radius-toast: var(--radius-lg);
+
+  /* ----------------------------------------------------------------------
+     3. SEMÁNTICA ESPACIAL (Trauma-Informed Layout)
+     ---------------------------------------------------------------------- */
+  
+  /* Espaciado interno (Paddings) */
+  --padding-button-y: var(--spacing-sm);
+  --padding-button-x: var(--spacing-md);
+  --padding-input-y: var(--spacing-sm);
+  --padding-input-x: var(--spacing-md);
+  --padding-card: var(--spacing-xl);
+  --padding-modal: var(--spacing-xl);
+
+  /* Espaciado externo (Margins / Gaps) */
+  --gap-form-group: var(--spacing-sm); 
+  --gap-form-sections: var(--spacing-xl); 
+  --spacing-emotional-break: var(--spacing-xxl); 
+
+  /* ----------------------------------------------------------------------
+     4. SEMÁNTICA DE PROFUNDIDAD, TELONES DE FONDO Y ELEVACIÓN
+     ---------------------------------------------------------------------- */
+  
+  --z-index-hide: -1;
+  --z-index-base: 0;
+  --z-index-dropdown: 10;
+  --z-index-sticky: 100;     
+  --z-index-overlay: 900;    
+  --z-index-modal: 1000;     
+  --z-index-toast: 1100;
+
+  /* Telones de Fondo y Superposiciones Accesibles (Backdrop & Scrim Overlays) */
+  --overlay-backdrop-bg: var(--color-overlay-sensitive);
+  --overlay-backdrop-color: var(--color-overlay-text);
+  --overlay-backdrop-blur: 0.25rem;
+  --overlay-border-subtle: rgba(255, 255, 255, 0.2);
+
+  /* Elevaciones y Sombras Sutiles (Estricta adhesión Flat/Clean IDS) */
+  --shadow-elevation-none: none;
+  --shadow-elevation-subtle: 0 -0.25rem 0.5rem -0.25rem rgba(0, 0, 0, 0.05);
+  --shadow-elevation-card: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.06);
+  --shadow-elevation-sticky: 0 -0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+
+  /* ----------------------------------------------------------------------
+     5. SEMÁNTICA DE ACCIONES Y CONTROLES (WCAG AAA & Trauma-Informed)
+     ---------------------------------------------------------------------- */
+  --target-size-min: 2.75rem; /* 44px - Área táctil mínima accesible WCAG AAA */
+  --opacity-disabled: 0.6;
+
+  /* Semántica compartida de Botones */
+  --button-min-height: var(--target-size-min);
+  --button-min-width: var(--target-size-min);
+  --button-border-width: var(--focus-ring-width);
+  --button-font-size: var(--font-size-body);
+  --button-font-weight: var(--font-weight-medium);
+  --button-line-height: var(--line-height-base);
+  --button-gap: var(--spacing-sm);
+  --padding-button-sm-y: var(--spacing-xs);
+  --padding-button-sm-x: var(--spacing-sm);
+  --padding-button-lg-y: var(--spacing-md);
+  --padding-button-lg-x: var(--spacing-lg);
+  --font-size-button-sm: var(--font-size-caption);
+  --font-size-button-lg: var(--font-size-body-large);
+
+  /* ----------------------------------------------------------------------
+     6. SEMÁNTICA DE ENTRADAS, CASILLAS Y RADIOS (Inputs, Checkboxes & Radios)
+     ---------------------------------------------------------------------- */
+  --input-min-height: var(--target-size-min);
+  --input-min-width: var(--target-size-min);
+  --input-border-width: var(--focus-ring-width);
+  --input-font-size: var(--font-size-body);
+  --input-font-weight: var(--font-weight-regular);
+  --input-line-height: var(--line-height-base);
+  --input-gap: var(--spacing-sm);
+
+  /* Variaciones de escala de inputs */
+  --padding-input-sm-y: var(--spacing-xs);
+  --padding-input-sm-x: var(--spacing-sm);
+  --padding-input-lg-y: var(--spacing-md);
+  --padding-input-lg-x: var(--spacing-lg);
+  --font-size-input-sm: var(--font-size-caption);
+  --font-size-input-lg: var(--font-size-body-large);
+
+  /* Semántica de controles de selección (Checkboxes y Radios) */
+  --control-checkbox-size: 1.375rem; /* 22px geometría visible */
+  --control-radio-size: 1.375rem;    /* 22px geometría visible */
+  --control-target-size: var(--target-size-min); /* 44px tap target */
+  --control-border-width: var(--focus-ring-width);
+  --control-gap: var(--spacing-sm);
+
+  /* ----------------------------------------------------------------------
+     7. SEMÁNTICA DE ETIQUETAS Y TEXTOS DE APOYO (Labels & Helper Texts)
+     ---------------------------------------------------------------------- */
+  --label-font-size: var(--font-size-body);
+  --label-font-size-sm: var(--font-size-caption);
+  --label-font-size-lg: var(--font-size-body-large);
+  --label-font-weight: var(--font-weight-medium);
+  --label-font-weight-bold: var(--font-weight-bold);
+  --label-line-height: var(--line-height-base);
+  --label-gap: var(--spacing-xs);
+  --label-margin-bottom: var(--spacing-xs);
+
+  --help-text-font-size: var(--font-size-caption);
+  --help-text-line-height: var(--line-height-base);
+  --help-text-gap: var(--spacing-xs);
+  --help-text-margin-top: var(--spacing-xs);
+  --help-text-icon-size: var(--spacing-md);
+  --help-text-max-width: 65ch;
+
+  --counter-font-size: var(--font-size-caption);
+
+  /* Badges y Placas de Metadatos */
+  --badge-font-size: 0.75rem;
+  --badge-font-size-xs: 0.625rem;
+  --badge-font-size-sm: 0.6875rem;
+  --badge-font-size-lg: var(--font-size-caption);
+  --badge-padding-y: 0.125rem;
+  --badge-padding-x: var(--spacing-xs);
+  --badge-padding-y-xs: 0.0625rem;
+  --badge-padding-x-xs: calc(var(--spacing-xs) / 2);
+  --badge-padding-y-sm: 0.0625rem;
+  --badge-padding-x-sm: calc(var(--spacing-xs) * 0.75);
+  --badge-padding-y-lg: 0.25rem;
+  --badge-padding-x-lg: var(--spacing-sm);
+  --badge-radius: var(--radius-sm);
+  --badge-radius-pill: var(--radius-full);
+  --badge-active-contrast-bg: rgba(255, 255, 255, 0.25);
+
+  /* ----------------------------------------------------------------------
+     8. SEMÁNTICA DE SELECTORES (Select Elements)
+     ---------------------------------------------------------------------- */
+  --select-min-height: var(--target-size-min);
+  --select-border-width: var(--focus-ring-width);
+  --select-padding-y: var(--spacing-sm);
+  --select-padding-x: var(--spacing-md);
+  --select-padding-end: var(--spacing-xxl);
+  --select-font-size: var(--font-size-body);
+  --select-font-weight: var(--font-weight-regular);
+  --select-line-height: var(--line-height-base);
+  --select-icon-size: var(--spacing-sm);
+  --select-icon-color: var(--color-text-secondary);
+
+  /* Escalas de selectores */
+  --select-padding-sm-y: var(--spacing-xs);
+  --select-padding-sm-x: var(--spacing-sm);
+  --select-font-size-sm: var(--font-size-caption);
+  --select-padding-lg-y: var(--spacing-md);
+  --select-padding-lg-x: var(--spacing-lg);
+  --select-font-size-lg: var(--font-size-body-large);
+
+  /* ----------------------------------------------------------------------
+     9. SEMÁNTICA DE CONTROLES DE RANGO (Range Sliders)
+     ---------------------------------------------------------------------- */
+  --range-min-height: var(--target-size-min);
+  --range-track-height: 0.5rem;
+  --range-track-height-sm: 0.25rem;
+  --range-track-height-lg: 0.75rem;
+  --range-track-radius: var(--radius-full);
+  --range-track-bg: var(--color-surface-muted);
+  --range-track-border: var(--color-border-subtle);
+  --range-track-fill: var(--color-action-primary);
+
+  --range-thumb-size: 1.5rem;
+  --range-thumb-size-sm: 1.125rem;
+  --range-thumb-size-lg: 1.875rem;
+  --range-thumb-radius: var(--radius-full);
+  --range-thumb-border-width: var(--focus-ring-width);
+  --range-thumb-bg: var(--color-surface-background);
+  --range-thumb-border: var(--color-action-primary);
+  --range-thumb-hover-bg: var(--color-action-hover);
+  --range-thumb-hover-border: var(--color-action-hover);
+
+  /* ----------------------------------------------------------------------
+     10. SEMÁNTICA DE BARRAS DE PROGRESO (Progress Bars)
+     ---------------------------------------------------------------------- */
+  --progress-height-xs: 0.25rem;
+  --progress-height-sm: 0.375rem;
+  --progress-height: 0.5rem;
+  --progress-height-lg: 0.75rem;
+  --progress-height-xl: 1rem;
+
+  --progress-radius: var(--radius-full);
+  --progress-radius-square: 0;
+
+  --progress-bg: var(--color-surface-muted);
+  --progress-bar-bg: var(--color-action-primary);
+  --progress-bar-color: var(--color-action-primary-text);
+
+  --progress-stripe-size: 1rem;
+  --progress-stripe-color: var(--color-surface-background);
+
+  --progress-label-font-size: var(--font-size-caption);
+  --progress-value-font-size: var(--font-size-caption);
+  --progress-label-color: var(--color-text-primary);
+  --progress-value-color: var(--color-text-secondary);
+
+  /* Estados de Progreso */
+  --progress-success-bg: var(--color-status-success);
+  --progress-danger-bg: var(--color-status-danger);
+  --progress-warning-bg: var(--color-status-warning);
+  --progress-info-bg: var(--color-status-info);
+  --progress-track-contrast-bg: rgba(0, 0, 0, 0.2);
+  --progress-track-contrast-warning-bg: rgba(0, 0, 0, 0.15);
+
+  /* Semántica de Notificaciones Push (Toasts) */
+  --toast-close-hover-bg: rgba(0, 0, 0, 0.08);
+  --toast-progress-track-bg: var(--progress-track-contrast-bg);
+  --toast-progress-track-warning-bg: var(--progress-track-contrast-warning-bg);
+
+  /* ----------------------------------------------------------------------
+     11. SEMÁNTICA DE SPINNERS DE CARGA (Loading Spinners)
+     ---------------------------------------------------------------------- */
+  --spinner-size-xs: 0.875rem; /* 14px */
+  --spinner-size-sm: 1.125rem; /* 18px */
+  --spinner-size: 1.5rem;      /* 24px */
+  --spinner-size-lg: 2.25rem;  /* 36px */
+  --spinner-size-xl: 3.25rem;  /* 52px */
+
+  --spinner-border-width-xs: 0.09375rem; /* 1.5px */
+  --spinner-border-width-sm: 0.125rem;   /* 2px */
+  --spinner-border-width: 0.15625rem;    /* 2.5px */
+  --spinner-border-width-lg: 0.21875rem; /* 3.5px */
+  --spinner-border-width-xl: 0.28125rem; /* 4.5px */
+
+  --spinner-radius: var(--radius-full);
+  --spinner-speed: 750ms;
+  --spinner-speed-slow: 1400ms;
+
+  --spinner-color: var(--color-action-primary);
+  --spinner-track-color: var(--color-border-subtle);
+  --spinner-success-color: var(--color-status-success);
+  --spinner-danger-color: var(--color-status-danger);
+  --spinner-warning-color: var(--color-status-warning);
+  --spinner-info-color: var(--color-status-info);
+  --spinner-neutral-color: var(--color-text-secondary);
+  --spinner-gap: var(--spacing-sm);
+
+  /* ----------------------------------------------------------------------
+     12. SEMÁNTICA DE TOOLTIPS (Información Contextual Accesible)
+     ---------------------------------------------------------------------- */
+  --z-index-tooltip: 1200;
+
+  /* Tamaños y Escalas Tipográficas */
+  --tooltip-font-size-sm: 0.75rem;
+  --tooltip-font-size: var(--font-size-caption);
+  --tooltip-font-size-lg: var(--font-size-body);
+  --tooltip-line-height: var(--line-height-base);
+
+  /* Espaciados Internos (Paddings) */
+  --tooltip-padding-sm-y: 0.25rem;
+  --tooltip-padding-sm-x: var(--spacing-xs);
+  --tooltip-padding-y: var(--spacing-xs);
+  --tooltip-padding-x: var(--spacing-sm);
+  --tooltip-padding-lg-y: var(--spacing-sm);
+  --tooltip-padding-lg-x: var(--spacing-md);
+
+  /* Geometría y Flechas */
+  --tooltip-radius: var(--radius-sm);
+  --tooltip-max-width: 20rem;
+  --tooltip-arrow-size: 0.375rem; /* 6px */
+  --tooltip-offset: var(--spacing-xs);
+
+  /* Colores, Superficie y Opacidades */
+  --tooltip-bg: var(--color-surface-card);
+  --tooltip-color: var(--color-text-primary);
+  --tooltip-border-color: var(--color-border-subtle);
+  --tooltip-success-bg: var(--color-status-success);
+  --tooltip-success-color: var(--color-status-success-text);
+  --tooltip-success-border: var(--color-status-success);
+  --tooltip-danger-bg: var(--color-status-danger);
+  --tooltip-danger-color: var(--color-status-danger-text);
+  --tooltip-danger-border: var(--color-status-danger);
+  --tooltip-warning-bg: var(--color-status-warning);
+  --tooltip-warning-color: var(--color-status-warning-text);
+  --tooltip-warning-border: var(--color-status-warning);
+  --tooltip-info-bg: var(--color-status-info);
+  --tooltip-info-color: var(--color-status-info-text);
+  --tooltip-info-border: var(--color-status-info);
+  --tooltip-opacity-solid: 1;
+  --tooltip-opacity-translucent: 0.92;
+  --tooltip-opacity-glass: 0.8;
+  --tooltip-blur-glass: 0.5rem; /* 8px */
+
+  /* ----------------------------------------------------------------------
+     13. SEMÁNTICA DE IMÁGENES Y MINIATURAS (Images & Thumbnails)
+     ---------------------------------------------------------------------- */
+  /* Miniatura Thumbnail 200x200 (12.5rem = 200px) */
+  --img-thumbnail-size: 12.5rem;
+  --img-thumbnail-padding: var(--spacing-xs);
+  --img-thumbnail-bg: var(--color-img-thumbnail-bg);
+  --img-thumbnail-border-color: var(--color-img-thumbnail-border);
+  --img-thumbnail-border-width: var(--focus-ring-width);
+  --img-thumbnail-radius: var(--radius-sm);
+
+  /* Curvaturas de Imagen */
+  --img-radius-rounded: var(--radius-base);
+  --img-radius-circle: var(--radius-full);
+
+  /* Contenedores y Figuras */
+  --img-figure-margin-bottom: var(--spacing-md);
+  --img-caption-color: var(--color-text-secondary);
+  --img-caption-font-size: var(--font-size-caption);
+  --img-caption-margin-top: var(--spacing-xs);
+
+  /* Trauma-Informed: Contenido Sensible (Blur de protección) */
+  --img-sensitive-blur: 1.25rem;
+  --img-sensitive-overlay-bg: var(--color-overlay-sensitive);
+  --img-sensitive-overlay-color: var(--color-overlay-text);
+
+  /* ----------------------------------------------------------------------
+     14. SEMÁNTICA DE TABLAS DE DATOS (Data Tables)
+     ---------------------------------------------------------------------- */
+  /* Espaciados y Relleno de Celdas (Paddings) */
+  --table-cell-padding-y: var(--spacing-sm);
+  --table-cell-padding-x: var(--spacing-md);
+  --table-cell-padding-sm-y: var(--spacing-xs);
+  --table-cell-padding-sm-x: var(--spacing-sm);
+  --table-cell-padding-lg-y: var(--spacing-md);
+  --table-cell-padding-lg-x: var(--spacing-lg);
+
+  /* Tipografía */
+  --table-font-size: var(--font-size-body);
+  --table-font-size-sm: var(--font-size-caption);
+  --table-font-size-lg: var(--font-size-body-large);
+  --table-line-height: var(--line-height-base);
+  --table-header-font-weight: var(--font-weight-bold);
+
+  /* Superficies y Bordes Base */
+  --table-bg: transparent;
+  --table-color: var(--color-text-primary);
+  --table-header-bg: var(--color-surface-muted);
+  --table-header-color: var(--color-text-primary);
+  --table-border-color: var(--color-border-subtle);
+  --table-border-width: 0.0625rem; /* 1px */
+
+  /* Rayado (Zebra Striping) y Hover */
+  --table-striped-bg: var(--color-surface-muted);
+  --table-hover-bg: var(--color-surface-hover);
+
+  /* Fila y Celda Destacada (Highlight) */
+  --table-highlight-bg: var(--color-surface-muted);
+  --table-highlight-border: var(--color-action-primary);
+  --table-highlight-color: var(--color-text-primary);
+
+  /* Estados de Color Semánticos de Filas/Celdas (WCAG AAA) */
+  --table-success-bg: var(--color-surface-muted);
+  --table-success-color: var(--color-text-primary);
+  --table-success-border: var(--color-status-success);
+
+  --table-danger-bg: var(--color-surface-muted);
+  --table-danger-color: var(--color-text-primary);
+  --table-danger-border: var(--color-status-danger);
+
+  --table-warning-bg: var(--color-surface-muted);
+  --table-warning-color: var(--color-text-primary);
+  --table-warning-border: var(--color-status-warning);
+
+  --table-info-bg: var(--color-surface-muted);
+  --table-info-color: var(--color-text-primary);
+  --table-info-border: var(--color-status-info);
+
+  /* Título Caption de Tabla */
+  --table-caption-color: var(--color-text-secondary);
+  --table-caption-font-size: var(--font-size-caption);
+  --table-caption-padding-y: var(--spacing-xs);
+
+  /* ----------------------------------------------------------------------
+     15. SEMÁNTICA DE FORMAS GEOMÉTRICAS (Shapes & Geometry)
+     ---------------------------------------------------------------------- */
+  /* Escala de Dimensiones Cuadradas y Circulares (Size) */
+  --shape-size-xs: 1.5rem;    /* 24px */
+  --shape-size-sm: 2rem;      /* 32px */
+  --shape-size: 2.75rem;      /* 44px - Target Area Mínima Accesible WCAG AAA */
+  --shape-size-lg: 3.5rem;    /* 56px */
+  --shape-size-xl: 5rem;      /* 80px */
+
+  /* Dimensiones Rectangulares (Height y Width escalados) */
+  --shape-rect-width-xs: 3rem;       /* 48px */
+  --shape-rect-height-xs: 1.5rem;    /* 24px */
+  --shape-rect-width-sm: 4.5rem;     /* 72px */
+  --shape-rect-height-sm: 2rem;      /* 32px */
+  --shape-rect-width: 6rem;          /* 96px */
+  --shape-rect-height: 2.75rem;      /* 44px */
+  --shape-rect-width-lg: 8rem;       /* 128px */
+  --shape-rect-height-lg: 3.5rem;    /* 56px */
+  --shape-rect-width-xl: 10rem;      /* 160px */
+  --shape-rect-height-xl: 5rem;      /* 80px */
+
+  /* Curvaturas de Formas */
+  --shape-radius-circle: var(--radius-full);
+  --shape-radius-square: 0;
+  --shape-radius-rounded: var(--radius-sm);
+  --shape-radius-rectangle: var(--radius-sm);
+
+  /* Bordes de Formas */
+  --shape-border-width: var(--focus-ring-width);
+  --shape-border-color: var(--color-border-subtle);
+
+  /* Tipografía interna de etiquetas (Labels) */
+  --shape-label-font-size-xs: 0.6875rem; /* 11px */
+  --shape-label-font-size-sm: var(--font-size-caption); /* 14px */
+  --shape-label-font-size: var(--font-size-body); /* 16px */
+  --shape-label-font-size-lg: var(--font-size-body-large);
+  --shape-label-font-size-xl: var(--font-size-h5);
+  --shape-label-font-weight: var(--font-weight-medium);
+
+  /* Colores Base */
+  --shape-bg: var(--color-surface-muted);
+  --shape-color: var(--color-text-primary);
+
+  /* ----------------------------------------------------------------------
+     16. SEMÁNTICA DE ÍCONOS Y CONTENEDORES (Icons & Icon Containers)
+     ---------------------------------------------------------------------- */
+  /* Escala de Tamaños de SVG (Icon Sizes) */
+  --icon-size-xs: 0.75rem;    /* 12px - Para badges, chips y metadatos minúsculos */
+  --icon-size-sm: 1rem;       /* 16px - Alineado con texto base y controles compactos */
+  --icon-size: 1.25rem;       /* 20px - Tamaño estándar para botones y acciones */
+  --icon-size-lg: 1.5rem;     /* 24px - Prominente para cabeceras y llamadas a la acción */
+  --icon-size-xl: 2rem;       /* 32px - Para estados, alertas y modales */
+  --icon-size-2xl: 3rem;      /* 48px - Ilustraciones de estado vacío o pantallas de bienvenida */
+
+  /* Trazo de Iconos SVG */
+  --icon-stroke-width: 2;
+  --icon-stroke-width-thin: 1.5;
+  --icon-stroke-width-thick: 2.5;
+
+  /* Escala de Contenedores de Iconos (Icon Box Sizes) */
+  --icon-box-size-xs: 1.5rem;   /* 24px */
+  --icon-box-size-sm: 2rem;     /* 32px */
+  --icon-box-size: 2.75rem;     /* 44px - Target Area Mínima Accesible WCAG AAA */
+  --icon-box-size-lg: 3.5rem;   /* 56px */
+  --icon-box-size-xl: 4.5rem;   /* 72px */
+
+  /* Curvaturas de Contenedores */
+  --icon-box-radius-circle: var(--radius-full);
+  --icon-box-radius-rounded: var(--radius-sm);
+  --icon-box-radius-square: 0;
+
+  /* Bordes y Superficies de Contenedores */
+  --icon-box-border-width: var(--focus-ring-width);
+  --icon-box-border-color: var(--color-border-subtle);
+  --icon-box-bg: var(--color-surface-muted);
+  --icon-box-color: var(--color-text-primary);
+  --icon-box-success-bg: var(--status-success-bg);
+  --icon-box-danger-bg: var(--status-danger-bg);
+  --icon-box-warning-bg: var(--status-warning-bg);
+  --icon-box-info-bg: var(--status-info-bg);
+  --icon-box-primary-bg: var(--status-primary-bg);
+
+  /* ----------------------------------------------------------------------
+     17. SEMÁNTICA DE ESTADOS Y VARIANTES CROMÁTICAS (Status & Chromatic)
+     ---------------------------------------------------------------------- */
+  /* Estados Semánticos Principales */
+  --status-success: var(--color-status-success);
+  --status-danger: var(--color-status-danger);
+  --status-warning: var(--color-status-warning);
+  --status-info: var(--color-status-info);
+
+  /* Texto Accesible sobre Color de Estado Sólido */
+  --status-success-text: var(--color-status-success-text);
+  --status-danger-text: var(--color-status-danger-text);
+  --status-warning-text: var(--color-status-warning-text);
+  --status-info-text: var(--color-status-info-text);
+
+  /* Fondos y Bordes Tenues/Sutiles para Badges, Formas, Icon Boxes y Alertas */
+  --status-success-bg: var(--color-surface-muted);
+  --status-success-border: var(--color-status-success);
+  --status-danger-bg: var(--color-surface-muted);
+  --status-danger-border: var(--color-status-danger);
+  --status-warning-bg: var(--color-surface-muted);
+  --status-warning-border: var(--color-status-warning);
+  --status-info-bg: var(--color-surface-muted);
+  --status-info-border: var(--color-status-info);
+
+  /* Estados Neutral y Primario */
+  --status-neutral-bg: var(--color-surface-muted);
+  --status-neutral-border: var(--color-border-subtle);
+  --status-neutral-text: var(--color-text-secondary);
+  --status-primary-bg: var(--color-surface-muted);
+  --status-primary-border: var(--color-action-primary);
+  --status-primary-text: var(--color-action-primary);
+
+  /* ----------------------------------------------------------------------
+     18. SEMÁNTICA DE INTERRUPTORES BOOLEANOS (Toggle Switch)
+     ---------------------------------------------------------------------- */
+  /* Geometría y Proporciones de la Pista (Track) */
+  --toggle-width: 2.875rem;          /* 46px */
+  --toggle-height: 1.625rem;         /* 26px */
+  --toggle-track-radius: var(--radius-full);
+  --toggle-border-width: var(--focus-ring-width); /* 2px */
+
+  /* Geometría del Deslizador (Thumb) */
+  --toggle-thumb-size: 1.25rem;      /* 20px */
+  --toggle-thumb-radius: var(--radius-full);
+  --toggle-thumb-offset: 0.0625rem;   /* 1px */
+
+  /* Escala de Tamaños (Modificadores) */
+  --toggle-width-sm: 2.25rem;        /* 36px */
+  --toggle-height-sm: 1.375rem;      /* 22px */
+  --toggle-thumb-size-sm: 1rem;      /* 16px */
+  --toggle-thumb-offset-sm: 0.0625rem;
+
+  --toggle-width-lg: 3.5rem;         /* 56px */
+  --toggle-height-lg: 2rem;          /* 32px */
+  --toggle-thumb-size-lg: 1.625rem;  /* 26px */
+  --toggle-thumb-offset-lg: 0.0625rem;
+
+  /* Área táctil mínima accesible WCAG AAA (Mínimo 44px x 44px) */
+  --toggle-target-size: var(--target-size-min);
+
+  /* Espaciado y Tipografía de Etiquetas */
+  --toggle-gap: var(--spacing-sm);
+  --toggle-label-font-size: var(--font-size-body);
+  --toggle-label-line-height: var(--line-height-base);
+  --toggle-description-font-size: var(--font-size-caption);
+
+  /* Piel y Mapeo Cromático - Estado Inactivo (Off / Unchecked) */
+  --toggle-track-bg: var(--color-surface-muted);
+  --toggle-track-border: var(--color-border-subtle);
+  --toggle-thumb-bg: var(--color-surface-background);
+  --toggle-thumb-border: var(--color-border-subtle);
+
+  /* Piel y Mapeo Cromático - Estado Hover Inactivo */
+  --toggle-track-hover-bg: var(--color-surface-hover);
+  --toggle-track-hover-border: var(--color-border-interactive);
+
+  /* Piel y Mapeo Cromático - Estado Activo (On / Checked) */
+  --toggle-track-active-bg: var(--color-action-primary);
+  --toggle-track-active-border: var(--color-action-primary);
+  --toggle-thumb-active-bg: var(--color-surface-background);
+  --toggle-thumb-active-border: var(--color-action-primary);
+
+  /* Piel y Mapeo Cromático - Estado Hover Activo */
+  --toggle-track-active-hover-bg: var(--color-action-hover);
+  --toggle-track-active-hover-border: var(--color-action-hover);
+
+  /* Piel y Mapeo Cromático - Estado Deshabilitado */
+  --toggle-disabled-opacity: var(--opacity-disabled);
+  --toggle-disabled-track-bg: var(--color-action-disabled-bg);
+  --toggle-disabled-track-border: var(--color-action-disabled-border);
+  --toggle-disabled-thumb-bg: var(--color-action-disabled-text);
+  --toggle-disabled-thumb-border: var(--color-action-disabled-border);
+  --toggle-disabled-label-color: var(--color-action-disabled-text);
+
+  /* Variantes de Color Semánticas por Estado */
+  --toggle-success-bg: var(--color-status-success);
+  --toggle-success-border: var(--color-status-success);
+  --toggle-danger-bg: var(--color-status-danger);
+  --toggle-danger-border: var(--color-status-danger);
+  --toggle-warning-bg: var(--color-status-warning);
+  --toggle-warning-border: var(--color-status-warning);
+  --toggle-info-bg: var(--color-status-info);
+  --toggle-info-border: var(--color-status-info);
+
+  /* ----------------------------------------------------------------------
+     19. SEMÁNTICA DE SEPARADORES Y DIVISORES (Dividers & Thematic Breaks)
+     ---------------------------------------------------------------------- */
+  /* Geometría y Grosor */
+  --divider-thickness: 0.0625rem;       /* 1px */
+  --divider-thickness-thick: var(--focus-ring-width); /* 2px */
+  --divider-style: solid;
+  --divider-color: var(--color-border-subtle);
+
+  /* Espaciados y Márgenes Verticales */
+  --divider-margin-y: var(--spacing-lg);           /* 1.5rem / 24px estándar */
+  --divider-margin-y-xs: var(--spacing-xs);        /* 4px */
+  --divider-margin-y-sm: var(--spacing-sm);        /* 8px */
+  --divider-margin-y-md: var(--spacing-md);        /* 16px */
+  --divider-margin-y-lg: var(--spacing-lg);        /* 24px */
+  --divider-margin-y-xl: var(--spacing-xl);        /* 32px */
+  --divider-margin-y-emotional: var(--spacing-emotional-break); /* 48px - Pausa cognitiva Trauma-Informed */
+
+  /* Espaciado Horizontal para Separadores Verticales */
+  --divider-margin-x: var(--spacing-md);
+  --divider-vertical-height: 1.5rem;
+
+  /* Contenido / Texto en Separadores */
+  --divider-content-gap: var(--spacing-md);
+  --divider-content-padding-x: var(--spacing-sm);
+  --divider-content-font-size: var(--font-size-caption);
+  --divider-content-color: var(--color-text-secondary);
+  --divider-content-font-weight: var(--font-weight-medium);
+
+  /* Variantes Cromáticas de Separador */
+  --divider-primary-color: var(--color-action-primary);
+  --divider-interactive-color: var(--color-border-interactive);
+  --divider-success-color: var(--color-status-success);
+  --divider-danger-color: var(--color-status-danger);
+  --divider-warning-color: var(--color-status-warning);
+  --divider-info-color: var(--color-status-info);
+
+  /* ----------------------------------------------------------------------
+     20. SEMÁNTICA DE BARRAS DE DESPLAZAMIENTO (Scrollbars X & Y)
+     Accesibilidad universal WCAG AAA, Trauma-Informed (Flat/Clean, sin sobresaltos)
+     ---------------------------------------------------------------------- */
+  /* Geometría y Dimensiones Base (Eje Y: Ancho / Eje X: Alto) */
+  --scrollbar-size-vertical: 0.5rem;             /* 8px - Ancho estándar para desplazamiento vertical */
+  --scrollbar-size-horizontal: 0.5rem;           /* 8px - Alto estándar para desplazamiento horizontal */
+  --scrollbar-size: var(--scrollbar-size-vertical);
+
+  /* Variantes de Dimensión (Delgada y Accesible/Amplia) */
+  --scrollbar-size-sm-vertical: 0.25rem;         /* 4px - Compacto / Discreto */
+  --scrollbar-size-sm-horizontal: 0.25rem;       /* 4px */
+  --scrollbar-size-sm: var(--scrollbar-size-sm-vertical);
+
+  --scrollbar-size-lg-vertical: 0.75rem;         /* 12px - Alta accesibilidad motriz / Fácil agarre */
+  --scrollbar-size-lg-horizontal: 0.75rem;       /* 12px */
+  --scrollbar-size-lg: var(--scrollbar-size-lg-vertical);
+
+  /* Curvatura y Holgura (Border Radius & Inset) */
+  --scrollbar-track-radius: var(--radius-full);
+  --scrollbar-thumb-radius: var(--radius-full);
+  --scrollbar-thumb-border-width: 0.0625rem;      /* 1px separación visual con la pista */
+  --scrollbar-min-length: 1.5rem;                /* 24px longitud mínima del deslizador */
+
+  /* Mapeo Cromático Semántico (Superficie y Contraste) */
+  --scrollbar-track-bg: var(--color-surface-muted);
+  --scrollbar-track-border: transparent;
+  --scrollbar-thumb-bg: var(--color-border-subtle);
+  --scrollbar-thumb-border: var(--color-surface-muted);
+  --scrollbar-thumb-hover-bg: var(--color-border-interactive);
+  --scrollbar-thumb-active-bg: var(--color-action-primary);
+  --scrollbar-corner-bg: var(--color-surface-background);
+
+  /* Variantes Cromáticas por Estado y Énfasis */
+  --scrollbar-primary-thumb-bg: var(--color-action-primary);
+  --scrollbar-primary-thumb-hover-bg: var(--color-action-hover);
+  --scrollbar-success-thumb-bg: var(--color-status-success);
+  --scrollbar-danger-thumb-bg: var(--color-status-danger);
+  --scrollbar-warning-thumb-bg: var(--color-status-warning);
+  --scrollbar-info-thumb-bg: var(--color-status-info);
+
+  /* ----------------------------------------------------------------------
+     21. SEMÁNTICA DE ÁREAS DE TEXTO (Textarea Elements)
+     Proporciones, tipografía y ergonomía de redacción Trauma-Informed
+     ---------------------------------------------------------------------- */
+  --textarea-min-height: calc(var(--target-size-min) * 2.5); /* 6.875rem / 110px */
+  --textarea-min-height-sm: calc(var(--target-size-min) * 1.75); /* 4.8125rem / 77px */
+  --textarea-min-height-lg: calc(var(--target-size-min) * 3.5); /* 9.625rem / 154px */
+  --textarea-max-height: 25rem;                               /* 400px límite de autosize */
+  --textarea-border-width: var(--focus-ring-width);
+  --textarea-padding-y: var(--spacing-md);
+  --textarea-padding-x: var(--spacing-md);
+  --textarea-padding-y-sm: var(--spacing-sm);
+  --textarea-padding-x-sm: var(--spacing-sm);
+  --textarea-padding-y-lg: var(--spacing-lg);
+  --textarea-padding-x-lg: var(--spacing-lg);
+  --textarea-font-size: var(--font-size-body);
+  --textarea-font-size-sm: var(--font-size-caption);
+  --textarea-font-size-lg: var(--font-size-body-large);
+  --textarea-font-weight: var(--font-weight-regular);
+  --textarea-line-height: var(--line-height-base);            /* 1.5 WCAG AAA lectura */
+  --textarea-radius: var(--radius-input);
+}
+
+

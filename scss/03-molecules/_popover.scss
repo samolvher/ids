@@ -1,0 +1,611 @@
+/* ==========================================================================
+   03-molecules/_popover.scss
+   Identity Design System (IDS) - Molécula de Ventanas Emergentes (Popover)
+   Contenedor contextual interactivo en las 4 posiciones (top, bottom, left, right)
+   con soporte de los 4 estados de color semánticos y Popover API accesible.
+   Sector: Tech For Human Rights (T4HR)
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES SEMÁNTICAS DE POPOVER
+   Contrato de tokens agnósticos. Estricta prohibición de valores absolutos.
+   Toda dimensión, geometría, color o espacio se inyecta mediante variables CSS.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Geometría, Ancho y Proporciones Base */
+  --ids-popover-max-width: 20rem;
+  --ids-popover-max-width-sm: 16rem;
+  --ids-popover-max-width-lg: 26rem;
+  --ids-popover-min-width: 14rem;
+  --ids-popover-radius: var(--radius-card);
+  --ids-popover-border-width: var(--focus-ring-width);
+  --ids-popover-border-style: solid;
+  --ids-popover-arrow-size: 0.5rem;
+  --ids-popover-offset: var(--spacing-sm);
+  --ids-popover-z-index: 1050;
+
+  /* Espaciado Interno (Paddings Semánticos) */
+  --ids-popover-header-padding-y: var(--spacing-sm);
+  --ids-popover-header-padding-x: var(--spacing-md);
+  --ids-popover-body-padding-y: var(--spacing-md);
+  --ids-popover-body-padding-x: var(--spacing-md);
+  --ids-popover-footer-padding-y: var(--spacing-sm);
+  --ids-popover-footer-padding-x: var(--spacing-md);
+  --ids-popover-gap: var(--spacing-xs);
+
+  /* Tipografía y Jerarquía Visual */
+  --ids-popover-font-family: var(--font-family-base);
+  --ids-popover-title-font-size: var(--font-size-body);
+  --ids-popover-title-font-weight: var(--font-weight-semibold);
+  --ids-popover-title-line-height: var(--line-height-tight);
+  --ids-popover-body-font-size: var(--font-size-caption);
+  --ids-popover-body-line-height: var(--line-height-base);
+
+  /* Piel y Superficies (Estado Normal / Reposo) */
+  --ids-popover-bg: var(--color-surface-card);
+  --ids-popover-header-bg: var(--color-surface-muted);
+  --ids-popover-footer-bg: var(--color-surface-card);
+  --ids-popover-color: var(--color-text-primary);
+  --ids-popover-body-color: var(--color-text-secondary);
+  --ids-popover-border-color: var(--color-border-subtle);
+  --ids-popover-divider-color: var(--color-border-subtle);
+
+  /* Variables Activas de Instancia (Inyectables dinámicamente) */
+  --ids-popover-current-bg: var(--ids-popover-bg);
+  --ids-popover-current-header-bg: var(--ids-popover-header-bg);
+  --ids-popover-current-header-color: var(--color-text-primary);
+  --ids-popover-current-footer-bg: var(--ids-popover-footer-bg);
+  --ids-popover-current-color: var(--ids-popover-color);
+  --ids-popover-current-border: var(--ids-popover-border-color);
+
+  /* Botón de Cierre Accesible */
+  --ids-popover-close-size: 2rem;
+  --ids-popover-close-color: var(--color-text-secondary);
+  --ids-popover-close-hover-color: var(--color-text-primary);
+  --ids-popover-close-hover-bg: var(--color-surface-hover);
+
+  /* Movimiento y Transiciones */
+  --ids-popover-transition-speed: var(--transition-speed-fast);
+  --ids-popover-transition-ease: var(--transition-ease);
+}
+
+/* --------------------------------------------------------------------------
+   2. CONTENEDOR DISPARADOR / ENVOLTURA RELATIVA (.ids-popover-wrapper)
+   Establece el contexto de apilamiento relativo para popovers en flujo regular.
+   -------------------------------------------------------------------------- */
+.ids-popover-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   3. ESTRUCTURA Y ESQUELETO BASE (.ids-popover)
+   Contenedor emergente enriquecido con soporte de accesibilidad y foco.
+   -------------------------------------------------------------------------- */
+.ids-popover {
+  position: absolute;
+  z-index: var(--ids-popover-z-index);
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: var(--ids-popover-min-width);
+  max-width: calc(100vw - var(--spacing-xl));
+
+  &--left,
+  &--right {
+    max-width: calc(100vw - var(--spacing-lg));
+  }
+
+  @media (min-width: 48rem) {
+    max-width: var(--ids-popover-max-width);
+
+    &--left,
+    &--right {
+      max-width: var(--ids-popover-max-width);
+    }
+  }
+  box-sizing: border-box;
+  background-color: var(--ids-popover-current-bg);
+  color: var(--ids-popover-current-color);
+  border: var(--ids-popover-border-width) var(--ids-popover-border-style) var(--ids-popover-current-border);
+  border-radius: var(--ids-popover-radius);
+  font-family: var(--ids-popover-font-family);
+  text-align: start;
+  word-wrap: break-word;
+
+  /* Estados de Visibilidad Inicial (Oculto por defecto) */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  /* Transición fluida */
+  transition: opacity var(--ids-popover-transition-speed) var(--ids-popover-transition-ease),
+              transform var(--ids-popover-transition-speed) var(--ids-popover-transition-ease),
+              visibility var(--ids-popover-transition-speed) var(--ids-popover-transition-ease);
+
+  /* Pseudoelementos para Flecha Integrada (::before = borde, ::after = relleno) */
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  /* ------------------------------------------------------------------------
+     Estado Abierto / Visible
+     ------------------------------------------------------------------------ */
+  &.is-open,
+  &--open,
+  &[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+/* Soporte Nativo para HTML5 Popover API ([popover]) */
+[popover].ids-popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+
+  &:is(:popover-open, .\:popover-open) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. COMPONENTES INTERNOS DEL POPOVER
+   -------------------------------------------------------------------------- */
+/* Cabecera (.ids-popover__header) */
+.ids-popover__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding-block: var(--ids-popover-header-padding-y);
+  padding-inline: var(--ids-popover-header-padding-x);
+  background-color: var(--ids-popover-current-header-bg);
+  color: var(--ids-popover-current-header-color);
+  border-start-start-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+  border-start-end-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+  border-block-end: var(--divider-thickness) solid var(--ids-popover-divider-color);
+  box-sizing: border-box;
+
+  .ids-popover__header-content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+}
+
+/* Título de la Cabecera (.ids-popover__title) */
+.ids-popover__title {
+  margin: 0;
+  font-family: var(--ids-popover-font-family);
+  font-size: var(--ids-popover-title-font-size);
+  font-weight: var(--ids-popover-title-font-weight);
+  line-height: var(--ids-popover-title-line-height);
+  color: inherit;
+}
+
+/* Botón de Cierre (.ids-popover__close) */
+.ids-popover__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ids-popover-close-size);
+  height: var(--ids-popover-close-size);
+  padding: 0;
+  margin: 0;
+  margin-inline-end: calc(-1 * var(--spacing-xs));
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  opacity: 0.8;
+  cursor: pointer;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: opacity var(--ids-popover-transition-speed) var(--ids-popover-transition-ease),
+              background-color var(--ids-popover-transition-speed) var(--ids-popover-transition-ease);
+
+  .ids-icon {
+    inline-size: 1rem;
+    block-size: 1rem;
+    fill: currentColor;
+  }
+
+  &:hover {
+    opacity: 1;
+    background-color: var(--ids-popover-close-hover-bg);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+    opacity: 1;
+  }
+}
+
+/* Cuerpo de Contenido (.ids-popover__body) */
+.ids-popover__body {
+  padding-block: var(--ids-popover-body-padding-y);
+  padding-inline: var(--ids-popover-body-padding-x);
+  font-family: var(--ids-popover-font-family);
+  font-size: var(--ids-popover-body-font-size);
+  line-height: var(--ids-popover-body-line-height);
+  color: var(--ids-popover-body-color);
+  box-sizing: border-box;
+
+  p {
+    margin: 0;
+    margin-block-end: var(--spacing-xs);
+
+    &:last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  /* Si no hay cabecera, redondear esquinas superiores del cuerpo */
+  &:first-child {
+    border-start-start-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+    border-start-end-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+  }
+
+  /* Si no hay pie, redondear esquinas inferiores del cuerpo */
+  &:last-child {
+    border-end-start-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+    border-end-end-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+  }
+}
+
+/* Pie de Página / Barra de Acciones (.ids-popover__footer) */
+.ids-popover__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding-block: var(--ids-popover-footer-padding-y);
+  padding-inline: var(--ids-popover-footer-padding-x);
+  background-color: var(--ids-popover-current-footer-bg);
+  border-block-start: var(--divider-thickness) solid var(--ids-popover-divider-color);
+  border-end-start-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+  border-end-end-radius: calc(var(--ids-popover-radius) - var(--ids-popover-border-width));
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   5. LAS 4 POSICIONES CON FLECHA DIRECCIONAL INTEGRADA
+   (Top, Bottom, Left, Right)
+   -------------------------------------------------------------------------- */
+/* 5.1 POSICIÓN ARRIBA (Top) - El popover flota encima del disparador */
+.ids-popover--top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(-1 * var(--ids-popover-offset)));
+  margin-bottom: var(--ids-popover-arrow-size);
+
+  /* Borde exterior de la flecha */
+  &::before {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) 0 var(--ids-popover-arrow-size);
+    border-color: var(--ids-popover-current-border) transparent transparent transparent;
+  }
+
+  /* Relleno interior de la flecha */
+  &::after {
+    top: calc(100% - var(--ids-popover-border-width));
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) 0 var(--ids-popover-arrow-size);
+    border-color: var(--ids-popover-current-bg) transparent transparent transparent;
+  }
+
+  &.is-open,
+  &--open,
+  &[aria-hidden="false"] {
+    transform: translateX(-50%) translateY(calc(-0.5 * var(--spacing-xs)));
+  }
+}
+
+/* 5.2 POSICIÓN ABAJO (Bottom) - El popover flota debajo del disparador */
+.ids-popover--bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(var(--ids-popover-offset));
+  margin-top: var(--ids-popover-arrow-size);
+
+  /* Borde exterior de la flecha */
+  &::before {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) var(--ids-popover-arrow-size);
+    border-color: transparent transparent var(--ids-popover-current-border) transparent;
+  }
+
+  /* Relleno interior de la flecha (apunta hacia la cabecera) */
+  &::after {
+    bottom: calc(100% - var(--ids-popover-border-width));
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) var(--ids-popover-arrow-size);
+    border-color: transparent transparent var(--ids-popover-current-header-bg) transparent;
+  }
+
+  &.is-open,
+  &--open,
+  &[aria-hidden="false"] {
+    transform: translateX(-50%) translateY(calc(var(--spacing-xs) / 2));
+  }
+}
+
+/* 5.3 POSICIÓN IZQUIERDA (Left / Start) - El popover flota a la izquierda */
+.ids-popover--left,
+.ids-popover--start {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(-1 * var(--ids-popover-offset)));
+  margin-right: var(--ids-popover-arrow-size);
+
+  /* Borde exterior de la flecha */
+  &::before {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: var(--ids-popover-arrow-size) 0 var(--ids-popover-arrow-size) var(--ids-popover-arrow-size);
+    border-color: transparent transparent transparent var(--ids-popover-current-border);
+  }
+
+  /* Relleno interior de la flecha */
+  &::after {
+    left: calc(100% - var(--ids-popover-border-width));
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: var(--ids-popover-arrow-size) 0 var(--ids-popover-arrow-size) var(--ids-popover-arrow-size);
+    border-color: transparent transparent transparent var(--ids-popover-current-bg);
+  }
+
+  &.is-open,
+  &--open,
+  &[aria-hidden="false"] {
+    transform: translateY(-50%) translateX(calc(-0.5 * var(--spacing-xs)));
+  }
+}
+
+/* 5.4 POSICIÓN DERECHA (Right / End) - El popover flota a la derecha */
+.ids-popover--right,
+.ids-popover--end {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(var(--ids-popover-offset));
+  margin-left: var(--ids-popover-arrow-size);
+
+  /* Borde exterior de la flecha */
+  &::before {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) 0;
+    border-color: transparent var(--ids-popover-current-border) transparent transparent;
+  }
+
+  /* Relleno interior de la flecha */
+  &::after {
+    right: calc(100% - var(--ids-popover-border-width));
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) var(--ids-popover-arrow-size) 0;
+    border-color: transparent var(--ids-popover-current-bg) transparent transparent;
+  }
+
+  &.is-open,
+  &--open,
+  &[aria-hidden="false"] {
+    transform: translateY(-50%) translateX(calc(var(--spacing-xs) / 2));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. LOS 4 ESTADOS DE COLOR SEMÁNTICOS (WCAG AAA)
+   Parametrización cromática para confirmaciones, advertencias e información.
+   -------------------------------------------------------------------------- */
+/* 6.1 ESTADO ÉXITO / ACCIÓN SEGURA (Success) */
+.ids-popover--success {
+  --ids-popover-current-border: var(--color-status-success);
+  --ids-popover-current-header-bg: var(--color-status-success);
+  --ids-popover-current-header-color: var(--color-status-success-text);
+
+  .ids-popover__close {
+    color: var(--color-status-success-text);
+  }
+}
+
+/* 6.2 ESTADO PELIGRO / ATENCIÓN CRÍTICA (Danger - Trauma-Informed) */
+.ids-popover--danger {
+  --ids-popover-current-border: var(--color-status-danger);
+  --ids-popover-current-header-bg: var(--color-status-danger);
+  --ids-popover-current-header-color: var(--color-status-danger-text);
+
+  .ids-popover__close {
+    color: var(--color-status-danger-text);
+  }
+}
+
+/* 6.3 ESTADO ADVERTENCIA / PRECAUCIÓN (Warning) */
+.ids-popover--warning {
+  --ids-popover-current-border: var(--color-status-warning);
+  --ids-popover-current-header-bg: var(--color-status-warning);
+  --ids-popover-current-header-color: var(--color-status-warning-text);
+
+  .ids-popover__close {
+    color: var(--color-status-warning-text);
+  }
+}
+
+/* 6.4 ESTADO INFORMACIÓN / PROTOCOLO NEUTRAL (Info) */
+.ids-popover--info {
+  --ids-popover-current-border: var(--color-status-info);
+  --ids-popover-current-header-bg: var(--color-status-info);
+  --ids-popover-current-header-color: var(--color-status-info-text);
+
+  .ids-popover__close {
+    color: var(--color-status-info-text);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. VARIANTES DE ESTILO (Subtle / Glass / Flat)
+   -------------------------------------------------------------------------- */
+/* Variante Sutil / Con Borde de Estado (Sin cabecera de color sólido) */
+.ids-popover--subtle {
+  &.ids-popover--success {
+    --ids-popover-current-header-bg: var(--color-surface-muted);
+    --ids-popover-current-header-color: var(--color-status-success);
+  }
+
+  &.ids-popover--danger {
+    --ids-popover-current-header-bg: var(--color-surface-muted);
+    --ids-popover-current-header-color: var(--color-status-danger);
+  }
+
+  &.ids-popover--warning {
+    --ids-popover-current-header-bg: var(--color-surface-muted);
+    --ids-popover-current-header-color: var(--color-status-warning);
+  }
+
+  &.ids-popover--info {
+    --ids-popover-current-header-bg: var(--color-surface-muted);
+    --ids-popover-current-header-color: var(--color-status-info);
+  }
+
+  .ids-popover__close {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* Variante Vidrio / Glassmorphism */
+.ids-popover--glass {
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+}
+
+/* --------------------------------------------------------------------------
+   8. MODIFICADORES DE TAMAÑO (.ids-popover--sm y .ids-popover--lg)
+   -------------------------------------------------------------------------- */
+.ids-popover--sm {
+  max-width: var(--ids-popover-max-width-sm);
+  min-width: 12rem;
+  --ids-popover-body-padding-y: var(--spacing-sm);
+  --ids-popover-body-padding-x: var(--spacing-sm);
+}
+
+.ids-popover--lg {
+  max-width: var(--ids-popover-max-width-lg);
+  --ids-popover-body-padding-y: var(--spacing-lg);
+  --ids-popover-body-padding-x: var(--spacing-lg);
+}
+
+/* --------------------------------------------------------------------------
+   9. ADAPTABILIDAD A LOS 4 EJES TEMÁTICOS DEL IDS
+   -------------------------------------------------------------------------- */
+/* Tema Alto Contraste (WCAG AAA 7:1) */
+[data-theme="high-contrast"] {
+  .ids-popover {
+    border-width: var(--focus-ring-width);
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-surface-background);
+  }
+
+  .ids-popover__header {
+    border-block-end-color: var(--color-border-subtle);
+  }
+
+  .ids-popover__footer {
+    border-block-start-color: var(--color-border-subtle);
+  }
+
+  .ids-popover--success {
+    --ids-popover-current-border: var(--color-border-interactive);
+  }
+
+  .ids-popover--danger {
+    --ids-popover-current-border: var(--color-action-danger-bg);
+  }
+}
+
+/* Modo Forzado de Colores del Sistema (Windows High Contrast / Assistive Tech) */
+@media (forced-colors: active) {
+  .ids-popover {
+    border: 0.125rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+
+    &::before {
+      border-color: CanvasText;
+    }
+
+    &::after {
+      border-color: Canvas;
+    }
+  }
+
+  .ids-popover__header {
+    border-block-end: 0.0625rem solid CanvasText;
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .ids-popover__footer {
+    border-block-start: 0.0625rem solid CanvasText;
+  }
+
+  .ids-popover__close:focus-visible {
+    outline: 0.1875rem solid Highlight;
+    outline-offset: 0.125rem;
+  }
+}
+
+/* Tema Baja Estimulación (Low-Stimulation / Sensory Comfort) */
+[data-theme="low-stimulation"] {
+  .ids-popover {
+    transition: none;
+    box-shadow: none;
+  }
+}
+
+/* Tema Discreto / Sigilo (Discrete / Anti-Outing) */
+[data-theme="discrete"] {
+  .ids-popover {
+    background-color: var(--color-surface-card);
+    border-color: var(--color-border-subtle);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. MOVIMIENTO REDUCIDO Y RESPONSIVIDAD NATIVA
+   -------------------------------------------------------------------------- */
+/* Movimiento Reducido (Accesibilidad Vestibular) */
+@media (prefers-reduced-motion: reduce) {
+  .ids-popover,
+  .ids-popover__close {
+    transition: none !important;
+  }
+}
+
+/* Diseño Responsivo - Mobile-First
+   El ancho máximo se limita dinámicamente al viewport en pantallas móviles
+   y adopta el ancho máximo establecido a partir de @media (min-width: 48rem). */
+
