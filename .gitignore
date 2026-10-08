@@ -4,7 +4,7 @@ css/
 *.html
 
 ### Agentes ###
-*.md
+AGENTS.md
 scratch/
 .agents/
 .gemini/
