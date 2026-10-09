@@ -365,6 +365,7 @@ svg.ids-icon {
 .ids-popover__close svg,
 .ids-snackbar__close svg,
 .ids-snackbar__icon svg,
+.ids-snackbar svg:not([class*="__img"]):not([class*="-img"]),
 .ids-fab svg:not([class*="__img"]):not([class*="-img"]),
 .ids-toolbar__button svg:not([class*="__img"]):not([class*="-img"]),
 .ids-consent-card svg:not([class*="__img"]):not([class*="-img"]) {

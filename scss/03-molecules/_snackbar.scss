@@ -135,7 +135,9 @@
     block-size: 1.5rem;
     color: currentColor;
 
-    .ids-icon {
+    &.ids-icon,
+    .ids-icon,
+    svg {
       inline-size: 100%;
       block-size: 100%;
       fill: currentColor;
