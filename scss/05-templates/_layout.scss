@@ -1170,3 +1170,103 @@
     animation: none !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   12. PLANTILLA MODULAR DE SWITCHER DE TEMAS Y MODO OSCURO/CLARO
+   Estructura: .ids-theme-switcher
+   Nivel: 05-templates
+   Filosofía: Trauma-Informed Design, Tecnología Consentida y WCAG AAA
+   -------------------------------------------------------------------------- */
+
+.ids-theme-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background-color: var(--color-surface-card);
+  border: var(--focus-ring-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  inline-size: 100%;
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-h4);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-heading);
+  }
+
+  &__desc {
+    margin: 0;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-body-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-body);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+
+    @media (min-width: 48rem) {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__label {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  &__theme-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  &__mode-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-inline-size: 12.5rem;
+  }
+
+  &__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-surface-muted);
+    border: var(--focus-ring-width) solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-caption);
+    color: var(--color-text-secondary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ids-theme-switcher {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
