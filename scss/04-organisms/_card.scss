@@ -123,6 +123,7 @@
    Contenedor modular con estética plana (Flat/Clean, sin sombras complejas).
    -------------------------------------------------------------------------- */
 .ids-card {
+  padding: var(--ids-card-padding);
   position: relative;
   display: flex;
   flex-direction: column;

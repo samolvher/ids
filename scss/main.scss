@@ -69,3 +69,12 @@
 /*
 @import '04-organisms/orca-card';
 */
+
+body {
+  font-family: var(--ids-font-family);
+  font-size: var(--ids-font-size);
+  line-height: var(--ids-line-height);
+  color: var(--ids-color-text);
+  background-color: var(--ids-color-bg);
+  padding: var(--spacing-xl);
+}
